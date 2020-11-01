@@ -1,2 +1,2 @@
-# -Library
-Library software project using flutter 
+# Library management system
+Library management system for software project using flutter 
