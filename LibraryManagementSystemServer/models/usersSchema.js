@@ -37,6 +37,18 @@ var userSchema = new schema({
         type: Boolean,
         default: false
     },
+    canBorrowItems: { 
+        type: Boolean, 
+        default: true 
+    },
+    canEvaluateItems: { 
+        type: Boolean, 
+        default: true 
+    },
+    managedLibrary: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "Library"  
+    },
     subscribedLibraries:[subsSchema]
 });
 
