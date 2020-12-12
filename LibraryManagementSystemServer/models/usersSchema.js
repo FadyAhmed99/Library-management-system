@@ -12,15 +12,18 @@ var subsSchema = new schema({
 var userSchema = new schema({
     firstname: {
         type: String,
+        default: ''
     },
     lastname: {
         type: String,
+        default: ''
     },
     facebookId: {
         type: String
     },
     email:{
         type: String,
+        default: ''
     },
     profilePhoto:{
         type: String,

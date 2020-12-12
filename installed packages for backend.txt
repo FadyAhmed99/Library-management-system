@@ -16,3 +16,4 @@ path
 cookie-parser
 morgan
 cors
+nodemon

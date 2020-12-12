@@ -9,7 +9,9 @@ const itemSchema = new schema({
 });
 
 const favoriteSchema = new schema({
-    _id: { type: mongoose.Schema.Types.ObjectId, ref: "User",required:true },
+    _id: { type: mongoose.Schema.Types.ObjectId, ref: "User",
+           required: true
+    },
     items: [itemSchema],
 });
 

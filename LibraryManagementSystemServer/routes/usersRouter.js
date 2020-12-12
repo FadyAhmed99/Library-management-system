@@ -151,7 +151,7 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
       if(user == null){
         res.statusCode = 404;
         res.setHeader("Content-Type" , 'application/json');
-        res.json({success: false, status:"User Not Found", err:err});
+        res.json({success: false, status:"Couldn't Modify Info", err: "User Not Found"});
       }
       else{
         if(req.body.firstname){
@@ -171,7 +171,7 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
             if(err){
               res.statusCode = 500;
               res.setHeader("Content-Type" , 'application/json');
-              res.json({success: false, status:"Couldn't Change Password", err:err});
+              res.json({success: false, status:"Couldn't Modify Info", err:err});
             }
             else{
               user.save().then((user)=>{
@@ -206,7 +206,7 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
 });
 
 // Modifying Profile Pic
-userRouter.post('/editInfo/profilePic', cors.corsWithOptions ,authenticate.verifyUser , 
+userRouter.put('/editInfo/profilePic', cors.corsWithOptions ,authenticate.verifyUser , 
 upload.upload('public/images/profiles',/\.(jpg|jpeg|png|gif)$/).single("profilePic"), (req,res,next)=>{
     if(req.wrongFormat){
       res.statusCode = 500;
