@@ -52,7 +52,7 @@ exports.verifyUser = (req,res,next)=>{
         else if(!user){
             res.statusCode = 401;
             res.setHeader("Content-Type" , 'application/json');
-            if(req.headers.authorization == ''){
+            if(req.headers.authorization == '' || req.headers.authorization == null){
                 res.json({success: false , status: "Access Denied", err: "No Token Specified"});
             }
             else{
