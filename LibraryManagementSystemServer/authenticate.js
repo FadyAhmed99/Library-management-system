@@ -129,7 +129,7 @@ exports.verifyFacebook = (req,res,next)=>{
         else if(!user){
             res.statusCode = 401;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false , status: "Not Found", err: info});
+            res.json({success: false , status: "Access Denied", err: info});
         }
         else{
             req.logIn(user, (err)=>{     // establish a session
@@ -144,4 +144,16 @@ exports.verifyFacebook = (req,res,next)=>{
               });
         }
     })(req,res,next);
+}
+
+
+exports.verifyLibrarian = (req,res,next)=>{
+    if(req.user.managedLibrary = req.params.libraryId){
+        return next();
+    }
+    else{
+        res.statusCode = 403;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
+    }
 }

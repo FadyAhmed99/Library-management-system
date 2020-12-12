@@ -42,20 +42,13 @@ userRouter.post('/signup' , cors.corsWithOptions , (req,res,next)=>{
       }
 
       user.save().then((user)=>{
-
-        // authenticating the registered user to ensure that is registered correctly
-        passport.authenticate('local')(req , res , ()=>{  // if an error happened during authentication, it will be handled automatically
-
           res.statusCode = 200;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: true , status: "Registeration Successful"});
-
-      });
       }).catch((err)=>{
           res.statusCode = 500;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: false, status: "Registeration Failed" ,err:err});
-          return ;
       });
     }
   });
@@ -149,7 +142,7 @@ userRouter.get('/facebook/token' , authenticate.verifyFacebook , (req,res,next)=
 userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,res,next)=>{
     User.findById(req.user._id).then((user)=>{
       if(user == null){
-        res.statusCode = 404;
+        res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false, status:"Couldn't Modify Info", err: "User Not Found"});
       }
@@ -177,11 +170,11 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
               user.save().then((user)=>{
                 res.statusCode = 200;
                 res.setHeader("Content-Type" , 'application/json');
-                res.json(user);
+                res.json({success: true, user: user});
               }).catch((err)=>{
                 res.statusCode = 500;
                 res.setHeader("Content-Type" , 'application/json');
-                res.json({success: false, status:"Couldn't Save Changes", err:err});
+                res.json({success: false, status:"Couldn't Modify Info", err:err});
               })
             }
           });
@@ -194,7 +187,7 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
           }).catch((err)=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false, status:"Couldn't Save Changes", err:err});
+            res.json({success: false, status:"Couldn't Modify Info", err:err});
           })
         }
       }
@@ -219,11 +212,11 @@ upload.upload('public/images/profiles',/\.(jpg|jpeg|png|gif)$/).single("profileP
         user.save().then((user)=>{
           res.statusCode = 200;
           res.setHeader("Content-Type" , 'application/json');
-          res.json({success: true, status:"Profile Pic Updated"});
+          res.json({success: true, status:"Profile Pic Updated", image: user.profilePhoto});
         }).catch((err)=>{
           res.statusCode = 500;
           res.setHeader("Content-Type" , 'application/json');
-          res.json({success: false, status:"Couldn't Save Changes", err:err});
+          res.json({success: false, status:"Upload Failed", err:err});
         })
       }).catch((err)=>{
           res.statusCode = 500;
@@ -239,7 +232,7 @@ userRouter.get('/' , cors.corsWithOptions ,  authenticate.verifyUser , authentic
   User.find({}).then((users)=>{
     res.statusCode = 200;
     res.setHeader("Content-Type" , 'application/json');
-    res.json(users);
+    res.json({success: true, users: users});
   })
   .catch((err)=>{
     res.statusCode = 500;
@@ -248,5 +241,115 @@ userRouter.get('/' , cors.corsWithOptions ,  authenticate.verifyUser , authentic
   });
 });
 
+
+// Get all blocked users from something
+userRouter.get('/permissions/get', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyAdmin , (req,res,next)=>{
+  if(req.query.blockedFrom == "borrowing"){
+    User.find({canBorrowItems: false}).then((users)=>{
+      res.statusCode = 200;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: true, blockedUsers: users});
+    }).catch((err)=>{
+      res.statusCode = 500;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:err});
+    });
+  }
+  else if(req.query.blockedFrom == "evaluating"){
+    User.find({canEvaluateItems: false}).then((users)=>{
+      res.statusCode = 200;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: true, blockedUsers: users});
+    }).catch((err)=>{
+      res.statusCode = 500;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:err});
+    });
+  }
+  else{
+    res.statusCode = 404;
+    res.setHeader("Content-Type" , 'application/json');
+    res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
+  }
+});
+
+// set permissions to a certain user
+userRouter.put('/permissions/:userId/set', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyAdmin, (req,res,next)=>{
+  User.findById(req.params.userId).then((user)=>{
+    if(user == null){
+      res.statusCode = 500;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:"User Not Found"});
+    }
+    else if(user.librarian){
+      res.statusCode = 403;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:"You Can't Set Permissions For Admins"});
+    }
+    else if((req.query.action == "block" || req.query.action == "unblock") && (req.query.from == "evaluating" || req.query.from == "borrowing")){
+      if(req.query.action == "block"){
+        if(req.query.from == "borrowing"){
+          user.canBorrowItems = false;
+          user.save().then((user)=>{
+            res.statusCode = 200;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: true, user: user});
+          }).catch((err)=>{
+            res.statusCode = 500;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:err});
+          });
+        }
+        else if(req.query.from == "evaluating"){
+          user.canEvaluateItems = false;
+          user.save().then((user)=>{
+            res.statusCode = 200;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: true, user: user});
+          }).catch((err)=>{
+            res.statusCode = 500;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:err});
+          });
+        }
+      }
+      else if(req.query.action == "unblock"){
+        if(req.query.from == "borrowing"){
+          user.canBorrowItems = true;
+          user.save().then((user)=>{
+            res.statusCode = 200;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: true, user: user});
+          }).catch((err)=>{
+            res.statusCode = 500;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:err});
+          });
+        }
+        else if(req.query.from == "evaluating"){
+          user.canEvaluateItems = true;
+          user.save().then((user)=>{
+            res.statusCode = 200;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: true, user: user});
+          }).catch((err)=>{
+            res.statusCode = 500;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:err});
+          });
+        }
+      }
+    }
+    else{
+      res.statusCode = 404;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
+    }
+  }).catch((err)=>{
+    res.statusCode = 500;
+    res.setHeader("Content-Type" , 'application/json');
+    res.json({success: false , status: "Process Failed", err:err});
+  });
+});
 
 module.exports = userRouter;
