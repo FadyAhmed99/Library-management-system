@@ -79,7 +79,7 @@ exports.verifyAdmin = (req,res,next)=>{
         return next();
     }
     else{
-        res.statusCode = 401;
+        res.statusCode = 403;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false , status: "Access Denied", err:"Not Admin"});
     }
@@ -148,7 +148,7 @@ exports.verifyFacebook = (req,res,next)=>{
 
 
 exports.verifyLibrarian = (req,res,next)=>{
-    if(req.user.managedLibrary = req.params.libraryId){
+    if(req.user.managedLibrary == req.params.libraryId){
         return next();
     }
     else{

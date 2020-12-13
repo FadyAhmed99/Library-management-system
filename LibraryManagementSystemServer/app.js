@@ -21,6 +21,7 @@ var config = require('./config');
 // Importing Routers   "Me"
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/usersRouter');
+const libraryRouter = require('./routes/libraryRouter');
 
 
 // Connecting to DB server
@@ -80,6 +81,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // I didn't type that l
 // Using Routers    "Me"
 app.use('/', indexRouter);
 app.use('/users', userRouter);
+app.use('/libraries', libraryRouter);
 
 
 
