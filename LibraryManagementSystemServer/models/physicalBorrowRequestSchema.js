@@ -1,28 +1,33 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
-
 const physicalBorrowRequestSchema = new schema({
-  user: { 
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:"User", 
-    required: true 
+    ref: "User",
+    required: true,
   },
-  library: { 
+  library: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:"Library", 
-    required: true 
+    ref: "Library",
+    required: true,
   },
-  item: { 
+  item: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:"Item", 
-    required: true 
+    ref: "Item",
+    required: true,
   },
-    borrowed:{
-      type:Boolean,
-      default:false
-  }
+  borrowed: {
+    type: Boolean,
+    default: false,
+  },
+  deadline: {
+    type: Date,
+  },
 });
 
-var PhysicalBorrowRequests = mongoose.model("BorrowRequest", physicalBorrowRequestSchema);
+var PhysicalBorrowRequests = mongoose.model(
+  "BorrowRequest",
+  physicalBorrowRequestSchema
+);
 module.exports = PhysicalBorrowRequests;
