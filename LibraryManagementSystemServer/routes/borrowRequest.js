@@ -43,12 +43,22 @@ borrowRequestRouter.post(
                     item
                       .save()
                       .then((item) => {
-                        res.statusCode = 200;
-                        res.setHeader("Content-Type", "application/json");
-                        res.json({
-                          success: true,
-                          status: "Requested Succesfully",
-                        });
+                        if(item){
+                          res.statusCode = 200;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: true,
+                            status: "Requested Succesfully",
+                          });
+                        } else {
+                          res.statusCode = 500;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: false,
+                            status: "Request Failed",
+                            err: err,
+                          });
+                        }
                       })
                       .catch((err) => {
                         res.statusCode = 500;
@@ -114,14 +124,15 @@ borrowRequestRouter.get(
       .then((requests) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
-        res.json(requests);
+        res.json({success:true,requests:requests});
       })
-      .catch(() => {
-        res.statusCode = 404;
+      .catch((err) => {
+        res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({
           success: false,
           status: "Request Failed",
+          err:err
         });
       });
   }
@@ -146,13 +157,13 @@ borrowRequestRouter.put(
             success: true,
             status: "Request Approved",
           });
-        }else{
+        } else {
           res.statusCode = 404;
           res.setHeader("Content-Type", "application/json");
           res.json({
             success: false,
             status: "Request Failed",
-            err: "Wrong ItemId"
+            err: "Wrong RequestId"
           });
         }
       })
@@ -176,26 +187,17 @@ borrowRequestRouter.get(
   (req, res, next) => {
     BorrowRequest.find({"user":req.user._id})
       .then((requests) => {
-        if(requests){
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.json(requests);
-        }else{
-          res.statusCode = 404;
-          res.setHeader("Content-Type", "application/json");
-          res.json({
-            success: false,
-            status: "Request Failed",
-            err:"No Requests"
-          });
-        }
+          res.json({success:true,requests:requests});
       })
-      .catch(() => {
-        res.statusCode = 404;
+      .catch((err) => {
+        res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({
           success: false,
           status: "Request Failed",
+          err:err
         });
       });
   }
