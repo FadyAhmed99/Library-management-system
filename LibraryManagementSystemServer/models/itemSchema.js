@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
+require('mongoose-currency').loadType(mongoose); 
+const currency = mongoose.Types.Currency
+
 const availableSchema = new schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -68,7 +71,8 @@ const itemSchema = new schema({
     type: String
   },
   lateFees: { 
-    type: Number
+    type: currency,
+    min: 0
   },
   available: [availableSchema],
   reviews: [reviewSchema],
