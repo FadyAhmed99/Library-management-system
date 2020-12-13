@@ -11,7 +11,7 @@ borrowRequestRouter.use(bodyParser.json());
 
 // user request to borrow item
 borrowRequestRouter.post(
-  "/:libraryId/:itemId",
+  "request/:libraryId/:itemId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyMember,
@@ -103,7 +103,7 @@ borrowRequestRouter.post(
 
 // librarian get all requests
 borrowRequestRouter.get(
-  "/:libraryId",
+  "libraryRequests/:libraryId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyLibrarian,
@@ -117,7 +117,7 @@ borrowRequestRouter.get(
         res.json(requests);
       })
       .catch(() => {
-        res.statusCode = 500;
+        res.statusCode = 404;
         res.setHeader("Content-Type", "application/json");
         res.json({
           success: false,
@@ -139,12 +139,22 @@ borrowRequestRouter.put(
       { $set: { borrowed: true } }
     )
       .then((request) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json({
-          success: true,
-          status: "Request Approved",
-        });
+        if(request){
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            status: "Request Approved",
+          });
+        }else{
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err: "Wrong ItemId"
+          });
+        }
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -153,6 +163,39 @@ borrowRequestRouter.put(
           success: false,
           status: "Request Failed",
           err: err,
+        });
+      });
+  }
+);
+
+// User get all of his requests
+borrowRequestRouter.get(
+  "/myRequests",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    BorrowRequest.find({"user":req.user._id})
+      .then((requests) => {
+        if(requests){
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(requests);
+        }else{
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err:"No Requests"
+          });
+        }
+      })
+      .catch(() => {
+        res.statusCode = 404;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Request Failed",
         });
       });
   }

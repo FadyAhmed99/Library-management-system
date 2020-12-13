@@ -59,7 +59,7 @@ app.all("*", (req, res, next) => {
   }
 });
 
-app.all("*",)
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
