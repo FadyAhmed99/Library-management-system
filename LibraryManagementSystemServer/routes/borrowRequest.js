@@ -11,7 +11,7 @@ borrowRequestRouter.use(bodyParser.json());
 
 // user request to borrow item
 borrowRequestRouter.post(
-  "/:libraryId/:itemId",
+  "request/:libraryId/:itemId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyMember,
@@ -43,12 +43,22 @@ borrowRequestRouter.post(
                     item
                       .save()
                       .then((item) => {
-                        res.statusCode = 200;
-                        res.setHeader("Content-Type", "application/json");
-                        res.json({
-                          success: true,
-                          status: "Requested Succesfully",
-                        });
+                        if(item){
+                          res.statusCode = 200;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: true,
+                            status: "Requested Succesfully",
+                          });
+                        } else {
+                          res.statusCode = 500;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: false,
+                            status: "Request Failed",
+                            err: err,
+                          });
+                        }
                       })
                       .catch((err) => {
                         res.statusCode = 500;
@@ -103,7 +113,7 @@ borrowRequestRouter.post(
 
 // librarian get all requests
 borrowRequestRouter.get(
-  "/:libraryId",
+  "libraryRequests/:libraryId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyLibrarian,
@@ -114,14 +124,15 @@ borrowRequestRouter.get(
       .then((requests) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
-        res.json(requests);
+        res.json({success:true,requests:requests});
       })
-      .catch(() => {
+      .catch((err) => {
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({
           success: false,
           status: "Request Failed",
+          err:err
         });
       });
   }
@@ -139,12 +150,23 @@ borrowRequestRouter.put(
       { $set: { borrowed: true } }
     )
       .then((request) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json({
-          success: true,
-          status: "Request Approved",
-        });
+        if(request){
+          // TODO: add transaction
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            status: "Request Approved",
+          });
+        } else {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err: "Wrong RequestId"
+          });
+        }
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -153,6 +175,30 @@ borrowRequestRouter.put(
           success: false,
           status: "Request Failed",
           err: err,
+        });
+      });
+  }
+);
+
+// User get all of his requests
+borrowRequestRouter.get(
+  "/myRequests",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    BorrowRequest.find({"user":req.user._id})
+      .then((requests) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({success:true,requests:requests});
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Request Failed",
+          err:err
         });
       });
   }
