@@ -159,6 +159,7 @@ exports.verifyFacebook = (req, res, next) => {
   })(req, res, next);
 };
 
+
 // verify the current user is librarian for this library
 // libraryId must be in request params
 exports.verifyLibrarian = (req, res, next) => {
@@ -175,13 +176,26 @@ exports.verifyLibrarian = (req, res, next) => {
   }
 };
 
+
+exports.verifyLibrarian = (req,res,next)=>{
+    if(req.user.managedLibrary == req.params.libraryId){
+        return next();
+    }
+    else{
+        res.statusCode = 403;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
+    }
+}
+
+
 // verify the current user is member for this library
 // libraryId must be in request params
 exports.verifyMember = (req, res, next) => {
-  console.log(req.user.subscribedLibraries.id(req.params.libraryId));
   if (req.user.subscribedLibraries.id(req.params.libraryId)) {
     return next();
-  } else {
+  } 
+  else {
     res.statusCode = 403;
     res.setHeader("Content-Type", "application/json");
     res.json({

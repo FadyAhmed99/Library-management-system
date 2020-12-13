@@ -7,7 +7,7 @@ userRouter.use(bodyParser.json());
 const cors = require('./cors');
 const multer = require('multer');
 const authenticate = require('../authenticate');
-const upload = require('../upload')
+const upload = require('../upload');
 
 
 userRouter.options('*' , cors.corsWithOptions , (req,res,next)=>{
@@ -351,5 +351,34 @@ userRouter.put('/permissions/:userId/set', cors.corsWithOptions , authenticate.v
     res.json({success: false , status: "Process Failed", err:err});
   });
 });
+
+
+
+//Get my subscribed Libraries
+userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (req,res,next)=>{
+  User.findById(req.user._id).populate('subscribedLibraries._id').then((user)=>{
+    if(user == null){
+      res.statusCode = 500;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:"User Not Found"});
+    }
+    else{
+      var subs = [];
+      for(var i=0; i < user.subscribedLibraries.length; i++){
+        subs.push(user.subscribedLibraries[i]._id);
+      }
+      res.statusCode = 200;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: true, subscribedLibraries: subs});
+    }
+  }).catch((err)=>{
+    res.statusCode = 500;
+    res.setHeader("Content-Type" , 'application/json');
+    res.json({success: false , status: "Process Failed", err:err});
+  });
+});
+
+
+
 
 module.exports = userRouter;

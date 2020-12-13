@@ -20,9 +20,11 @@ var authenticate = require("./authenticate");
 var config = require("./config");
 
 // Importing Routers   "Me"
-const indexRouter = require("./routes/index");
-const userRouter = require("./routes/usersRouter");
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/usersRouter');
+const libraryRouter = require('./routes/libraryRouter');
 const borrowRequest = require("./routes/borrowRequest");
+
 
 // Connecting to DB server
 const url = config.mongoUrl;
@@ -76,9 +78,10 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public"))); // I didn't type that line
 
 // Using Routers    "Me"
-app.use("/", indexRouter);
-app.use("/users", userRouter);
-app.use("/borrowRequests", borrowRequest);
+app.use('/', indexRouter);
+app.use('/users', userRouter);
+app.use('/libraries', libraryRouter);
+app.use('/borrowRequests', borrowRequest);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
