@@ -214,7 +214,7 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
       };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false, profile:profile});
+      res.json({success: true, profile:profile});
     }
   }).catch((err)=>{
     res.statusCode = 500;
