@@ -164,20 +164,22 @@ exports.verifyFacebook = (req, res, next) => {
 // verify the current user is librarian for this library
 // libraryId must be in request params
 exports.verifyLibrarian = (req,res,next)=>{
-    Library.find({}).then((lib)=>{
-      for(var i=0; i<lib.length; i++){
-        if(lib[i].librarian == req.user._id){
-          return next();
-        }
-      }
+  Library.findById(req.params.libraryId).then((library)=>{
+    console.log(library.librarian);
+    console.log(req.user._id);
+    if(req.user._id.equals(library.librarian)){
+      return next();
+    }
+    else{
       res.statusCode = 403;
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
-    }).catch((err)=>{
-        res.statusCode = 403;
-        res.setHeader("Content-Type" , 'application/json');
-        res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
-    });
+    }
+  }).catch((err)=>{
+    res.statusCode = 403;
+    res.setHeader("Content-Type" , 'application/json');
+    res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
+  })
 }
 
 
