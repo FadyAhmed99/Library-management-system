@@ -25,6 +25,8 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/usersRouter');
 const libraryRouter = require('./routes/libraryRouter');
 const borrowRequest = require("./routes/borrowRequest");
+const transactionsRoutser = require("./routes/transactionRouter");
+const transactionRouter = require("./routes/transactionRouter");
 
 
 // Connecting to DB server
@@ -83,6 +85,7 @@ app.use('/', indexRouter);
 app.use('/users', userRouter);
 app.use('/libraries', libraryRouter);
 app.use('/borrowRequests', borrowRequest);
+app.use('/transactions',transactionRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
