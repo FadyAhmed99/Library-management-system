@@ -10,6 +10,7 @@ const multer = require('multer');
 const authenticate = require('../authenticate');
 const upload = require('../upload');
 const e = require('express');
+const userRouter = require('./usersRouter');
 
 
 libraryRouter.options('*' , cors.corsWithOptions , (req,res,next)=>{
@@ -53,16 +54,30 @@ libraryRouter.route('/')
 
 libraryRouter.route('/:libraryId')
 .get(cors.cors , (req,res,next)=>{
-    Library.findById(req.params.libraryId).then((library)=>{
+    Library.findById(req.params.libraryId).populate('librarian').then((library)=>{
         if(library == null){
             res.statusCode = 404;
             res.setHeader("Content-Type" , 'application/json');
             res.json({success: false, status: "Process Failed" ,err:"Library Not Found"});
         }
         else{
+            var libr = {
+                firstname: library.librarian.firstname,
+                lastname: library.librarian.lastname,
+                email: library.librarian.email,
+                profilePhoto: library.librarian.profilePhoto,
+                phoneNumber: library.librarian.phoneNumber
+            }
+            var lib = {
+                name:library.name,
+                address: library.address,
+                description: library.description,
+                phoneNumber: library.phoneNumber,
+                image: library.image
+            }
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true , library: library});
+            res.json({success: true , library: lib ,librarian: libr});
         }
     }).catch((err)=>{
         res.statusCode = 500;

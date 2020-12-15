@@ -139,7 +139,7 @@ userRouter.get('/facebook/token' , authenticate.verifyFacebook , (req,res,next)=
 //------------------------------
 
 // Modifying Basic info
-userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,res,next)=>{
+userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, (req,res,next)=>{
     User.findById(req.user._id).then((user)=>{
       if(user == null){
         res.statusCode = 500;
@@ -196,10 +196,35 @@ userRouter.put('/editInfo', cors.corsWithOptions ,authenticate.verifyUser, (req,
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: false, status:"Coudln't Modify Info", err:err});
     })
+})
+.get(cors.corsWithOptions ,authenticate.verifyUser, (req,res,next)=>{
+  User.findById(req.user._id).then((user)=>{
+    if(user == null){
+      res.statusCode = 404;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false, status:"Couldn't Fetch Profile", err:"User Not Found"});
+    }
+    else{
+      var profile = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        profilePhoto: user.profilePhoto,
+        phoneNumber: user.phoneNumber,
+        email: user.email
+      };
+      res.statusCode = 200;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false, profile:profile});
+    }
+  }).catch((err)=>{
+    res.statusCode = 500;
+    res.setHeader("Content-Type" , 'application/json');
+    res.json({success: false, status:"Couldn't Fetch Profile", err:err});
+  })
 });
 
 // Modifying Profile Pic
-userRouter.put('/editInfo/profilePic', cors.corsWithOptions ,authenticate.verifyUser , 
+userRouter.put('/profile/profilePic', cors.corsWithOptions ,authenticate.verifyUser , 
 upload.upload('public/images/profiles',/\.(jpg|jpeg|png|gif)$/).single("profilePic"), (req,res,next)=>{
     if(req.wrongFormat){
       res.statusCode = 500;
@@ -364,12 +389,25 @@ userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (
     }
     else{
       var subs = [];
-      for(var i=0; i < user.subscribedLibraries.length; i++){
-        subs.push(user.subscribedLibraries[i]._id);
+      for(var i=0; i<user.subscribedLibraries.length; i++){
+        if(user.subscribedLibraries[i].status == "approved"){
+          subs.push(user.subscribedLibraries[i]._id);
+        }
+      }
+      var final = [];
+      for(var i=0; i<subs.length; i++){
+        final.push({
+          name: subs[i].name,
+          _id: subs[i]._id,
+          address: subs[i].address,
+          image: subs[i].image,
+          phoneNumber: subs[i].phoneNumber,
+          description:subs[i].description
+        });
       }
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
-      res.json({success: true, subscribedLibraries: subs});
+      res.json({success: true, subscribedLibraries: final});
     }
   }).catch((err)=>{
     res.statusCode = 500;

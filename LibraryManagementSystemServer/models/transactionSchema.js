@@ -2,6 +2,10 @@ const { Timestamp } = require("mongodb");
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
+require('mongoose-currency').loadType(mongoose); 
+const currency = mongoose.Types.Currency;
+
+
 const transactionSchema = new schema({
   user: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -28,6 +32,10 @@ const transactionSchema = new schema({
   },
   returnDate: { 
     type: Timestamp 
+  },
+  lateFees:{
+    type: currency,
+    min: 0
   },
   requestedToReturn: { 
     type: Boolean 
