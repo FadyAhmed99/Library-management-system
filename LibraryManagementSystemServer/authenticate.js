@@ -1,6 +1,7 @@
 const passport = require("passport");
 const localStrategy = require("passport-local").Strategy;
 const User = require("./models/usersSchema");
+const Library = require('./models/librarySchema');
 
 // json web tokens
 const jwtStrategy = require("passport-jwt").Strategy;
@@ -162,37 +163,28 @@ exports.verifyFacebook = (req, res, next) => {
 
 // verify the current user is librarian for this library
 // libraryId must be in request params
-exports.verifyLibrarian = (req, res, next) => {
-  if (req.user.managedLibrary == req.params.libraryId) {
-    return next();
-  } else {
-    res.statusCode = 403;
-    res.setHeader("Content-Type", "application/json");
-    res.json({
-      success: false,
-      status: "Access Denied",
-      err: "You Are Not A Librarian In This Library",
-    });
-  }
-};
-
-
 exports.verifyLibrarian = (req,res,next)=>{
-    if(req.user.managedLibrary == req.params.libraryId){
-        return next();
-    }
-    else{
+    Library.find({}).then((lib)=>{
+      for(var i=0; i<lib.length; i++){
+        if(lib[i].librarian == req.user._id){
+          return next();
+        }
+      }
+      res.statusCode = 403;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
+    }).catch((err)=>{
         res.statusCode = 403;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
-    }
+    });
 }
 
 
 // verify the current user is member for this library
 // libraryId must be in request params
 exports.verifyMember = (req, res, next) => {
-  if (req.user.subscribedLibraries.id(req.params.libraryId)) {
+  if (req.user.subscribedLibraries.id(req.params.libraryId).status == "approved") {
     return next();
   } 
   else {

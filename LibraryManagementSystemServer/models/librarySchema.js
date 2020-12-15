@@ -33,6 +33,10 @@ const librarySchema = new schema({
      type: String,
      default: ''
     },
+  librarian: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
   feedback: [feedbackSchema],
 });
 

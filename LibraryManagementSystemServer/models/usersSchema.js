@@ -6,6 +6,10 @@ var subsSchema = new schema({
     _id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Library"
+    },
+    status:{
+        type: String,
+        default: 'pending'
     }
 });
 
