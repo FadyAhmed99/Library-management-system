@@ -24,9 +24,21 @@ libraryRouter.route('/')
             res.json({success: false, status: "Process Failed" ,err:"No Libraries Found"});
         }
         else{
+            var librars = [];
+            for(var i=0; i<libs.length; i++){
+                librars.push({
+                    name: libs[i].name,
+                    address: libs[i].address,
+                    description: libs[i].description,
+                    _id: libs[i]._id,
+                    phoneNumber: libs[i].phoneNumber,
+                    image: libs[i].image,
+                    librarian: libs[i].librarian
+                });
+            }
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true , libraries: libs});
+            res.json({success: true , libraries: librars});
         }
     }).catch((err="Server Failed")=>{
         res.statusCode = 500;
@@ -71,7 +83,8 @@ libraryRouter.route('/:libraryId/info')
                 address: library.address,
                 description: library.description,
                 phoneNumber: library.phoneNumber,
-                image: library.image
+                image: library.image,
+                _id: library._id
             }
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
@@ -103,9 +116,17 @@ libraryRouter.route('/:libraryId/info')
             lib.phoneNumber = req.body.phoneNumber;
         }
         lib.save().then((lib)=>{
+            var librar = {
+                name: lib.name,
+                address: lib.address,
+                description: lib.description,
+                phoneNumber: lib.phoneNumber,
+                image: lib.image,
+                _id: lib._id
+            };
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true , library: lib});
+            res.json({success: true , library: librar});
         }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
@@ -300,6 +321,7 @@ libraryRouter.route('/:libraryId/feedback')
                     firstname: library.feedback[i].user.firstname,
                     lastname: library.feedback[i].user.lastname,
                     profilePhoto: library.feedback[i].user.profilePhoto,
+                    userId: library.feedback[i].user._id,
                     feedback: library.feedback[i].feedback
                 });
             }

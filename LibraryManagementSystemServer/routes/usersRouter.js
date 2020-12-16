@@ -224,7 +224,8 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         lastname: user.lastname,
         profilePhoto: user.profilePhoto,
         phoneNumber: user.phoneNumber,
-        email: user.email
+        email: user.email,
+        username: user.username
       };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
