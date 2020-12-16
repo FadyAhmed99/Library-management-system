@@ -7,7 +7,8 @@ const authenticate = require("../authenticate");
 const Transaction = require("../models/transactionSchema");
 const Item = require("../models/itemSchema");
 const Fee = require("../models/feeSchema");
-const Fees = require("../models/feeSchema");
+const Library = require("../models/librarySchema");
+const { ObjectID } = require("mongodb");
 
 var transactionRouter = express.Router();
 transactionRouter.use(bodyParser.json());
@@ -217,65 +218,82 @@ transactionRouter.put(
     Transaction.findById(req.params.transactionId)
       .then((transaction) => {
         transaction.returned = true;
-        if (transaction.hasFees) {
-          Item.findById(transaction.item)
-            .then((item) => {
-              const date1 = new Date();
-              const date2 = transaction.deadline;
-              const diffTime = Math.abs(date2 - date1);
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              Fee.create({
-                transactionId: transaction._id,
-                user: req.user._id,
-                item: item._id,
-                paid: false,
-                fees: (item.lateFees / 100) * diffDays,
-              }).then((fee) => {
-                transaction
-                  .save()
-                  .then(() => {
-                    res.statusCode = 200;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json({ success: true, status: "Transaction Returned" });
-                  })
-                  .catch((err) => {
-                    res.statusCode = 500;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json({
-                      success: false,
-                      status: "Request Failed",
-                      err: err,
-                    });
+        Library.findOne({ librarian: req.user._id })
+          .then((library) => {
+            transaction.returnedTo = ObjectID(library._id);
+            console.log(library._id);
+            if (transaction.hasFees) {
+              Item.findById(transaction.item)
+                .then((item) => {
+                  const date1 = new Date();
+                  const date2 = transaction.deadline;
+                  const diffTime = Math.abs(date2 - date1);
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  Fee.create({
+                    transactionId: transaction._id,
+                    user: req.user._id,
+                    item: item._id,
+                    paid: false,
+                    fees: (item.lateFees / 100) * diffDays,
+                  }).then((fee) => {
+                    transaction
+                      .save()
+                      .then(() => {
+                        res.statusCode = 200;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: true,
+                          status: "Transaction Returned",
+                        });
+                      })
+                      .catch((err) => {
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: false,
+                          status: "Request Failed",
+                          err: err,
+                        });
+                      });
                   });
-              });
-            })
-            .catch((err) => {
-              res.statusCode = 500;
-              res.setHeader("Content-Type", "application/json");
-              res.json({
-                success: false,
-                status: "Request Failed",
-                err: err,
-              });
+                })
+                .catch((err) => {
+                  res.statusCode = 500;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({
+                    success: false,
+                    status: "Request Failed",
+                    err: err,
+                  });
+                });
+            } else {
+              transaction
+                .save()
+                .then((item) => {
+                  res.statusCode = 200;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({ success: true, status: "Transaction Returned" });
+                })
+                .catch((err) => {
+                  res.statusCode = 500;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({
+                    success: false,
+                    status: "Request Failed",
+                    err: err,
+                  });
+                });
+            }
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.json({
+              success: false,
+              status: "Request Failed",
+              err: err,
             });
-        } else {
-          transaction
-            .save()
-            .then((item) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json({ success: true, status: "Transaction Returned" });
-            })
-            .catch((err) => {
-              res.statusCode = 500;
-              res.setHeader("Content-Type", "application/json");
-              res.json({
-                success: false,
-                status: "Request Failed",
-                err: err,
-              });
-            });
-        }
+          });
       })
       .catch((err) => {
         res.statusCode = 500;
