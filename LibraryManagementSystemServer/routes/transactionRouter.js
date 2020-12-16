@@ -124,6 +124,7 @@ transactionRouter.put(
               });
             } else {
               transaction.requestedToReturn = true;
+              transaction.returnDate = date;
               if (transaction.deadline > date) {
                 transaction.hasFees = true;
                 const date1 = new Date();
@@ -221,6 +222,9 @@ transactionRouter.put(
         Library.findOne({ librarian: req.user._id })
           .then((library) => {
             transaction.returnedTo = ObjectID(library._id);
+            var date = new Date();
+            transaction.returnDate = date;
+
             console.log(library._id);
             if (transaction.hasFees) {
               Item.findById(transaction.item)
