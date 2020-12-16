@@ -173,10 +173,10 @@ exports.verifyLibrarian = (req,res,next)=>{
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
     }
-  }).catch((err)=>{
-    res.statusCode = 403;
+  }).catch((err="Server Failed")=>{
+    res.statusCode = 500;
     res.setHeader("Content-Type" , 'application/json');
-    res.json({success: false , status: "Access Denied", err: 'You Are Not A Librarian In This Library'});
+    res.json({success: false , status: "Process Failed", err: err});
   })
 }
 
@@ -232,4 +232,29 @@ exports.verifyNotMember = (req, res, next) => {
       err: "You Are Already A Member In This Library"
     });
   }
+};
+
+exports.verifyMemberToLibrary = (req,res,next)=>{
+  User.findOne({_id: req.params.userId, subscribedLibraries:{$elemMatch:{_id: req.params.libraryId, member: true}}}).then((user)=>{
+    if(user == null){
+      res.statusCode = 403;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Process Failed",
+        err: "This User Is Not In That Library"
+      });
+    }
+    else{
+      return next();
+      }
+  }).catch((err="Server Failed")=>{
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Process Failed",
+        err: err
+      });
+  });
 };
