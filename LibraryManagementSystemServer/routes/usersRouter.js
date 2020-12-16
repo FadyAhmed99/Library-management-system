@@ -404,19 +404,25 @@ userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (
     else{
       var subs = [];
       for(var i=0; i<user.subscribedLibraries.length; i++){
-        if(user.subscribedLibraries[i].member == true){
-          subs.push(user.subscribedLibraries[i]._id);
-        }
+        subs.push(user.subscribedLibraries[i]._id);
       }
       var final = [];
       for(var i=0; i<subs.length; i++){
+        var status;
+        if(user.subscribedLibraries[i].member == true){
+          status = "member";
+        }
+        else{
+          status= "pending";
+        }
         final.push({
           name: subs[i].name,
           _id: subs[i]._id,
           address: subs[i].address,
           image: subs[i].image,
           phoneNumber: subs[i].phoneNumber,
-          description:subs[i].description
+          description:subs[i].description,
+          status: status
         });
       }
       res.statusCode = 200;
