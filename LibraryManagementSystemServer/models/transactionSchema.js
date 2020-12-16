@@ -27,7 +27,6 @@ const transactionSchema = new schema({
   returnedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Library",
-    required: true,
   },
   returnDate: { 
     type: Date 
