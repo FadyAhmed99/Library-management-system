@@ -24,11 +24,23 @@ libraryRouter.route('/')
             res.json({success: false, status: "Process Failed" ,err:"No Libraries Found"});
         }
         else{
+            var librars = [];
+            for(var i=0; i<libs.length; i++){
+                librars.push({
+                    name: libs[i].name,
+                    address: libs[i].address,
+                    description: libs[i].description,
+                    _id: libs[i]._id,
+                    phoneNumber: libs[i].phoneNumber,
+                    image: libs[i].image,
+                    librarian: libs[i].librarian
+                });
+            }
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true , libraries: libs});
+            res.json({success: true , libraries: librars});
         }
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false, status: "Process Failed" ,err:err});
@@ -71,13 +83,14 @@ libraryRouter.route('/:libraryId/info')
                 address: library.address,
                 description: library.description,
                 phoneNumber: library.phoneNumber,
-                image: library.image
+                image: library.image,
+                _id: library._id
             }
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
             res.json({success: true , library: lib ,librarian: libr});
         }
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false, status: "Process Failed" ,err:err});
@@ -103,15 +116,23 @@ libraryRouter.route('/:libraryId/info')
             lib.phoneNumber = req.body.phoneNumber;
         }
         lib.save().then((lib)=>{
+            var librar = {
+                name: lib.name,
+                address: lib.address,
+                description: lib.description,
+                phoneNumber: lib.phoneNumber,
+                image: lib.image,
+                _id: lib._id
+            };
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true , library: lib});
-        }).catch((err)=>{
+            res.json({success: true , library: librar});
+        }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
             res.json({success: false, status: "Process Failed" ,err:err});
         })
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false, status: "Process Failed" ,err:err});
@@ -146,7 +167,7 @@ libraryRouter.get('/:libraryId', cors.corsWithOptions, authenticate.verifyUser, 
                 res.setHeader("Content-Type", "application/json");
                 res.json({success: true, requests: requestArr});
             }
-        }).catch((err)=>{
+        }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type", "application/json");
             res.json({success: false, status: "Process Failed", err:err});
@@ -173,7 +194,7 @@ libraryRouter.get('/:libraryId', cors.corsWithOptions, authenticate.verifyUser, 
                 res.setHeader("Content-Type", "application/json");
                 res.json({success: true, members: memberArr});
             }
-        }).catch((err)=>{
+        }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type", "application/json");
             res.json({success: false, status: "Process Failed", err:err});
@@ -196,12 +217,12 @@ libraryRouter.post('/:libraryId/requests' , cors.corsWithOptions, authenticate.v
             res.statusCode = 200;
             res.setHeader("Content-Type", "application/json");
             res.json({success: true, status: "Join Request Sent"});
-        }).catch((err)=>{
+        }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type", "application/json");
             res.json({success: false, status: "Process Failed", err:err});
         });
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({success: false, status: "Process Failed", err:err});
@@ -223,7 +244,7 @@ libraryRouter.put('/:libraryId/:userId', cors.corsWithOptions, authenticate.veri
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
                     res.json({success: true, status: "Request Approved Successfuly"});
-                }).catch((err)=>{
+                }).catch((err="Server Failed")=>{
                     res.statusCode = 500;
                     res.setHeader("Content-Type", "application/json");
                     res.json({success: false, status: "Process Failed", err:err});
@@ -236,7 +257,7 @@ libraryRouter.put('/:libraryId/:userId', cors.corsWithOptions, authenticate.veri
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
                     res.json({success: true, status: "User Rejected Successfuly"});
-                }).catch((err)=>{
+                }).catch((err="Server Failed")=>{
                     res.statusCode = 500;
                     res.setHeader("Content-Type", "application/json");
                     res.json({success: false, status: "Process Failed", err:err});
@@ -248,7 +269,7 @@ libraryRouter.put('/:libraryId/:userId', cors.corsWithOptions, authenticate.veri
                 res.json({success: false, status: "Process Failed", err:"Invalid Parameters"});
             }
         } 
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({success: false, status: "Process Failed", err:err});
@@ -273,13 +294,13 @@ libraryRouter.route('/:libraryId/feedback')
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
                 res.json({success: true, status: "Feedback Sent Successfully"});
-            }).catch((err)=>{
+            }).catch((err="Server Failed")=>{
                 res.statusCode = 500;
                 res.setHeader("Content-Type", "application/json");
                 res.json({success: false, status: "Process Failed", err:err})
             });
         }
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({success: false, status: "Process Failed", err:err});
@@ -300,6 +321,7 @@ libraryRouter.route('/:libraryId/feedback')
                     firstname: library.feedback[i].user.firstname,
                     lastname: library.feedback[i].user.lastname,
                     profilePhoto: library.feedback[i].user.profilePhoto,
+                    userId: library.feedback[i].user._id,
                     feedback: library.feedback[i].feedback
                 });
             }
@@ -307,12 +329,179 @@ libraryRouter.route('/:libraryId/feedback')
             res.setHeader("Content-Type", "application/json");
             res.json({success: true, feedbacks: feedbacks});
         }
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({success: false, status: "Process Failed", err:err});
     });
 });
+
+
+// Get all blocked users from something in your library
+libraryRouter.get('/:libraryId/permissions/get', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyLibrarian , (req,res,next)=>{
+    if(req.query.blockedFrom == "borrowing"){
+      User.find({canBorrowItems: false, subscribedLibraries: {$elemMatch:{_id: req.params.libraryId, member: true}}}).then((users)=>{
+        var bUsers = [];
+        for(var i=0; i<users.length; i++){
+            bUsers.push({
+                firstname: users[i].firstname,
+                lastname: users[i].lastname,
+                profilePhoto: users[i].profilePhoto,
+                canBorrowItems: users[i].canBorrowItems,
+                canEvaluateItems: users[i].canEvaluateItems,
+                _id: users[i]._id
+            });
+        }
+        res.statusCode = 200;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: true, blockedUsers: bUsers});
+      }).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+      });
+    }
+    else if(req.query.blockedFrom == "evaluating"){
+      User.find({canEvaluateItems: false, subscribedLibraries: {$elemMatch:{_id: req.params.libraryId, member: true}}}).then((users)=>{
+        var bUsers = [];
+        for(var i=0; i<users.length; i++){
+            bUsers.push({
+                firstname: users[i].firstname,
+                lastname: users[i].lastname,
+                profilePhoto: users[i].profilePhoto,
+                canBorrowItems: users[i].canBorrowItems,
+                canEvaluateItems: users[i].canEvaluateItems,
+                _id: users[i]._id
+            });
+        }
+        res.statusCode = 200;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: true, blockedUsers: bUsers});
+      }).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+      });
+    }
+    else{
+      res.statusCode = 404;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
+    }
+  });
+  
+// set permissions to a certain user in the library
+libraryRouter.put('/:libraryId/permissions/:userId/set', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyLibrarian, authenticate.verifyMemberToLibrary ,(req,res,next)=>{
+    User.findById(req.params.userId).then((user)=>{
+      if(user == null){
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:"User Not Found"});
+      }
+      else if(user.librarian){
+        res.statusCode = 403;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:"You Can't Set Permissions For Admins"});
+      }
+      else if((req.query.action == "block" || req.query.action == "unblock") && (req.query.from == "evaluating" || req.query.from == "borrowing")){
+        if(req.query.action == "block"){
+          if(req.query.from == "borrowing"){
+            user.canBorrowItems = false;
+            user.save().then((user)=>{
+              var sUser ={
+                firstname: user.firstname,
+                lastname: user.lastname,
+                profilePhoto: user.profilePhoto,
+                canBorrowItems: user.canBorrowItems,
+                canEvaluateItems: user.canEvaluateItems,
+                _id: user._id
+              };  
+              res.statusCode = 200;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: true, user: sUser});
+            }).catch((err="Server Failed")=>{
+              res.statusCode = 500;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: false , status: "Process Failed", err:err});
+            });
+          }
+          else if(req.query.from == "evaluating"){
+            user.canEvaluateItems = false;
+            user.save().then((user)=>{
+                var sUser ={
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    profilePhoto: user.profilePhoto,
+                    canBorrowItems: user.canBorrowItems,
+                    canEvaluateItems: user.canEvaluateItems,
+                    _id: user._id
+                  };  
+              res.statusCode = 200;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: true, user: sUser});
+            }).catch((err="Server Failed")=>{
+              res.statusCode = 500;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: false , status: "Process Failed", err:err});
+            });
+          }
+        }
+        else if(req.query.action == "unblock"){
+          if(req.query.from == "borrowing"){
+            user.canBorrowItems = true;
+            user.save().then((user)=>{
+                var sUser ={
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    profilePhoto: user.profilePhoto,
+                    canBorrowItems: user.canBorrowItems,
+                    canEvaluateItems: user.canEvaluateItems,
+                    _id: user._id
+                  };  
+              res.statusCode = 200;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: true, user: sUser});
+            }).catch((err="Server Failed")=>{
+              res.statusCode = 500;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: false , status: "Process Failed", err:err});
+            });
+          }
+          else if(req.query.from == "evaluating"){
+            user.canEvaluateItems = true;
+            user.save().then((user)=>{
+                var sUser ={
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    profilePhoto: user.profilePhoto,
+                    canBorrowItems: user.canBorrowItems,
+                    canEvaluateItems: user.canEvaluateItems,
+                    _id: user._id
+                  };    
+              res.statusCode = 200;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: true, user: sUser});
+            }).catch((err="Server Failed")=>{
+              res.statusCode = 500;
+              res.setHeader("Content-Type" , 'application/json');
+              res.json({success: false , status: "Process Failed", err:err});
+            });
+          }
+        }
+      }
+      else{
+        res.statusCode = 404;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
+      }
+    }).catch((err="Server Failed")=>{
+      res.statusCode = 500;
+      res.setHeader("Content-Type" , 'application/json');
+      res.json({success: false , status: "Process Failed", err:err});
+    });
+  });
+  
+  
 
 
 module.exports = libraryRouter;

@@ -45,7 +45,7 @@ userRouter.post('/signup' , cors.corsWithOptions , (req,res,next)=>{
           res.statusCode = 200;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: true , status: "Registeration Successful"});
-      }).catch((err)=>{
+      }).catch((err="Server Failed")=>{
           res.statusCode = 500;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: false, status: "Registeration Failed" ,err:err});
@@ -178,7 +178,7 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
                 res.statusCode = 200;
                 res.setHeader("Content-Type" , 'application/json');
                 res.json({success: true, stats: "Password Changed Successfully" ,profile: profile});
-              }).catch((err)=>{
+              }).catch((err="Server Failed")=>{
                 res.statusCode = 500;
                 res.setHeader("Content-Type" , 'application/json');
                 res.json({success: false, status:"Couldn't Modify Info", err:err});
@@ -198,14 +198,14 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
             res.json({success: true, profile: profile});
-          }).catch((err)=>{
+          }).catch((err="Server Failed")=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
             res.json({success: false, status:"Couldn't Modify Info", err:err});
           })
         }
       }
-    }).catch((err)=>{
+    }).catch((err="Server Failed")=>{
       res.statusCode = 500;
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: false, status:"Coudln't Modify Info", err:err});
@@ -224,13 +224,14 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         lastname: user.lastname,
         profilePhoto: user.profilePhoto,
         phoneNumber: user.phoneNumber,
-        email: user.email
+        email: user.email,
+        username: user.username
       };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: true, profile:profile});
     }
-  }).catch((err)=>{
+  }).catch((err="Server Failed")=>{
     res.statusCode = 500;
     res.setHeader("Content-Type" , 'application/json');
     res.json({success: false, status:"Couldn't Fetch Profile", err:err});
@@ -252,12 +253,12 @@ upload.upload('public/images/profiles',/\.(jpg|jpeg|png|gif)$/).single("profileP
           res.statusCode = 200;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: true, status:"Profile Pic Updated", image: user.profilePhoto});
-        }).catch((err)=>{
+        }).catch((err="Server Failed")=>{
           res.statusCode = 500;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: false, status:"Upload Failed", err:err});
         })
-      }).catch((err)=>{
+      }).catch((err="Server Failed")=>{
           res.statusCode = 500;
           res.setHeader("Content-Type" , 'application/json');
           res.json({success: false, status:"Upload Failed", err:err});
@@ -273,125 +274,12 @@ userRouter.get('/' , cors.corsWithOptions ,  authenticate.verifyUser , authentic
     res.setHeader("Content-Type" , 'application/json');
     res.json({success: true, users: users});
   })
-  .catch((err)=>{
+  .catch((err="Server Failed")=>{
     res.statusCode = 500;
     res.setHeader("Content-Type" , 'application/json');
     res.json({success: false , status: "Process Failed", err:err});
   });
 });
-
-
-// Get all blocked users from something
-userRouter.get('/permissions/get', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyAdmin , (req,res,next)=>{
-  if(req.query.blockedFrom == "borrowing"){
-    User.find({canBorrowItems: false}).then((users)=>{
-      res.statusCode = 200;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: true, blockedUsers: users});
-    }).catch((err)=>{
-      res.statusCode = 500;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false , status: "Process Failed", err:err});
-    });
-  }
-  else if(req.query.blockedFrom == "evaluating"){
-    User.find({canEvaluateItems: false}).then((users)=>{
-      res.statusCode = 200;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: true, blockedUsers: users});
-    }).catch((err)=>{
-      res.statusCode = 500;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false , status: "Process Failed", err:err});
-    });
-  }
-  else{
-    res.statusCode = 404;
-    res.setHeader("Content-Type" , 'application/json');
-    res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
-  }
-});
-
-// set permissions to a certain user
-userRouter.put('/permissions/:userId/set', cors.corsWithOptions , authenticate.verifyUser , authenticate.verifyAdmin, (req,res,next)=>{
-  User.findById(req.params.userId).then((user)=>{
-    if(user == null){
-      res.statusCode = 500;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false , status: "Process Failed", err:"User Not Found"});
-    }
-    else if(user.librarian){
-      res.statusCode = 403;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false , status: "Process Failed", err:"You Can't Set Permissions For Admins"});
-    }
-    else if((req.query.action == "block" || req.query.action == "unblock") && (req.query.from == "evaluating" || req.query.from == "borrowing")){
-      if(req.query.action == "block"){
-        if(req.query.from == "borrowing"){
-          user.canBorrowItems = false;
-          user.save().then((user)=>{
-            res.statusCode = 200;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true, user: user});
-          }).catch((err)=>{
-            res.statusCode = 500;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false , status: "Process Failed", err:err});
-          });
-        }
-        else if(req.query.from == "evaluating"){
-          user.canEvaluateItems = false;
-          user.save().then((user)=>{
-            res.statusCode = 200;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true, user: user});
-          }).catch((err)=>{
-            res.statusCode = 500;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false , status: "Process Failed", err:err});
-          });
-        }
-      }
-      else if(req.query.action == "unblock"){
-        if(req.query.from == "borrowing"){
-          user.canBorrowItems = true;
-          user.save().then((user)=>{
-            res.statusCode = 200;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true, user: user});
-          }).catch((err)=>{
-            res.statusCode = 500;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false , status: "Process Failed", err:err});
-          });
-        }
-        else if(req.query.from == "evaluating"){
-          user.canEvaluateItems = true;
-          user.save().then((user)=>{
-            res.statusCode = 200;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: true, user: user});
-          }).catch((err)=>{
-            res.statusCode = 500;
-            res.setHeader("Content-Type" , 'application/json');
-            res.json({success: false , status: "Process Failed", err:err});
-          });
-        }
-      }
-    }
-    else{
-      res.statusCode = 404;
-      res.setHeader("Content-Type" , 'application/json');
-      res.json({success: false , status: "Process Failed", err:"Invalid Parameters"});
-    }
-  }).catch((err)=>{
-    res.statusCode = 500;
-    res.setHeader("Content-Type" , 'application/json');
-    res.json({success: false , status: "Process Failed", err:err});
-  });
-});
-
-
 
 //Get my subscribed Libraries
 userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (req,res,next)=>{
@@ -429,7 +317,7 @@ userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: true, subscribedLibraries: final});
     }
-  }).catch((err)=>{
+  }).catch((err="Server Failed")=>{
     res.statusCode = 500;
     res.setHeader("Content-Type" , 'application/json');
     res.json({success: false , status: "Process Failed", err:err});
