@@ -1,17 +1,19 @@
 var express = require("express");
 const bodyParser = require("body-parser");
 const User = require("../models/usersSchema");
+const Transactoin = require("../models/transactionSchema");
 const BorrowRequest = require("../models/physicalBorrowRequestSchema");
 const Item = require("../models/itemSchema");
 const cors = require("./cors");
 const authenticate = require("../authenticate");
+const config = require("../config");
 
 var borrowRequestRouter = express.Router();
 borrowRequestRouter.use(bodyParser.json());
 
 // user request to borrow item
 borrowRequestRouter.post(
-  "request/:libraryId/:itemId",
+  "/request/:libraryId/:itemId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyMember,
@@ -43,12 +45,12 @@ borrowRequestRouter.post(
                     item
                       .save()
                       .then((item) => {
-                        if(item){
+                        if (item) {
                           res.statusCode = 200;
                           res.setHeader("Content-Type", "application/json");
                           res.json({
                             success: true,
-                            status: "Requested Succesfully",
+                            status: "Requested Successfully",
                           });
                         } else {
                           res.statusCode = 500;
@@ -73,7 +75,41 @@ borrowRequestRouter.post(
                 }
                 // if item is not physical
                 else {
-                  // TODO: add transaction
+                  var date = new Date();
+                  date.setDate(date.getDate() + config.duration);
+                  Transactoin.create({
+                    user: req.user._id,
+                    item: req.params.itemId,
+                    lateFees: item.lateFees,
+                    borrowedFrom: req.params.libraryId,
+                    deadline: date,
+                  })
+                    .then((transaction) => {
+                      if (transaction) {
+                        res.statusCode = 200;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: true,
+                          status: "Requested Successfully",
+                        });
+                      } else {
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: false,
+                          status: "Request Failed",
+                        });
+                      }
+                    })
+                    .catch((err) => {
+                      res.statusCode = 500;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json({
+                        success: false,
+                        status: "Request Failed",
+                        err: err,
+                      });
+                    });
                 }
               } else {
                 res.statusCode = 500;
@@ -100,12 +136,13 @@ borrowRequestRouter.post(
           });
         }
       })
-      .catch(() => {
+      .catch((err) => {
         res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
         res.json({
           success: false,
           status: "Request Failed",
+          err: err,
         });
       });
   }
@@ -113,7 +150,7 @@ borrowRequestRouter.post(
 
 // librarian get all requests
 borrowRequestRouter.get(
-  "libraryRequests/:libraryId",
+  "/libraryRequests/:libraryId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyLibrarian,
@@ -124,49 +161,7 @@ borrowRequestRouter.get(
       .then((requests) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
-        res.json({success:true,requests:requests});
-      })
-      .catch((err) => {
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.json({
-          success: false,
-          status: "Request Failed",
-          err:err
-        });
-      });
-  }
-);
-
-// librarian accepts requests
-borrowRequestRouter.put(
-  "/accept/:libraryId/:requestId",
-  cors.corsWithOptions,
-  authenticate.verifyUser,
-  authenticate.verifyLibrarian,
-  (req, res, next) => {
-    BorrowRequest.findOneAndUpdate(
-      { _id: req.params.requestId },
-      { $set: { borrowed: true } }
-    )
-      .then((request) => {
-        if(request){
-          // TODO: add transaction
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json({
-            success: true,
-            status: "Request Approved",
-          });
-        } else {
-          res.statusCode = 404;
-          res.setHeader("Content-Type", "application/json");
-          res.json({
-            success: false,
-            status: "Request Failed",
-            err: "Wrong RequestId"
-          });
-        }
+        res.json({ success: true, requests: requests });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -180,17 +175,37 @@ borrowRequestRouter.put(
   }
 );
 
-// User get all of his requests
-borrowRequestRouter.get(
-  "/myRequests",
+// librarian accepts requests
+borrowRequestRouter.put(
+  "/accept/:libraryId/:requestId",
   cors.corsWithOptions,
   authenticate.verifyUser,
+  authenticate.verifyLibrarian,
   (req, res, next) => {
-    BorrowRequest.find({"user":req.user._id})
-      .then((requests) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json({success:true,requests:requests});
+    BorrowRequest.findById(req.params.requestId)
+      .then((request) => {
+        request.borrowed = true;
+        request.save().then((request) => {
+          Item.findById(request.item).then((item) => {
+            // add transaction
+            var date = new Date();
+            date.setDate(date.getDate() + config.duration);
+            Transactoin.create({
+              user: req.user._id,
+              item: request.item,
+              lateFees: item.lateFees,
+              borrowedFrom: req.params.libraryId,
+              deadline: date,
+            }).then((transaction) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: true,
+                status: "Requested Successfully",
+              });
+            });
+          });
+        });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -198,7 +213,31 @@ borrowRequestRouter.get(
         res.json({
           success: false,
           status: "Request Failed",
-          err:err
+          err: err,
+        });
+      });
+  }
+); 
+
+// User get all of his requests
+borrowRequestRouter.get(
+  "/myRequests",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    BorrowRequest.find({ user: req.user._id })
+      .then((requests) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: true, requests: requests });
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Request Failed",
+          err: err,
         });
       });
   }
