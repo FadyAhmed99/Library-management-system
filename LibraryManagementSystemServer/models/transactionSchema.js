@@ -1,4 +1,3 @@
-const { Timestamp } = require("mongodb");
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
@@ -23,15 +22,14 @@ const transactionSchema = new schema({
     required: true 
   },
   deadline: { 
-    type: Timestamp 
+    type: Date 
   },
   returnedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Library",
-    required: true,
   },
   returnDate: { 
-    type: Timestamp 
+    type: Date 
   },
   lateFees:{
     type: currency,
