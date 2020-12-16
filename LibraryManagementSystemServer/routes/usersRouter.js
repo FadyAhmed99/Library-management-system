@@ -168,9 +168,16 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
             }
             else{
               user.save().then((user)=>{
+                var profile = {
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  profilePhoto: user.profilePhoto,
+                  phoneNumber: user.phoneNumber,
+                  email: user.email
+                };
                 res.statusCode = 200;
                 res.setHeader("Content-Type" , 'application/json');
-                res.json({success: true, user: user});
+                res.json({success: true, stats: "Password Changed Successfully" ,profile: profile});
               }).catch((err)=>{
                 res.statusCode = 500;
                 res.setHeader("Content-Type" , 'application/json');
@@ -181,9 +188,16 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         }
         else{
           user.save().then((user)=>{
+            var profile = {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              profilePhoto: user.profilePhoto,
+              phoneNumber: user.phoneNumber,
+              email: user.email
+            };
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json(user);
+            res.json({success: true, profile: profile});
           }).catch((err)=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
@@ -390,19 +404,25 @@ userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (
     else{
       var subs = [];
       for(var i=0; i<user.subscribedLibraries.length; i++){
-        if(user.subscribedLibraries[i].status == "approved"){
-          subs.push(user.subscribedLibraries[i]._id);
-        }
+        subs.push(user.subscribedLibraries[i]._id);
       }
       var final = [];
       for(var i=0; i<subs.length; i++){
+        var status;
+        if(user.subscribedLibraries[i].member == true){
+          status = "member";
+        }
+        else{
+          status= "pending";
+        }
         final.push({
           name: subs[i].name,
           _id: subs[i]._id,
           address: subs[i].address,
           image: subs[i].image,
           phoneNumber: subs[i].phoneNumber,
-          description:subs[i].description
+          description:subs[i].description,
+          status: status
         });
       }
       res.statusCode = 200;
