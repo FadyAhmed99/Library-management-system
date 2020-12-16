@@ -168,9 +168,16 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
             }
             else{
               user.save().then((user)=>{
+                var profile = {
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  profilePhoto: user.profilePhoto,
+                  phoneNumber: user.phoneNumber,
+                  email: user.email
+                };
                 res.statusCode = 200;
                 res.setHeader("Content-Type" , 'application/json');
-                res.json({success: true, user: user});
+                res.json({success: true, stats: "Password Changed Successfully" ,profile: profile});
               }).catch((err)=>{
                 res.statusCode = 500;
                 res.setHeader("Content-Type" , 'application/json');
@@ -181,9 +188,16 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         }
         else{
           user.save().then((user)=>{
+            var profile = {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              profilePhoto: user.profilePhoto,
+              phoneNumber: user.phoneNumber,
+              email: user.email
+            };
             res.statusCode = 200;
             res.setHeader("Content-Type" , 'application/json');
-            res.json(user);
+            res.json({success: true, profile: profile});
           }).catch((err)=>{
             res.statusCode = 500;
             res.setHeader("Content-Type" , 'application/json');
@@ -390,7 +404,7 @@ userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (
     else{
       var subs = [];
       for(var i=0; i<user.subscribedLibraries.length; i++){
-        if(user.subscribedLibraries[i].status == "approved"){
+        if(user.subscribedLibraries[i].member == true){
           subs.push(user.subscribedLibraries[i]._id);
         }
       }
