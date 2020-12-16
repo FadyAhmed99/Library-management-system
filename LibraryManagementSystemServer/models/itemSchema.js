@@ -16,6 +16,8 @@ const availableSchema = new schema({
   location: {
     type: String
   },
+}, {
+  timestamps: true
 });
 const reviewSchema = new schema({
   _id: {
@@ -39,7 +41,7 @@ const itemSchema = new schema({
   },
   genre: { 
     type: String, 
-   // required: true 
+    required: true 
   },
   name: { 
     type: String, 
@@ -47,28 +49,27 @@ const itemSchema = new schema({
   },
   author: { 
     type: String, 
-  //  required: true 
+    required: true 
   },
   language: { 
     type: String,
-   // required: true
+    required: true
   },
   ISBN: { 
-    type: String 
-  },
-  averageRating: { 
-    type: Number, 
-    default: 0
+    type: String ,
+    default: ''
   },
   itemLink: {
-     type: String 
+     type: String,
+     default: ''
     },
   inLibrary: { 
-    type: Boolean,
-    default: false
+    type: String,
+    default: ""
   },
   image: { 
-    type: String
+    type: String,
+    default: ""
   },
   lateFees: { 
     type: currency,
