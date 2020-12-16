@@ -7,9 +7,9 @@ var subsSchema = new schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Library"
     },
-    status:{
-        type: String,
-        default: 'pending'
+    member:{
+        type: Boolean,
+        default: false
     }
 });
 
@@ -48,10 +48,6 @@ var userSchema = new schema({
     canEvaluateItems: { 
         type: Boolean, 
         default: true 
-    },
-    managedLibrary: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Library"  
     },
     subscribedLibraries:[subsSchema]
 });

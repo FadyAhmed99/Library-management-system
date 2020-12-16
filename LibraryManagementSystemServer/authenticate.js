@@ -165,8 +165,6 @@ exports.verifyFacebook = (req, res, next) => {
 // libraryId must be in request params
 exports.verifyLibrarian = (req,res,next)=>{
   Library.findById(req.params.libraryId).then((library)=>{
-    console.log(library.librarian);
-    console.log(req.user._id);
     if(req.user._id.equals(library.librarian)){
       return next();
     }
@@ -186,8 +184,19 @@ exports.verifyLibrarian = (req,res,next)=>{
 // verify the current user is member for this library
 // libraryId must be in request params
 exports.verifyMember = (req, res, next) => {
-  if (req.user.subscribedLibraries.id(req.params.libraryId).status == "approved") {
-    return next();
+  if (req.user.subscribedLibraries.id(req.params.libraryId)) {
+    if(req.user.subscribedLibraries.id(req.params.libraryId).member == true){
+      return next();
+    }
+    else{
+      res.statusCode = 403;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Access Denied",
+        err: "You Are Not A Member In This Library",
+    });
+    }
   } 
   else {
     res.statusCode = 403;
@@ -196,6 +205,31 @@ exports.verifyMember = (req, res, next) => {
       success: false,
       status: "Access Denied",
       err: "You Are Not A Member In This Library",
+    });
+  }
+};
+
+
+exports.verifyNotMember = (req, res, next) => {
+  if (!(req.user.subscribedLibraries.id(req.params.libraryId))) {
+    return next();
+  }
+  else if((req.user.subscribedLibraries.id(req.params.libraryId).member == false)){
+    res.statusCode = 403;
+    res.setHeader("Content-Type", "application/json");
+    res.json({
+      success: false,
+      status: "Request Failed",
+      err: "You Have Already Sent A Request To This Library"
+  });
+   }
+  else if(req.user.subscribedLibraries.id(req.params.libraryId).member == true) {
+    res.statusCode = 403;
+    res.setHeader("Content-Type", "application/json");
+    res.json({
+      success: false,
+      status: "Request Failed",
+      err: "You Are Already A Member In This Library"
     });
   }
 };
