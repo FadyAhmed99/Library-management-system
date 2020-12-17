@@ -1,7 +1,8 @@
 var express = require('express');
 const bodyParser = require('body-parser');
-User = require('../models/usersSchema');
+const User = require('../models/usersSchema');
 const Library = require('../models/librarySchema');
+const Item = require('../models/itemSchema');
 const passport = require('passport');
 var libraryRouter = express.Router();
 libraryRouter.use(bodyParser.json());
@@ -16,7 +17,7 @@ libraryRouter.options('*' , cors.corsWithOptions , (req,res,next)=>{
 });
 
 libraryRouter.route('/')
-.get(cors.cors, (req,res,next)=>{
+.get(cors.corsWithOptions, authenticate.verifyUser ,(req,res,next)=>{
     Library.find({}).then((libs)=>{
         if(libs == null){
             res.statusCode = 500;
@@ -501,7 +502,109 @@ libraryRouter.put('/:libraryId/permissions/:userId/set', cors.corsWithOptions , 
     });
   });
   
-  
+/*
+libraryRouter.route('/:libraryId/items')
+// Get all items in a certain library  "library collection"
+.get(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
+    Item.find({available:{$elemMatch:{_id: req.params.libraryId}}}).then((items)=>{
+        var itemS =[];
+        for(var i=0; i<items.length; i++){
+            itemS.push({
+                _id: items[i]._id,
+                type: items[i].type,
+                genre: items[i].genre,
+                name: items[i].name,
+                author: items[i].author,
+                language: items[i].language,
+                image: items[i].image,
+                inLibrary: items[i].inLibrary,
+                ISBN: items[i].ISBN,
+                lateFees: items[i].lateFees,
+                location: items[i].available.id(req.params.libraryId).location,
+                amount: items[i].available.id(req.params.libraryId).amount
+            });
+            // calculate averageRating
+            var ratings=[];
+            for(var j=0; i<items[i].reviews.length; j++){
+                ratings.push(items[i].reviews[j].rating);
+            }
+            var avarageRating = 0;
+            if(ratings.length > 0){
+                for(var k=0; k<ratings.length; k++){
+                    avarageRating += ratings[i];
+                }
+                avarageRating = avarageRating/(ratings.length);
+            }
+            itemS[i].avarageRating = avarageRating; 
+        }
+        res.statusCode = 200;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: true, items: itemS});
+    }
+    ).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+    });
+})
+// add a new item to a certain library
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyLibrarian, (req,res,next)=>{
+    Item.findOne({}).then((item)=>{
+        if(item == null){
+            var newItem = new Item({
+                name: req.body.name,
+                genre: req.body.genre,
+                author: req.body.author,
+                type: req.body.type,
+                language: req.body.language,
+                image: req.body.image
+            });
+            if(req.body.ISBN){
+                newItem.ISBN = req.body.ISBN;
+            }
+            if(req.body.inLibrary){
+                newItem.inLibrary = req.body.inLibrary;
+            }
+            if(req.body.itemLink){
+                newItem.itemLink = req.body.itemLink;
+            }
+            if(req.body.lateFees){
+                newItem.lateFees = req.body.lateFees;
+            }
+            newItem.available.push({
+                _id: req.params.libraryId,
+            });
+            if(req.body.amount){
+                newItem.available[newItem.available.length-1].amount = req.body.amount;
+            }
+            if(req.body.location){
+                newItem.available[newItem.available.length-1].location = req.body.location;
+            }
+        }
+        else{
 
+        }
+    })
+    // saving data
+    newItem.save().then((item)=>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: true, status: "Item Added Successfully"});
+    }).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+    })
+});
+
+
+libraryRouter.route('/:libraryId/items/:itemId')
+// Get full info of a certain item in a certain library
+.get()
+// Modify the info of a certain item in a certain library
+.put()
+// Delete a certain item in a certain library
+.delete()
+*/
 
 module.exports = libraryRouter;

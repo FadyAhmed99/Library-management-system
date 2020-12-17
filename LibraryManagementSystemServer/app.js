@@ -25,7 +25,6 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/usersRouter');
 const libraryRouter = require('./routes/libraryRouter');
 const borrowRequest = require("./routes/borrowRequest");
-const itemRouter = require('./routes/itemRouter');
 const transactionRouter = require("./routes/transactionRouter");
 
 
@@ -85,7 +84,6 @@ app.use('/', indexRouter);
 app.use('/users', userRouter);
 app.use('/libraries', libraryRouter);
 app.use('/borrowRequests', borrowRequest);
-app.use('/items', itemRouter);
 app.use('/transactions',transactionRouter);
 
 // catch 404 and forward to error handler

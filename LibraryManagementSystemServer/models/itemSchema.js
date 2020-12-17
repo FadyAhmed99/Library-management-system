@@ -64,8 +64,8 @@ const itemSchema = new schema({
      default: ''
     },
   inLibrary: { 
-    type: String,
-    default: ""
+    type: Boolean,
+    default: false
   },
   image: { 
     type: String,
@@ -73,10 +73,11 @@ const itemSchema = new schema({
   },
   lateFees: { 
     type: currency,
-    min: 0
+    min: 0,
+    default: 0
   },
   available: [availableSchema],
-  reviews: [reviewSchema],
+  reviews: [reviewSchema]
 });
 
 var Items = mongoose.model("Item", itemSchema);
