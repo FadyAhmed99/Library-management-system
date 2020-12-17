@@ -502,13 +502,27 @@ libraryRouter.put('/:libraryId/permissions/:userId/set', cors.corsWithOptions , 
     });
   });
   
-/*
+
+
+
+
+
+
+
+
+
+// Working with items
 libraryRouter.route('/:libraryId/items')
-// Get all items in a certain library  "library collection"
+// Get all items in a certain library "library collection", marking the latest additions
 .get(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
     Item.find({available:{$elemMatch:{_id: req.params.libraryId}}}).then((items)=>{
         var itemS =[];
+        var dates =[];
         for(var i=0; i<items.length; i++){
+            dates.push({
+                item: i,
+                createdAt: items[i].available.id(req.params.libraryId).createdAt
+            });
             itemS.push({
                 _id: items[i]._id,
                 type: items[i].type,
@@ -516,27 +530,48 @@ libraryRouter.route('/:libraryId/items')
                 name: items[i].name,
                 author: items[i].author,
                 language: items[i].language,
-                image: items[i].image,
-                inLibrary: items[i].inLibrary,
                 ISBN: items[i].ISBN,
-                lateFees: items[i].lateFees,
+                image: items[i].available.id(req.params.libraryId).image,
+                inLibrary: items[i].available.id(req.params.libraryId).inLibrary,
+                lateFees: items[i].available.id(req.params.libraryId).lateFees,
                 location: items[i].available.id(req.params.libraryId).location,
-                amount: items[i].available.id(req.params.libraryId).amount
+                amount: items[i].available.id(req.params.libraryId).amount,
+                new: false
             });
             // calculate averageRating
             var ratings=[];
-            for(var j=0; i<items[i].reviews.length; j++){
+            for(var j=0; j<items[i].reviews.length; j++){
                 ratings.push(items[i].reviews[j].rating);
             }
             var avarageRating = 0;
             if(ratings.length > 0){
                 for(var k=0; k<ratings.length; k++){
-                    avarageRating += ratings[i];
+                    avarageRating += ratings[k];
                 }
                 avarageRating = avarageRating/(ratings.length);
             }
-            itemS[i].avarageRating = avarageRating; 
+            itemS[i].averageRating = avarageRating; 
         }
+        // handling latest items in a certain library
+        dates.sort((a,b)=>{
+            if(a.createdAt < b.createdAt){
+                return 1;
+            }
+            else{
+                return -1;
+            }
+        });
+        if(dates.length < 5){
+            for(var i=0; i<dates.length; i++){
+                itemS[dates[i].item].new = true;
+            }
+        }
+        else{
+            for(var i=0; i<5; i++){
+                itemS[dates[i].item].new = true;
+            }
+        }
+        
         res.statusCode = 200;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: true, items: itemS});
@@ -549,7 +584,8 @@ libraryRouter.route('/:libraryId/items')
 })
 // add a new item to a certain library
 .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyLibrarian, (req,res,next)=>{
-    Item.findOne({}).then((item)=>{
+    Item.findOne({name: req.body.name, type: req.body.type, genre: req.body.genre, author: req.body.author, 
+        language: req.body.language, ISBN: req.body.ISBN}).then((item)=>{
         if(item == null){
             var newItem = new Item({
                 name: req.body.name,
@@ -557,54 +593,188 @@ libraryRouter.route('/:libraryId/items')
                 author: req.body.author,
                 type: req.body.type,
                 language: req.body.language,
-                image: req.body.image
             });
             if(req.body.ISBN){
                 newItem.ISBN = req.body.ISBN;
             }
-            if(req.body.inLibrary){
-                newItem.inLibrary = req.body.inLibrary;
-            }
-            if(req.body.itemLink){
-                newItem.itemLink = req.body.itemLink;
-            }
-            if(req.body.lateFees){
-                newItem.lateFees = req.body.lateFees;
-            }
             newItem.available.push({
                 _id: req.params.libraryId,
             });
+            if(req.body.inLibrary){
+                newItem.available[newItem.available.length-1].inLibrary = req.body.inLibrary;
+            }
+            if(req.body.lateFees){
+                newItem.available[newItem.available.length-1].lateFees = req.body.lateFees;
+            }
             if(req.body.amount){
                 newItem.available[newItem.available.length-1].amount = req.body.amount;
             }
             if(req.body.location){
                 newItem.available[newItem.available.length-1].location = req.body.location;
             }
+            if(req.body.image){
+                newItem.available[newItem.available.length-1].image = req.body.image;
+            }
+            if(req.body.itemLink){
+                newItem.available[newItem.available.length-1].itemLink = req.body.itemLink;
+            }
+            newItem.save().then((newitem)=>{
+                res.statusCode = 200;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: true, status: "Item Added Successfully"});
+            }).catch((err="Server Failed")=>{
+                res.statusCode = 500;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: false , status: "Process Failed", err:err});
+            });
         }
         else{
-
+            item.available.push({_id: req.params.libraryId});
+            if(req.body.inLibrary){
+                item.available[item.available.length-1].inLibrary = req.body.inLibrary;
+            }
+            if(req.body.lateFees){
+                item.available[item.available.length-1].lateFees = req.body.lateFees;
+            }
+            if(req.body.amount){
+                item.available[item.available.length-1].amount = req.body.amount;
+            }
+            if(req.body.location){
+                item.available[item.available.length-1].location = req.body.location;
+            }
+            if(req.body.image){
+                item.available[item.available.length-1].image = req.body.image;
+            }
+            if(req.body.itemLink){
+                item.available[item.available.length-1].itemLink = req.body.itemLink;
+            }
+            item.save().then((it)=>{
+                res.statusCode = 200;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: true, status: "Item Added Successfully"});
+            }).catch((err="Server Failed")=>{
+                res.statusCode = 500;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: false , status: "Process Failed", err:err});
+            });
         }
-    })
-    // saving data
-    newItem.save().then((item)=>{
-        res.statusCode = 200;
-        res.setHeader("Content-Type" , 'application/json');
-        res.json({success: true, status: "Item Added Successfully"});
     }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
         res.json({success: false , status: "Process Failed", err:err});
-    })
+    });
 });
 
 
 libraryRouter.route('/:libraryId/items/:itemId')
 // Get full info of a certain item in a certain library
-.get()
+.get(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
+    Item.findById(req.params.itemId).populate('reviews._id').then((item)=>{
+        if(item == null){
+            res.statusCode = 404;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:"Item Not Found"});
+        }
+        else{
+            if(item.available.id(req.params.libraryId)){
+                var itemN={
+                    _id: item._id,
+                    type: item.type,
+                    genre: item.genre,
+                    name: item.name,
+                    author: item.author,
+                    language: item.language,
+                    ISBN: item.ISBN,
+                    image: item.available.id(req.params.libraryId).image,
+                    inLibrary: item.available.id(req.params.libraryId).inLibrary,
+                    lateFees: item.available.id(req.params.libraryId).lateFees,
+                    location: item.available.id(req.params.libraryId).location,
+                    amount: item.available.id(req.params.libraryId).amount
+                };
+                // handling average rating and reviews
+                var ratings=[];
+                var reviewS = [];
+                for(var i=0; i<item.reviews.length; i++){
+                    reviewS.push({
+                        firstname: item.reviews[i]._id.firstname,
+                        lastname: item.reviews[i]._id.lastname,
+                        profilePhoto: item.reviews[i]._id.profilePhoto,
+                        rating: item.reviews[i].rating,
+                        review: item.reviews[i].review
+                    });
+                    ratings.push(item.reviews[i].rating);
+                }
+                var averageRating = 0;
+                if(ratings.length>0){
+                    for(var j=0; j<ratings.length; j++){
+                        averageRating += ratings[j];
+                    }
+                    averageRating = averageRating/(ratings.length);
+                }
+                itemN.averageRating = averageRating;
+                itemN.reviews = reviewS;
+
+                res.statusCode = 200;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: true ,item:itemN});
+            }
+            else{
+                res.statusCode = 404;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: false , status: "Process Failed", err:"Item Not Found In This Library"});
+            }
+        }
+    }).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+    });
+})
 // Modify the info of a certain item in a certain library
 .put()
 // Delete a certain item in a certain library
 .delete()
-*/
+
+// posting reviews
+libraryRouter.post('/:libraryId/items/:itemId/reviews', cors.corsWithOptions , authenticate.verifyUser, authenticate.verifyMember ,(req,res,next)=>{
+    Item.findById(req.params.itemId).then((item)=>{
+        if(item == null){
+            res.statusCode = 404;
+            res.setHeader("Content-Type" , 'application/json');
+            res.json({success: false , status: "Process Failed", err:"Item Not Found"});
+        }
+        else{
+            if(item.available.id(req.params.libraryId)){
+                item.reviews.push({
+                    _id: req.user._id,
+                    rating: req.body.rating,
+                    review: req.body.review
+                });
+
+                item.save().then((item)=>{
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type" , 'application/json');
+                    res.json({success: true ,status: "Review Posted Successfully"});
+                }).catch((err="Server Failed")=>{
+                    res.statusCode = 500;
+                    res.setHeader("Content-Type" , 'application/json');
+                    res.json({success: false , status: "Process Failed", err:err});
+                });
+            }
+            else{
+                res.statusCode = 404;
+                res.setHeader("Content-Type" , 'application/json');
+                res.json({success: false , status: "Process Failed", err:"Item Not Found In This Library"});
+            }
+        }
+    }).catch((err="Server Failed")=>{
+        res.statusCode = 500;
+        res.setHeader("Content-Type" , 'application/json');
+        res.json({success: false , status: "Process Failed", err:err});
+    });
+});
+
+
+
 
 module.exports = libraryRouter;

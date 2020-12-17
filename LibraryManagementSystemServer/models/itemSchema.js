@@ -14,8 +14,26 @@ const availableSchema = new schema({
     type: Number
   },
   location: {
-    type: String
+    type: String,
+    default: ""
   },
+  lateFees:{
+    type: currency,
+    min: 0,
+    default: 0
+  },
+  inLibrary:{
+    type: Boolean,
+    default: false
+  },
+  image: { 
+    type: String,
+    default: ""
+  },
+  itemLink: {
+    type: String,
+    default: ''
+  }
 }, {
   timestamps: true
 });
@@ -35,6 +53,7 @@ const reviewSchema = new schema({
 });
 
 const itemSchema = new schema({
+  // Essential info
   type: { 
     type: String, 
     required: true 
@@ -58,23 +77,6 @@ const itemSchema = new schema({
   ISBN: { 
     type: String ,
     default: ''
-  },
-  itemLink: {
-     type: String,
-     default: ''
-    },
-  inLibrary: { 
-    type: Boolean,
-    default: false
-  },
-  image: { 
-    type: String,
-    default: ""
-  },
-  lateFees: { 
-    type: currency,
-    min: 0,
-    default: 0
   },
   available: [availableSchema],
   reviews: [reviewSchema]
