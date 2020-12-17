@@ -859,7 +859,7 @@ libraryRouter.route('/:libraryId/items/:itemId')
 });
 
 // posting reviews
-libraryRouter.post('/:libraryId/items/:itemId/reviews', cors.corsWithOptions , authenticate.verifyUser, authenticate.verifyMember ,(req,res,next)=>{
+libraryRouter.post('/:libraryId/items/:itemId/reviews', cors.corsWithOptions , authenticate.verifyUser, authenticate.verifyMember ,authenticate.canThisUserEvaluate,(req,res,next)=>{
     Item.findById(req.params.itemId).then((item)=>{
         if(item == null){
             res.statusCode = 404;
