@@ -585,7 +585,7 @@ libraryRouter.route('/:libraryId/items')
 // add a new item to a certain library
 .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyLibrarian, (req,res,next)=>{
     Item.findOne({name: req.body.name, type: req.body.type, genre: req.body.genre, author: req.body.author, 
-        language: req.body.language, ISBN: req.body.ISBN}).then((item)=>{
+        language: req.body.language}).then((item)=>{
         if(item == null){
             var newItem = new Item({
                 name: req.body.name,
@@ -629,34 +629,41 @@ libraryRouter.route('/:libraryId/items')
             });
         }
         else{
-            item.available.push({_id: req.params.libraryId});
-            if(req.body.inLibrary){
-                item.available[item.available.length-1].inLibrary = req.body.inLibrary;
-            }
-            if(req.body.lateFees){
-                item.available[item.available.length-1].lateFees = req.body.lateFees;
-            }
-            if(req.body.amount){
-                item.available[item.available.length-1].amount = req.body.amount;
-            }
-            if(req.body.location){
-                item.available[item.available.length-1].location = req.body.location;
-            }
-            if(req.body.image){
-                item.available[item.available.length-1].image = req.body.image;
-            }
-            if(req.body.itemLink){
-                item.available[item.available.length-1].itemLink = req.body.itemLink;
-            }
-            item.save().then((it)=>{
-                res.statusCode = 200;
+            if(item.available.id(req.params.libraryId)){
+                res.statusCode = 403;
                 res.setHeader("Content-Type" , 'application/json');
-                res.json({success: true, status: "Item Added Successfully"});
-            }).catch((err="Server Failed")=>{
-                res.statusCode = 500;
-                res.setHeader("Content-Type" , 'application/json');
-                res.json({success: false , status: "Process Failed", err:err});
-            });
+                res.json({success: false , status: "Process Failed", err:"This Item Already Exists In This Library"});
+            }
+            else{
+                item.available.push({_id: req.params.libraryId});
+                if(req.body.inLibrary){
+                    item.available[item.available.length-1].inLibrary = req.body.inLibrary;
+                }
+                if(req.body.lateFees){
+                    item.available[item.available.length-1].lateFees = req.body.lateFees;
+                }
+                if(req.body.amount){
+                    item.available[item.available.length-1].amount = req.body.amount;
+                }
+                if(req.body.location){
+                    item.available[item.available.length-1].location = req.body.location;
+                }
+                if(req.body.image){
+                    item.available[item.available.length-1].image = req.body.image;
+                }
+                if(req.body.itemLink){
+                    item.available[item.available.length-1].itemLink = req.body.itemLink;
+                }
+                item.save().then((it)=>{
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type" , 'application/json');
+                    res.json({success: true, status: "Item Added Successfully"});
+                }).catch((err="Server Failed")=>{
+                    res.statusCode = 500;
+                    res.setHeader("Content-Type" , 'application/json');
+                    res.json({success: false , status: "Process Failed", err:err});
+                });
+            }
         }
     }).catch((err="Server Failed")=>{
         res.statusCode = 500;
