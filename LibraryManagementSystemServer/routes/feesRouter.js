@@ -1,0 +1,124 @@
+var express = require("express");
+const bodyParser = require("body-parser");
+
+const Fee = require("../models/feeSchema");
+const User = require("../models/usersSchema");
+const cors = require("./cors");
+const authenticate = require("../authenticate");
+
+var feesRouter = express.Router();
+feesRouter.use(bodyParser.json());
+
+// user get all of his fees
+feesRouter.get(
+  "/myFees",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    if (req.query.paid == true) {
+      Fee.find({ user: req.user._id, paid: true })
+        .then((fees) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            status: "Request Succeed",
+            fees: fees,
+          });
+        })
+        .catch((err) => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err: err,
+          });
+        });
+    } else if (req.query.paid == false) {
+      Fee.find({ user: req.user._id, paid: false })
+        .then((fees) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            status: "Request Succeed",
+            fees: fees,
+          });
+        })
+        .catch((err) => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err: err,
+          });
+        });
+    } else {
+      Fee.find({ user: req.user._id })
+        .then((fees) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            status: "Request Succeed",
+            fees: fees,
+          });
+        })
+        .catch((err) => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+            err: err,
+          });
+        });
+    }
+  }
+);
+
+feesRouter.put(
+  "/pay/:feeId",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    Fee.findByIdAndUpdate(
+      { _id: req.params.feeId },
+      { $set: { paid: true } },
+      function (err, fee) {
+        if (!err) {
+          User.findByIdAndUpdate(
+            { _id: req.user._id },
+            { $set: { canBorrowItems: true } }
+          ).then(() => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json({
+              success: true,
+              status: "Paid Successfully",
+              fee: fee,
+            });
+          });
+        } else {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Request Failed",
+          });
+        }
+      }
+    ).catch((err) => {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Request Failed",
+      });
+    });
+  }
+);
+
+module.exports = feesRouter;

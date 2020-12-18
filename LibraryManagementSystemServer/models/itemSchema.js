@@ -58,23 +58,23 @@ const itemSchema = new schema({
   // Essential info
   type: { 
     type: String, 
-    required: true 
+  //  required: true 
   },
   genre: { 
     type: String, 
-    required: true 
+  //  required: true 
   },
   name: { 
     type: String, 
-    required: true 
+   // required: true 
   },
   author: { 
     type: String, 
-    required: true 
+   // required: true 
   },
   language: { 
     type: String,
-    required: true
+   // required: true
   },
   ISBN: { 
     type: String ,
