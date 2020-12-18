@@ -258,3 +258,32 @@ exports.verifyMemberToLibrary = (req,res,next)=>{
       });
   });
 };
+
+
+exports.canThisUserEvaluate = (req,res,next)=>{
+  User.findById(req.user._id).then((user)=>{
+    if(user == null){
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.json({success: false, status: "Process Failed", err: "User Not Found"});
+    }
+    else{
+      if(user.canEvaluateItems){
+        return next();
+      }
+      else{
+        res.statusCode = 403;
+        res.setHeader("Content-Type", "application/json");
+        res.json({success: false, status: "Process Failed", err: "You Are Blocked From Reviewing Items"});
+      }
+    }
+  }).catch((err="Server Failed")=>{
+    res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Process Failed",
+        err: err
+      });
+  });
+};

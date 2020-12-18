@@ -14,8 +14,28 @@ const availableSchema = new schema({
     type: Number
   },
   location: {
-    type: String
+    type: String,
+    default: ""
   },
+  lateFees:{
+    type: currency,
+    min: 0,
+    default: 0
+  },
+  inLibrary:{
+    type: Boolean,
+    default: false
+  },
+  image: { 
+    type: String,
+    default: ""
+  },
+  itemLink: {
+    type: String,
+    default: ''
+  }
+}, {
+  timestamps: true
 });
 const reviewSchema = new schema({
   _id: {
@@ -33,13 +53,14 @@ const reviewSchema = new schema({
 });
 
 const itemSchema = new schema({
+  // Essential info
   type: { 
     type: String, 
     required: true 
   },
   genre: { 
     type: String, 
-   // required: true 
+    required: true 
   },
   name: { 
     type: String, 
@@ -47,35 +68,18 @@ const itemSchema = new schema({
   },
   author: { 
     type: String, 
-  //  required: true 
+    required: true 
   },
   language: { 
     type: String,
-   // required: true
+    required: true
   },
   ISBN: { 
-    type: String 
-  },
-  averageRating: { 
-    type: Number, 
-    default: 0
-  },
-  itemLink: {
-     type: String 
-    },
-  inLibrary: { 
-    type: Boolean,
-    default: false
-  },
-  image: { 
-    type: String
-  },
-  lateFees: { 
-    type: currency,
-    min: 0
+    type: String ,
+    default: ''
   },
   available: [availableSchema],
-  reviews: [reviewSchema],
+  reviews: [reviewSchema]
 });
 
 var Items = mongoose.model("Item", itemSchema);
