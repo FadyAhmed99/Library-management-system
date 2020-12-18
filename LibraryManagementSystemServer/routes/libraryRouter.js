@@ -574,7 +574,7 @@ libraryRouter.route('/:libraryId/items')
         
         res.statusCode = 200;
         res.setHeader("Content-Type" , 'application/json');
-        res.json({success: true, items: itemS});
+        res.json({success: true, num: items.length ,items: itemS});
     }
     ).catch((err="Server Failed")=>{
         res.statusCode = 500;

@@ -267,19 +267,7 @@ upload.upload('public/images/profiles',/\.(jpg|jpeg|png|gif)$/).single("profileP
 });
 
 
-// Getting all registered users
-userRouter.get('/' , cors.corsWithOptions ,  authenticate.verifyUser , authenticate.verifyAdmin , (req,res,next)=>{
-  User.find({}).then((users)=>{
-    res.statusCode = 200;
-    res.setHeader("Content-Type" , 'application/json');
-    res.json({success: true, users: users});
-  })
-  .catch((err="Server Failed")=>{
-    res.statusCode = 500;
-    res.setHeader("Content-Type" , 'application/json');
-    res.json({success: false , status: "Process Failed", err:err});
-  });
-});
+
 
 //Get my subscribed Libraries
 userRouter.get('/myLibraries', cors.corsWithOptions , authenticate.verifyUser, (req,res,next)=>{
