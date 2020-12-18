@@ -13,6 +13,17 @@ var subsSchema = new schema({
     }
 });
 
+var favoritesSchema = new schema({
+    _id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Item"
+    },
+    library:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Library"
+    }
+});
+
 var userSchema = new schema({
     firstname: {
         type: String,
@@ -49,7 +60,8 @@ var userSchema = new schema({
         type: Boolean, 
         default: true 
     },
-    subscribedLibraries:[subsSchema]
+    subscribedLibraries:[subsSchema],
+    favorites:[favoritesSchema]
 });
 
 userSchema.plugin(passportLocalMongoose);   // use passport local mongoose to add username and password fields to user schema
