@@ -11,7 +11,8 @@ const availableSchema = new schema({
     required: true,
   },
   amount: {
-    type: Number
+    type: Number,
+    min: 0
   },
   location: {
     type: String,
@@ -44,6 +45,7 @@ const reviewSchema = new schema({
   },
   rating: {
     type: Number,
+    min: 0,
     required: true
   },
   review: {
