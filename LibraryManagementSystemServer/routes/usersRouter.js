@@ -118,7 +118,7 @@ userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
 userRouter.get('/logout' , cors.corsWithOptions ,(req,res,next)=>{
     req.logout();
     res.clearCookie('session-id');
-    res.redirect('/');   // redirecting to index page.  u need to specify the full path
+    //res.redirect('/');   // redirecting to index page.  u need to specify the full path
 });
 
 
@@ -329,6 +329,7 @@ userRouter.route('/favorites')
         language: user.favorites[i]._id.language,
         author: user.favorites[i]._id.author,
         ISBN: user.favorites[i]._id.ISBN,
+        library: user.favorites[i].library,
         image: user.favorites[i]._id.available.id(user.favorites[i].library).image,
         inLibrary: user.favorites[i]._id.available.id(user.favorites[i].library).inLibrary,
         lateFees: user.favorites[i]._id.available.id(user.favorites[i].library).lateFees,
@@ -383,8 +384,34 @@ userRouter.route('/favorites')
     if(user.favorites.id(req.body._id)){
       user.favorites.id(req.body._id).remove();
       user.save().then((user)=>{
-        res.statusCode = 200;
-        res.redirect('/users/favorites');    // get the new favorites list
+        user.populate('favorites._id').then((user)=>{
+          var favs = [];
+          for(var i=0; i<user.favorites.length; i++){
+            favs.push({
+              _id: user.favorites[i]._id._id,
+              type: user.favorites[i]._id.type,
+              name: user.favorites[i]._id.name,
+              genre: user.favorites[i]._id.genre,
+              language: user.favorites[i]._id.language,
+              author: user.favorites[i]._id.author,
+              ISBN: user.favorites[i]._id.ISBN,
+              library: user.favorites[i].library,
+              image: user.favorites[i]._id.available.id(user.favorites[i].library).image,
+              inLibrary: user.favorites[i]._id.available.id(user.favorites[i].library).inLibrary,
+              lateFees: user.favorites[i]._id.available.id(user.favorites[i].library).lateFees,
+              location: user.favorites[i]._id.available.id(user.favorites[i].library).location,
+              amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount
+            });
+          }
+          res.statusCode = 200;
+          res.setHeader("Content-Type" , 'application/json');
+          res.json({success: true, status: "Item Deleted Successfully" ,newList: favs});
+        }).catch((err="Server Failed")=>{
+          res.statusCode = 500;
+          res.setHeader("Content-Type" , 'application/json');
+          res.json({success: false , status: "Process Failed", err:err});
+        });
+        
       }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');
@@ -402,10 +429,6 @@ userRouter.route('/favorites')
     res.json({success: false , status: "Process Failed", err:err});
   });
 });
-
-
-
-
 
 
 module.exports = userRouter;
