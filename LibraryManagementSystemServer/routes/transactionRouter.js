@@ -114,7 +114,10 @@ transactionRouter.put(
             item.type == "audioMaterial" ||
             item.type == "magazine"
           ) {
-            if (item.lateFees == 0) {
+            if (
+              item.available.id(transaction.borrowedFrom).lateFees / 100 ==
+              0
+            ) {
               transaction.requestedToReturn = true;
               transaction.returned = false;
               transaction.hasFees = false;
@@ -124,7 +127,7 @@ transactionRouter.put(
                 res.setHeader("Content-Type", "application/json");
                 res.json({
                   success: true,
-                  status: "Transaction Returned",
+                  status: "Transaction Requested To Return",
                 });
               });
             } else {
@@ -146,7 +149,10 @@ transactionRouter.put(
               });
             }
           } else {
-            if (item.lateFees == 0) {
+            if (
+              item.available.id(transaction.borrowedFrom).lateFees / 100 ==
+              0
+            ) {
               transaction.requestedToReturn = true;
               transaction.hasFees = false;
               transaction.returned = true;
@@ -162,7 +168,7 @@ transactionRouter.put(
             } else {
               transaction.requestedToReturn = true;
               transaction.returnDate = date;
-              if (transaction.deadline > date) {
+              if (transaction.deadline < date) {
                 transaction.hasFees = true;
                 const date1 = new Date();
                 const date2 = transaction.deadline;
@@ -173,20 +179,33 @@ transactionRouter.put(
                   user: req.user._id,
                   item: item._id,
                   paid: false,
-                  fees: (item.lateFees / 100) * diffDays,
+                  fees:
+                    (item.available.id(transaction.borrowedFrom).lateFees /
+                      100) *
+                    diffDays,
                 })
                   .then((fee) => {
                     User.findByIdAndUpdate(
                       { _id: req.user._id },
                       { $set: { canBorrowItems: false } }
-                    ).then(() => {
-                      res.statusCode = 200;
-                      res.setHeader("Content-Type", "application/json");
-                      res.json({
-                        success: true,
-                        status: "Transaction Returned",
+                    )
+                      .then(() => {
+                        res.statusCode = 200;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: true,
+                          status: "Transaction Returned",
+                        });
+                      })
+                      .catch((err) => {
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: false,
+                          status: "Request Failed",
+                          err: err,
+                        });
                       });
-                    });
                   })
                   .catch((err) => {
                     res.statusCode = 500;
@@ -254,7 +273,7 @@ transactionRouter.get(
   }
 );
 
-// librarian get all non-returned transactions
+// librarian get all requested to return transactions
 transactionRouter.get(
   "/allTransactions/requestedToReturn",
   cors.corsWithOptions,
@@ -284,7 +303,7 @@ transactionRouter.get(
 
 // librarian return excact transaction
 transactionRouter.put(
-  "/accept/:transactionId",
+  "/recive/:transactionId",
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyAdmin,
@@ -321,10 +340,20 @@ transactionRouter.put(
                           user: req.user._id,
                           item: item._id,
                           paid: false,
-                          fees: (item.lateFees / 100) * diffDays,
+                          fees:
+                            (item.available.id(transaction.borrowedFrom)
+                              .lateFees /
+                              100) *
+                            diffDays,
                         }).then((fee) => {
                           transaction
                             .save()
+                            .then((fee) => {
+                              User.findByIdAndUpdate(
+                                { _id: req.user._id },
+                                { $set: { canBorrowItems: false } }
+                              );
+                            })
                             .then(() => {
                               res.statusCode = 200;
                               res.setHeader("Content-Type", "application/json");

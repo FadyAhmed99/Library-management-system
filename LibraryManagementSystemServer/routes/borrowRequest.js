@@ -20,43 +20,108 @@ borrowRequestRouter.post(
   (req, res, next) => {
     BorrowRequest.find({ user: req.user._id, borrowed: false })
       .then((userRequests) => {
+        // limit check
         if (userRequests.length < config.maxNumOfBorrowings) {
           Transaction.find({ user: req.user._id, returned: false })
             .then((userTransactions) => {
-              // check user limits
-              if (userTransactions.length < config.maxNumOfBorrowings) {
-                User.findById(req.user._id)
-                  .then((user) => {
-                    if (user.canBorrowItems == true) {
-                      Item.findById(req.params.itemId)
-                        .then((item) => {
-                          // if item is available
-                          if (
-                            item.available.id(req.params.libraryId).amount != 0
-                          ) {
-                            // if item is physical
+              var canBorrow = true;
+              if (userTransactions) {
+                var date = new Date();
+                userTransactions.forEach((transaction) => {
+                  if (transaction.deadline < date) {
+                    canBorrow = false;
+                  }
+                });
+              }
+              if (canBorrow) {
+                // check user limits
+                if (userTransactions.length < config.maxNumOfBorrowings) {
+                  User.findById(req.user._id)
+                    .then((user) => {
+                      if (user.canBorrowItems == true) {
+                        Item.findById(req.params.itemId)
+                          .then((item) => {
+                            // if item is available
                             if (
-                              item.type == "book" ||
-                              item.type == "audioMaterial" ||
-                              item.type == "magazine"
+                              item.available.id(req.params.libraryId).amount !=
+                              0
                             ) {
-                              var date = new Date();
-                              date.setDate(date.getDate() + 2);
-                              BorrowRequest.create(
-                                new BorrowRequest({
+                              // if item is physical
+                              if (
+                                item.type == "book" ||
+                                item.type == "audioMaterial" ||
+                                item.type == "magazine"
+                              ) {
+                                var date = new Date();
+                                date.setDate(date.getDate() + 2);
+                                BorrowRequest.create(
+                                  new BorrowRequest({
+                                    user: req.user._id,
+                                    library: req.params.libraryId,
+                                    item: req.params.itemId,
+                                    deadline: date,
+                                  })
+                                ).then(() => {
+                                  item.available.id(
+                                    req.params.libraryId
+                                  ).amount -= 1;
+                                  item
+                                    .save()
+                                    .then((item) => {
+                                      if (item) {
+                                        res.statusCode = 200;
+                                        res.setHeader(
+                                          "Content-Type",
+                                          "application/json"
+                                        );
+                                        res.json({
+                                          success: true,
+                                          status: "Requested Successfully",
+                                        });
+                                      } else {
+                                        res.statusCode = 500;
+                                        res.setHeader(
+                                          "Content-Type",
+                                          "application/json"
+                                        );
+                                        res.json({
+                                          success: false,
+                                          status: "Request Failed",
+                                          err: err,
+                                        });
+                                      }
+                                    })
+                                    .catch((err) => {
+                                      res.statusCode = 500;
+                                      res.setHeader(
+                                        "Content-Type",
+                                        "application/json"
+                                      );
+                                      res.json({
+                                        success: false,
+                                        status: "Request Failed",
+                                        err: err,
+                                      });
+                                    });
+                                });
+                              }
+                              // if item is not physical
+                              else {
+                                var date = new Date();
+                                date.setDate(date.getDate() + config.duration);
+                                Transaction.create({
                                   user: req.user._id,
-                                  library: req.params.libraryId,
                                   item: req.params.itemId,
+                                  lateFees: item.available.id(
+                                    req.params.libraryId
+                                  ).lateFees,
+                                  borrowedFrom: req.params.libraryId,
                                   deadline: date,
+                                  returned: false,
+                                  requestedToReturn: false,
                                 })
-                              ).then(() => {
-                                item.available.id(
-                                  req.params.libraryId
-                                ).amount -= 1;
-                                item
-                                  .save()
-                                  .then((item) => {
-                                    if (item) {
+                                  .then((transaction) => {
+                                    if (transaction) {
                                       res.statusCode = 200;
                                       res.setHeader(
                                         "Content-Type",
@@ -64,7 +129,8 @@ borrowRequestRouter.post(
                                       );
                                       res.json({
                                         success: true,
-                                        status: "Requested Successfully",
+                                        status: "Borrowed Successfully",
+                                        item: item._id,
                                       });
                                     } else {
                                       res.statusCode = 500;
@@ -75,7 +141,6 @@ borrowRequestRouter.post(
                                       res.json({
                                         success: false,
                                         status: "Request Failed",
-                                        err: err,
                                       });
                                     }
                                   })
@@ -91,103 +156,61 @@ borrowRequestRouter.post(
                                       err: err,
                                     });
                                   });
+                              }
+                            } else {
+                              res.statusCode = 500;
+                              res.setHeader("Content-Type", "application/json");
+                              res.json({
+                                success: false,
+                                status: "Request Failed",
+                                err: "Item Not Found In This Library",
                               });
                             }
-                            // if item is not physical
-                            else {
-                              var date = new Date();
-                              date.setDate(date.getDate() + config.duration);
-                              Transaction.create({
-                                user: req.user._id,
-                                item: req.params.itemId,
-                                lateFees: item.lateFees,
-                                borrowedFrom: req.params.libraryId,
-                                deadline: date,
-                                returned: false,
-                                requestedToReturn: false,
-                              })
-                                .then((transaction) => {
-                                  if (transaction) {
-                                    res.statusCode = 200;
-                                    res.setHeader(
-                                      "Content-Type",
-                                      "application/json"
-                                    );
-                                    res.json({
-                                      success: true,
-                                      status: "Borrowed Successfully",
-                                      item: item._id,
-                                    });
-                                  } else {
-                                    res.statusCode = 500;
-                                    res.setHeader(
-                                      "Content-Type",
-                                      "application/json"
-                                    );
-                                    res.json({
-                                      success: false,
-                                      status: "Request Failed",
-                                    });
-                                  }
-                                })
-                                .catch((err) => {
-                                  res.statusCode = 500;
-                                  res.setHeader(
-                                    "Content-Type",
-                                    "application/json"
-                                  );
-                                  res.json({
-                                    success: false,
-                                    status: "Request Failed",
-                                    err: err,
-                                  });
-                                });
-                            }
-                          } else {
+                          })
+                          .catch((err) => {
                             res.statusCode = 500;
                             res.setHeader("Content-Type", "application/json");
                             res.json({
                               success: false,
                               status: "Request Failed",
-                              err: "Item Not Found In This Library",
+                              err: err,
                             });
-                          }
-                        })
-                        .catch((err) => {
-                          res.statusCode = 500;
-                          res.setHeader("Content-Type", "application/json");
-                          res.json({
-                            success: false,
-                            status: "Request Failed",
-                            err: err,
                           });
+                      } else {
+                        res.statusCode = 403;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: false,
+                          status: "Request Failed",
+                          err: "Can't Borrow",
                         });
-                    } else {
-                      res.statusCode = 403;
+                      }
+                    })
+                    .catch((err) => {
+                      res.statusCode = 500;
                       res.setHeader("Content-Type", "application/json");
                       res.json({
                         success: false,
                         status: "Request Failed",
-                        err: "Can't Borrow",
+                        err: err,
                       });
-                    }
-                  })
-                  .catch((err) => {
-                    res.statusCode = 500;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json({
-                      success: false,
-                      status: "Request Failed",
-                      err: err,
                     });
+                } else {
+                  res.statusCode = 403;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({
+                    success: false,
+                    status: "Request Failed",
+                    err: { message: "Limit Reached" },
                   });
+                }
               } else {
                 res.statusCode = 403;
                 res.setHeader("Content-Type", "application/json");
                 res.json({
                   success: false,
                   status: "Request Failed",
-                  err: { message: "Limit Reached", err: err },
+                  err: { message: "Non Returned Items", },
                 });
               }
             })
@@ -206,7 +229,7 @@ borrowRequestRouter.post(
           res.json({
             success: false,
             status: "Request Failed",
-            err: { message: "Limit Reached", err: err },
+            err: { message: "Limit Reached" },
           });
         }
       })
@@ -267,7 +290,7 @@ borrowRequestRouter.put(
             Transaction.create({
               user: req.user._id,
               item: request.item,
-              lateFees: item.lateFees,
+              lateFees: item.available.id(req.params.libraryId).lateFees / 100,
               borrowedFrom: req.params.libraryId,
               deadline: date,
               returned: false,

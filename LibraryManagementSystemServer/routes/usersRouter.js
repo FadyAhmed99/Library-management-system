@@ -94,7 +94,7 @@ userRouter.post('/login' , cors.corsWithOptions ,  (req,res,next)=>{
   
 });
 
-/*
+
 userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
   passport.authenticate('jwt' , {session: false} , (err,user,info)=>{
     if(err){
@@ -106,13 +106,13 @@ userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
       res.json({status: 'JWT invalid' , success: false, err: info});
     }
     else{
-      res.statusCode = 401;
+      res.statusCode = 200;
       res.setHeader('Content-Type' , 'application/json');
       res.json({status: 'JWT valid' , success: true, user: user});
     }
   })(req,res,next);
 });
-*/
+
 
 // Configuring logout process
 userRouter.get('/logout' , cors.corsWithOptions ,(req,res,next)=>{
