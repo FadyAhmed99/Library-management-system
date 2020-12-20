@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:LibraryManagmentSystem/screen/libraries.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './drawer.dart';
-import './test-screen.dart';
 import './theme.dart';
 import 'provider/user-provider.dart';
 
@@ -28,13 +28,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [ChangeNotifierProvider(create: (context) => UserProvider())],
-        child: MaterialApp(
-    title: 'Library Managment System',
-    theme: mainTheme,
-    home: MyHomePage(),
-        ),
-      );
+      providers: [ChangeNotifierProvider(create: (context) => UserProvider())],
+      child: MaterialApp(
+        title: 'Library Managment System',
+        theme: mainTheme,
+        home: MyHomePage(),
+      ),
+    );
   }
 }
 
@@ -44,25 +44,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String token = '';
+  bool _loading = false;
+  bool _init = true;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_init) {
+      final _userProvider = Provider.of<UserProvider>(context);
+      _userProvider.facebookLogin.currentAccessToken.then((value) {
+        if (value != null && value.isValid()) {
+          _userProvider.logInFacebookUser(value.token).then((value) {});
+        }
+        setState(() {
+          _init = false;
+        });
+      });
+    }
+
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: drawer(context),
-        appBar: AppBar(
-          title: Text("Library"),
-          actions: [
-            FittedBox(
-              child: RaisedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => TestComponnets()));
-                },
-                child: Text("Test Components"),
-                color: Colors.amber,
-              ),
-            )
-          ],
-        ),
-        body: Text("Home"));
+      drawer: drawer(context),
+      appBar: AppBar(
+        title: Text("Library"),
+      ),
+      body: Libraries(),
+    );
   }
 }
