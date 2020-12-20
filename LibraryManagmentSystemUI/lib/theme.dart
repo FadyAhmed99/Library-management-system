@@ -5,6 +5,7 @@ ThemeData mainTheme = ThemeData(
   accentColor: Colors.white,
   buttonColor: Colors.blue[500],
   backgroundColor: Colors.white,
+  disabledColor: Colors.grey[500],
   scaffoldBackgroundColor: Colors.grey[300],
   visualDensity: VisualDensity.adaptivePlatformDensity,
   buttonTheme: ButtonThemeData(

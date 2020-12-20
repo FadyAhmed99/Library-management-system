@@ -1,10 +1,11 @@
+import 'package:LibraryManagmentSystem/components/auth-button.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
+import 'package:LibraryManagmentSystem/components/text-field.dart';
 import 'package:LibraryManagmentSystem/provider/user-provider.dart';
-import 'package:LibraryManagmentSystem/screen/profile.dart';
+import 'package:LibraryManagmentSystem/screen/regestration/profile.dart';
 import 'package:provider/provider.dart';
 
-import '../components/text-field.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -52,8 +53,8 @@ class _SignUpState extends State<SignUp> {
             ),
             _loading
                 ? loading()
-                : RaisedButton(
-                    onPressed: () {
+                : ourAuthButton(
+                    function: () {
                       setState(() {
                         _loading = true;
                       });
@@ -65,11 +66,7 @@ class _SignUpState extends State<SignUp> {
                           setState(() {
                             _loading = false;
                           });
-                          myDialog(context: context, err: err);
-                        } else {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (ctx) => Profile()));
+                          ourDialog(context: context, error: err);
                         }
                       });
                     },
