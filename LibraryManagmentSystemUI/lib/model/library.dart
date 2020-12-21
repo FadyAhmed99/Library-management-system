@@ -1,22 +1,27 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:LibraryManagmentSystem/model/feedback.dart';
-import 'package:flutter/cupertino.dart';
 
+part 'library.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Library {
-  String name;
-  String address = '';
-  String description = '';
-  String phoneNumber = '';
-  String image = '';
-  String librarian;
+  final String name;
+  final String address;
+  final String description;
+  final String phoneNumber;
+  final String image;
+  final String librarian;
   List<Feedback> feedback;
 
   Library(
-      {@required this.name,
+      {this.name,
       this.address,
       this.description,
       this.phoneNumber,
       this.image,
       this.librarian,
       this.feedback});
-      
+  factory Library.fromJson(Map<String, dynamic> data) =>
+      _$LibraryFromJson(data);
+  Map<String, dynamic> toJson() => _$LibraryToJson(this);
 }

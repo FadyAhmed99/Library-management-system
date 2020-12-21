@@ -1,12 +1,15 @@
 import 'dart:io';
 
+import 'package:LibraryManagmentSystem/provider/library_provider.dart';
 import 'package:LibraryManagmentSystem/screen/libraries.dart';
+import 'package:LibraryManagmentSystem/screen/my_test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './drawer.dart';
 import './theme.dart';
 import 'provider/user-provider.dart';
+
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -28,7 +31,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => UserProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => LibraryProvider())
+      ],
       child: MaterialApp(
         title: 'Library Managment System',
         theme: mainTheme,
@@ -76,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Library"),
       ),
-      body: Libraries(),
+      body: MyTest(),
     );
   }
 }

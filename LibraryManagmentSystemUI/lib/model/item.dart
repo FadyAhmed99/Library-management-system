@@ -1,22 +1,28 @@
-import 'package:flutter/widgets.dart';
 import 'package:LibraryManagmentSystem/model/available.dart';
 import 'package:LibraryManagmentSystem/model/review.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'item.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Item {
   String name;
   String genre;
   String author;
   String language;
-  String isbn = '';
+  String isbn;
   List<Available> available;
-  List<Review> review;
-  
+  List<Review> reviews;
+
   Item(
-      {@required this.name,
-      @required this.genre,
-      @required this.author,
-      @required this.language,
+      {this.name,
+      this.genre,
+      this.author,
+      this.language,
       this.isbn,
       this.available,
-      this.review});
+      this.reviews});
+
+  factory Item.fromJson(Map<String, dynamic> data) => _$ItemFromJson(data);
+  Map<String, dynamic> toJson() => _$ItemToJson(this);
 }

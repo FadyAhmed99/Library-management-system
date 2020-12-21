@@ -1,49 +1,41 @@
+import 'package:LibraryManagmentSystem/model/favorite.dart';
+import 'package:LibraryManagmentSystem/model/subscribed_library.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class User {
-  final String firstName;
-  final String lastName;
+  final String firstname;
+  final String lastname;
   final String email;
   final String phoneNumber;
   final String profilePhoto;
   final String username;
   final String facebookId;
   final bool librarian;
-  final bool canBorrowItems;
-  final bool canEvaluateItems;
 
-  final List<Map<String, bool>> subscribedLibraries;
-  final List<Map<String, String>> favorites;
+  List<SubscribedLibrary> subscribedLibraries;
+  List<Favorite> favorites = new List();
 
-  String token;
+  User({
+    this.facebookId,
+    this.librarian,
+    this.subscribedLibraries,
+    this.favorites,
+    this.firstname,
+    this.lastname,
+    this.email,
+    this.phoneNumber,
+    this.profilePhoto,
+    this.username,
+  });
 
-  User(
-      {this.facebookId,
-      this.librarian,
-      this.canBorrowItems,
-      this.canEvaluateItems,
-      this.subscribedLibraries,
-      this.favorites,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.phoneNumber,
-      this.profilePhoto,
-      this.username,
-      this.token});
+  factory User.fromJson(Map<String, dynamic> data) => _$UserFromJson(data);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-        firstName: json['firstName'] ?? '',
-        lastName: json['lastName'] ?? '',
-        email: json['email'] ?? '',
-        phoneNumber: json['phoneNumber'] ?? '',
-        username: json['username'] ?? '',
-        token: json['token'] ?? '',
-        profilePhoto: json['profilePhoto'] ?? '',
-        canBorrowItems: json['canBorrowItems'] ?? false,
-        canEvaluateItems: json['canEvaluateItems'] ?? false,
-        facebookId: json['facebookId'] ?? '',
-        favorites: json['favorites'] ?? [],
-        librarian: json['librarian'] ?? false,
-        subscribedLibraries: json['subscribedLibraries'] ?? []);
+  void addFav(dynamic fav) {
+    this.favorites.add(Favorite.fromJson(fav));
   }
 }

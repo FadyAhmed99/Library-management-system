@@ -1,18 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../model/user.dart';
-import '../config.dart';
+import 'package:LibraryManagmentSystem/model/favorite.dart';
+import 'package:LibraryManagmentSystem/model/subscribed_library.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:http/http.dart' as http;
+
+import '../config.dart';
+import '../model/user.dart';
+
+String globalToken = '';
 
 class UserProvider with ChangeNotifier {
   User _user;
   final facebookLogin = FacebookLogin();
+  String _token;
 
   User get user {
     return _user;
+  }
+
+  String get token {
+    return _token;
   }
 
   Future<String> signUpUser(String userName, String password) async {
@@ -56,7 +66,10 @@ class UserProvider with ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['err']['message'];
         else {
-          getUserProfile(extractedData['token']);
+          _token = extractedData['token'];
+          globalToken = _token;
+          getUserProfile();
+          notifyListeners();
         }
       }
     } catch (e) {
@@ -64,12 +77,12 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<String> getUserProfile(String token) async {
+  Future<String> getUserProfile() async {
     try {
       final _url = '$apiStart/users/profile';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $_token"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -80,6 +93,7 @@ class UserProvider with ChangeNotifier {
           return extractedData['err']['message'];
         else {
           _user = User.fromJson(extractedData['profile']);
+          print(extractedData['profile']);
           notifyListeners();
         }
       }
@@ -119,7 +133,9 @@ class UserProvider with ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['err']['message'];
         else {
-          getUserProfile(extractedData['token']);
+          _token = extractedData['token'];
+          globalToken = _token;
+          getUserProfile();
         }
       }
     } catch (e) {
@@ -149,5 +165,112 @@ class UserProvider with ChangeNotifier {
       _user = null;
       notifyListeners();
     });
+  }
+
+  Future<dynamic> myLibraries() async {
+    try {
+      final _url = '$apiStart/users/myLibraries';
+      final response = await http.get(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $_token"},
+      );
+
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return null;
+      } else {
+        if (response.statusCode != 200)
+          return 'Error';
+        else {
+          _user.subscribedLibraries = [];
+          extractedData['subscribedLibraries'].forEach((library) {
+            _user.subscribedLibraries.add(SubscribedLibrary.fromJson(library));
+          });
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<dynamic> myFavourites() async {
+    try {
+      final _url = '$apiStart/users/favorites';
+      final response = await http.get(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $_token"},
+      );
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return 'Error!';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['err'];
+        else {
+          if (extractedData['items'].length != 0) {
+            extractedData['items'].forEach((item) {
+              _user.addFav(item);
+            });
+          }
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<dynamic> addToMyFavourites({String itemId, String libraryId}) async {
+    try {
+      final _url = '$apiStart/users/favorites';
+      final response = await http.post(
+        _url,
+        headers: {
+          HttpHeaders.authorizationHeader: "bearer $_token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({"_id": itemId, "library": libraryId}),
+      );
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return 'Error!';
+      } else {
+        if (response.statusCode != 200) {
+          return extractedData['err'];
+        } else {
+          return extractedData['status'];
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<dynamic> deleteFromMyFavourites(
+      {String itemId, String libraryId}) async {
+    try {
+      final _url = '$apiStart/users/favorites';
+      final response = await http.put(
+        _url,
+        headers: {
+          HttpHeaders.authorizationHeader: "bearer $_token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({"_id": itemId, "library": libraryId}),
+      );
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return 'Error!';
+      } else {
+        if (response.statusCode != 200) {
+          return extractedData['err'];
+        } else {
+          return extractedData['status'];
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }
