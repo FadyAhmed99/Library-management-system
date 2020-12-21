@@ -1,8 +1,8 @@
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart';
-import 'package:LibraryManagmentSystem/screen/regestration/profile.dart';
-import 'package:LibraryManagmentSystem/screen/regestration/signin.dart';
-import 'package:LibraryManagmentSystem/screen/regestration/signup.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/user_provider.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/profile.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/signin.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

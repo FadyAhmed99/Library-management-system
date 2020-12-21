@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:LibraryManagmentSystem/components/circular-loading.dart';
-import 'package:LibraryManagmentSystem/config.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart';
+import 'package:LibraryManagmentSystem/components/circular_loading.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';

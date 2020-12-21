@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../model/user.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+
 import '../config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

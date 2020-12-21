@@ -11,42 +11,50 @@ Widget libraryTile(
     Function onPressedFunction,
     IconData icon,
     int index}) {
+  Size size = MediaQuery.of(context).size;
+  print(size.aspectRatio);
+  double height = 200;
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Card(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: FaIcon(icon,
-                        color: joined ? Colors.blue : Colors.transparent)),
-              ],
-            ),
-            Hero(
-              tag: index,
-              child: Container(
-                height: 100,
-                child: Image.network(
-                  image,
-                  fit: BoxFit.fill,
+      Container(
+        height: height * 0.87,
+        child: Card(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: FaIcon(icon,
+                          color: joined ? Colors.blue : Colors.transparent)),
+                ],
+              ),
+              Hero(
+                tag: index,
+                child: Container(
+                  height: 90,
+                  child: Image.network(
+                    image,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                title,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+            ],
+          ),
         ),
       ),
       Container(
+        height: height * 0.13,
         padding: EdgeInsets.symmetric(horizontal: 4),
         child: RaisedButton(
           onPressed: onPressedFunction,

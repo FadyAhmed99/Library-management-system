@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:LibraryManagmentSystem/screen/libraries.dart';
+import 'package:LibraryManagmentSystem/providers/user_provider.dart';
+import 'package:LibraryManagmentSystem/screens/libraries_room_screen.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './drawer.dart';
 import './theme.dart';
-import 'provider/user-provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -21,6 +22,10 @@ void main() {
   HttpOverrides.global = new MyHttpOverrides();
 
   runApp(MyApp());
+  // runApp(DevicePreview(
+  //   enabled: true,
+  //   builder: (context) => MyApp(),
+  // ));
 }
 
 class MyApp extends StatelessWidget {
@@ -76,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Library"),
       ),
-      body: Libraries(),
+      body: LibrariesRoomScreen(),
     );
   }
 }
