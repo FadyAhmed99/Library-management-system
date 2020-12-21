@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 ThemeData mainTheme = ThemeData(
-  primarySwatch: Colors.blue,
+  primaryColor: Colors.lightBlue,
+  primarySwatch: Colors.lightBlue,
   accentColor: Colors.white,
-  buttonColor: Colors.blue[500],
+  buttonColor: Colors.lightBlue,
   backgroundColor: Colors.white,
-  disabledColor: Colors.grey[500],
   scaffoldBackgroundColor: Colors.grey[300],
   visualDensity: VisualDensity.adaptivePlatformDensity,
   buttonTheme: ButtonThemeData(
@@ -14,8 +14,8 @@ ThemeData mainTheme = ThemeData(
     disabledColor: Colors.grey,
   ),
   textTheme: TextTheme(
-    bodyText1: TextStyle(fontSize: 14, color: Colors.black),
-    bodyText2: TextStyle(fontSize: 16, color: Colors.black),
+    bodyText1: TextStyle(fontSize: 14, color: Colors.grey[900]),
+    bodyText2: TextStyle(fontSize: 16),
     headline1: TextStyle(
         fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
     headline2: TextStyle(
