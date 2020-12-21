@@ -1,4 +1,4 @@
-import 'package:LibraryManagmentSystem/components/auth-button.dart';
+import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
@@ -79,14 +79,15 @@ class _SignInState extends State<SignIn> {
                 ),
                 _loading
                     ? loading()
-                    : ourAuthButton(function: logInUser, child: Text('Log in')),
+                    : RoundedButton(
+                        onPressed: logInUser,
+                        title: 'Log in',
+                      ),
                 SizedBox(height: 16),
                 Center(child: Text('OR')),
-                ourAuthButton(
-                  function: logInFacebook,
-                  child: Text(
-                    "Log in using facebook",
-                  ),
+                RoundedButton(
+                  onPressed: logInFacebook,
+                  title: "Log in using facebook",
                 )
               ],
             ),

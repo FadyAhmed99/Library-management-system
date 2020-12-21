@@ -1,4 +1,4 @@
-import 'package:LibraryManagmentSystem/components/auth-button.dart';
+import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
@@ -53,8 +53,8 @@ class _SignUpState extends State<SignUp> {
             ),
             _loading
                 ? loading()
-                : ourAuthButton(
-                    function: () {
+                : RoundedButton(
+                    onPressed: () {
                       setState(() {
                         _loading = true;
                       });
@@ -70,7 +70,7 @@ class _SignUpState extends State<SignUp> {
                         }
                       });
                     },
-                    child: Text('Sign up'),
+                    title: 'Sign up',
                   )
           ],
         ),
