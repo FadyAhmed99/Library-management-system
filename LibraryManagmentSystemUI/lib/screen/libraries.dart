@@ -18,7 +18,7 @@ class _LibrariesState extends State<Libraries> {
         padding: const EdgeInsets.all(4.0),
         child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, childAspectRatio: 0.75),
+                crossAxisCount: 2, childAspectRatio: MediaQuery.of(context).size.width /500,),
             itemCount: 5,
             itemBuilder: (context, index) {
               return libraryTile(
