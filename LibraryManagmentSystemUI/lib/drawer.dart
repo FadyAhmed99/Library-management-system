@@ -1,5 +1,4 @@
-
-import 'package:LibraryManagmentSystem/screen/regestration/register.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class RoundedButton extends StatelessWidget {
-  RoundedButton({this.title, @required this.onPressed});
+class SmallButton extends StatelessWidget {
+  SmallButton({this.icon, @required this.onPressed});
 
-  final String title;
+  final IconData icon;
   final Function onPressed;
   @override
   Widget build(BuildContext context) {
@@ -15,13 +16,10 @@ class RoundedButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
         child: MaterialButton(
           onPressed: onPressed,
-          minWidth: 200.0,
+          
           height: 42.0,
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-            ),
+          child: Icon(
+            icon
           ),
         ),
       ),

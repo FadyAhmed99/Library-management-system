@@ -1,12 +1,14 @@
 import 'dart:io';
 
-import 'package:LibraryManagmentSystem/screen/libraries.dart';
+import 'package:LibraryManagmentSystem/components/circular-loading.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './drawer.dart';
 import './theme.dart';
-import 'provider/user-provider.dart';
+import 'providers/user-provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -28,7 +30,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => UserProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => LibraryProvider())
+      ],
       child: MaterialApp(
         title: 'Library Managment System',
         theme: mainTheme,
@@ -71,12 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       drawer: drawer(context),
       appBar: AppBar(
         title: Text("Library"),
       ),
-      body: Libraries(),
+      body: _userProvider.user == null ? loading() : LibrariesRoomScreen(),
     );
   }
 }
