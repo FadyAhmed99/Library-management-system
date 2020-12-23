@@ -4,6 +4,8 @@ import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/models/user.dart';
 import 'package:LibraryManagmentSystem/providers/user-provider.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/signin.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +53,12 @@ class _ProfileState extends State<Profile> {
                       setState(() {
                         _loading = true;
                       });
-                      _userProvider.facebookLogout();
+                      _userProvider.facebookLogout().then((_) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => WelcomeScreen()),
+                            (Route<dynamic> route) => false);
+                      });
                     },
                     child: _loading
                         ? loading()

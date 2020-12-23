@@ -3,6 +3,7 @@ import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
 import 'package:LibraryManagmentSystem/providers/user-provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -64,7 +65,13 @@ class _SignUpState extends State<SignUp> {
                           setState(() {
                             _loading = false;
                           });
+
                           ourDialog(context: context, error: err);
+                        } else {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) => LibrariesRoomScreen()),
+                              (Route<dynamic> route) => false);
                         }
                       });
                     },

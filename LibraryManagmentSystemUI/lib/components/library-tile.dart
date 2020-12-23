@@ -61,6 +61,7 @@ Widget libraryTile(
           ),
         ),
       ),
+      SizedBox(height: 5.0,),
       Container(
         height: height * 0.13,
         padding: EdgeInsets.symmetric(horizontal: 4),

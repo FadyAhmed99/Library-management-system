@@ -1,5 +1,3 @@
-import 'package:LibraryManagmentSystem/models/available.dart';
-import 'package:LibraryManagmentSystem/models/review.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'item.g.dart';

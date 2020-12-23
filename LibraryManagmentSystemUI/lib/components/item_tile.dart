@@ -31,11 +31,7 @@ class _ItemTileState extends State<ItemTile> {
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) {}),
-            );
-          },
+          onTap: () {},
           child: Container(
             height: height * 0.9,
             child: Card(
