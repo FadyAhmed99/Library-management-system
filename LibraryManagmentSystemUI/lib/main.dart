@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
+import 'package:LibraryManagmentSystem/screens/regestration/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,39 +52,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String token = '';
   bool _loading = false;
-  bool _init = true;
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    if (_init) {
-      final _userProvider = Provider.of<UserProvider>(context);
-      _userProvider.facebookLogin.currentAccessToken.then((value) {
-        if (value != null && value.isValid()) {
-          _userProvider.logInFacebookUser(value.token).then((value) {});
-        }
-        setState(() {
-          _init = false;
-        });
-      });
-    }
-
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final _userProvider = Provider.of<UserProvider>(context);
-
-    return Scaffold(
-      drawer: drawer(context),
-      appBar: AppBar(
-        title: Text("Library"),
+    return SafeArea(
+      child: Scaffold(
+        // drawer: drawer(context),
+        // appBar: AppBar(
+        //   title: Text("Library"),
+        // ),
+        body: WelcomeScreen(),
       ),
-      body: _userProvider.user == null ? loading() : LibrariesRoomScreen(),
     );
   }
 }
