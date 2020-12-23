@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:LibraryManagmentSystem/models/feedback.dart';
+import 'package:LibraryManagmentSystem/models/item.dart';
 import 'package:LibraryManagmentSystem/models/library.dart';
 import 'package:LibraryManagmentSystem/models/user.dart';
 import 'package:LibraryManagmentSystem/providers/user-provider.dart'
@@ -49,6 +50,16 @@ class LibraryProvider extends ChangeNotifier {
     return _librarian;
   }
 
+  Library _library;
+  Library get library {
+    return _library;
+  }
+
+  List<Item> _items = [];
+  List<Item> get items {
+    return _items;
+  }
+
   Future<String> getLibraries() async {
     try {
       final _url = '$apiStart/libraries';
@@ -76,7 +87,7 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> getLibrarian({String libraryId}) async {
+  Future<String> getLibrary({String libraryId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId/info';
       final response = await http.get(
@@ -92,6 +103,7 @@ class LibraryProvider extends ChangeNotifier {
           return extractedData['err'];
         else {
           _librarian = User.fromJson(extractedData['librarian']);
+          _library = Library.fromJson(extractedData['library']);
           notifyListeners();
         }
       }
@@ -348,8 +360,79 @@ class LibraryProvider extends ChangeNotifier {
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
           _blockedFromBorrowing.clear();
-          extractedData['requests'].forEach((user) {
+          extractedData['blockedUsers'].forEach((user) {
             _blockedFromBorrowing.add(User.fromJson(user));
+            return null;
+          });
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<dynamic> editLibraryInfo(
+      {String libraryId,
+      String name,
+      String desc,
+      String phoneNum,
+      String address}) async {
+    print('object');
+    try {
+      final _url = '$apiStart/libraries/$libraryId/info';
+      final response = await http.put(_url,
+          headers: {
+            HttpHeaders.authorizationHeader: "bearer $token",
+            "Content-Type": "application/json"
+          },
+          body: jsonEncode({
+            "name": name,
+            "address": address,
+            "description": desc,
+            "phoneNumber": phoneNum
+          }));
+
+      final extractedData = jsonDecode(response.body);
+
+      if (extractedData == null) {
+        return 'Error';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['status'] + ' ' + extractedData['err'];
+        else {
+          getLibraries();
+          notifyListeners();
+          return null;
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<dynamic> getLibraryItems({String libraryId}) async {
+    try {
+      final _url = '$apiStart/libraries/$libraryId/items';
+      final response = await http.get(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+      );
+
+      final extractedData = jsonDecode(response.body);
+
+      if (extractedData == null) {
+        return 'Error';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['status'] + ' ' + extractedData['err'];
+        else {
+          _items.clear();
+          print(extractedData['items']);
+          extractedData['items'].forEach((item) {
+            _items.add(Item.fromJson(item));
             return null;
           });
           notifyListeners();

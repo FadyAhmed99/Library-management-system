@@ -12,14 +12,14 @@ import '../models/user.dart';
 String globalToken = '';
 
 class UserProvider with ChangeNotifier {
-  User _user;
   final facebookLogin = FacebookLogin();
-  String _token;
 
+  User _user;
   User get user {
     return _user;
   }
 
+  String _token;
   String get token {
     return _token;
   }
@@ -68,6 +68,7 @@ class UserProvider with ChangeNotifier {
           _token = extractedData['token'];
           globalToken = _token;
           getUserProfile();
+
           notifyListeners();
         }
       }
@@ -92,7 +93,7 @@ class UserProvider with ChangeNotifier {
           return extractedData['err']['message'];
         else {
           _user = User.fromJson(extractedData['profile']);
-          print(extractedData['profile']);
+          myLibraries();
           notifyListeners();
         }
       }

@@ -8,6 +8,9 @@ import 'package:provider/provider.dart';
 import '../../constants.dart';
 
 class LibraryItemsScreen extends StatefulWidget {
+  final String libraryId;
+
+  const LibraryItemsScreen({Key key, this.libraryId}) : super(key: key);
   @override
   _LibraryItemsScreenState createState() => _LibraryItemsScreenState();
 }
@@ -16,18 +19,18 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
   bool _loading = true;
   bool _init = true;
 
-  List<Item> _lib = [];
+  List<Item> _items = [];
   @override
   void didChangeDependencies() {
     if (_init) {
       final _libraryProvider = Provider.of<LibraryProvider>(context);
-      _libraryProvider.getLibraries().then((_) {
+      _libraryProvider.getLibraryItems(libraryId: widget.libraryId).then((_) {
         setState(() {
-          // _lib = _libraryProvider.libraries;
+          _items = _libraryProvider.items;
           _loading = false;
         });
       });
-      print(_lib);
+      print(_items);
     }
     _init = false;
     super.didChangeDependencies();
@@ -36,16 +39,31 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 40,
+        leading: null,
+        elevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        automaticallyImplyLeading: false,
+        bottom: PreferredSize(
+          preferredSize: Size.zero,
+          child: Text(
+              _loading ? '' : "Library have ${_items.length.toString()} items"),
+        ),
+      ),
       body: _loading
           ? loading()
           : Padding(
               padding: const EdgeInsets.all(4.0),
               child: GridView.builder(
-                  gridDelegate: kGridShape,
-                  itemCount: _lib.length,
-                  itemBuilder: (context, index) {
-                    return ItemTile();
-                  }),
+                gridDelegate: kGridShape,
+                itemCount: _items.length,
+                itemBuilder: (context, index) {
+                  return ItemTile(
+                    item: _items[index],
+                  );
+                },
+              ),
             ),
     );
   }

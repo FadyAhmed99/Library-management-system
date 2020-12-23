@@ -17,9 +17,10 @@ const kTextFieldDecoration = InputDecoration(
 );
 
 const kGridShape = SliverGridDelegateWithMaxCrossAxisExtent(
-    maxCrossAxisExtent: 230, childAspectRatio: 0.75);
+    maxCrossAxisExtent:360/2, childAspectRatio: 0.7);
 
 const kListTilePadding = EdgeInsets.all(8);
 const kListTileMargin = EdgeInsets.all(8);
 const kUserPlaceholder = AssetImage('assets/images/user.png');
 const kLibraryPlaceholder = AssetImage('assets/images/user.png');
+const kItemPlaceholder = AssetImage('assets/images/user.png');

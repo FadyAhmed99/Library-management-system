@@ -8,7 +8,7 @@ part of 'available.dart';
 
 Available _$AvailableFromJson(Map<String, dynamic> json) {
   return Available(
-    id: json['id'] as String,
+    id: json['_id'] as String,
     image: json['image'] as String,
     inLibrary: json['inLibrary'] as bool,
     itemLink: json['itemLink'] as String,
@@ -19,7 +19,7 @@ Available _$AvailableFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$AvailableToJson(Available instance) => <String, dynamic>{
-      'id': instance.id,
+      '_id': instance.id,
       'image': instance.image,
       'inLibrary': instance.inLibrary,
       'itemLink': instance.itemLink,

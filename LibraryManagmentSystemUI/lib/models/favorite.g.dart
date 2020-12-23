@@ -8,13 +8,13 @@ part of 'favorite.dart';
 
 Favorite _$FavoriteFromJson(Map<String, dynamic> json) {
   return Favorite(
-    id: json['id'] as String,
+    id: json['_id'] as String,
     type: json['type'] as String,
     name: json['name'] as String,
     genre: json['genre'] as String,
     language: json['language'] as String,
     author: json['author'] as String,
-    isbn: json['isbn'] as String,
+    isbn: json['ISPN'] as String,
     image: json['image'] as String,
     inLibrary: json['inLibrary'] as bool,
     lateFees: json['lateFees'] as int,
@@ -24,13 +24,13 @@ Favorite _$FavoriteFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$FavoriteToJson(Favorite instance) => <String, dynamic>{
-      'id': instance.id,
+      '_id': instance.id,
       'type': instance.type,
       'name': instance.name,
       'genre': instance.genre,
       'language': instance.language,
       'author': instance.author,
-      'isbn': instance.isbn,
+      'ISPN': instance.isbn,
       'image': instance.image,
       'inLibrary': instance.inLibrary,
       'lateFees': instance.lateFees,

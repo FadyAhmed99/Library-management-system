@@ -5,7 +5,7 @@ part 'library.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Library {
-  final String name;
+  String name;
   final String address;
   final String description;
   final String phoneNumber;
@@ -25,4 +25,8 @@ class Library {
   factory Library.fromJson(Map<String, dynamic> data) =>
       _$LibraryFromJson(data);
   Map<String, dynamic> toJson() => _$LibraryToJson(this);
+
+  void changeName(String newName) {
+    name = newName;
+  }
 }
