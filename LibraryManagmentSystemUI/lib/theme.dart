@@ -26,7 +26,7 @@ ThemeData mainTheme = ThemeData(
     headline1: TextStyle(
         fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
     headline2: TextStyle(
-        fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+        fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
     headline3: TextStyle(
         fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
     headline4: TextStyle(
