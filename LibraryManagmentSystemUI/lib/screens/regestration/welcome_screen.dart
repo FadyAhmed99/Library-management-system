@@ -103,6 +103,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ? loading()
                   // register buttons
                   : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         RoundedButton(
                           title: 'Log In',

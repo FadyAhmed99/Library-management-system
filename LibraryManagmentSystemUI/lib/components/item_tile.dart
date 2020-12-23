@@ -47,7 +47,7 @@ class _ItemTileState extends State<ItemTile> {
                             child: widget.item.isNew
                                 ? FaIcon(
                                     widget.item.isNew
-                                        ? Icons.new_releases_rounded
+                                        ? Icons.fiber_new
                                         : FontAwesomeIcons.heart,
                                     color: Colors.red)
                                 : null),
@@ -68,16 +68,17 @@ class _ItemTileState extends State<ItemTile> {
                           )),
                     ],
                   ),
-                  Hero(
-                    tag: 1,
-                    child: Container(
+                 // Hero(
+                  //  tag: 1,
+                  //  child:
+                     Container(
                       height: height * 0.4,
                       child: libraryImage(
                         image: widget.item.image,
                         fit: BoxFit.contain,
                       ),
                     ),
-                  ),
+                  //),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
