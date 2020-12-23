@@ -1,15 +1,14 @@
-import 'package:LibraryManagmentSystem/model/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'feedback.g.dart';
 
 @JsonSerializable()
 class Feedback {
-   String firstname;
-   String lastname;
-   String profilePhoto;
-   String userId;
-   String feedback;
+  String firstname;
+  String lastname;
+  String profilePhoto;
+  String userId;
+  String feedback;
 
   Feedback(
       {this.firstname,

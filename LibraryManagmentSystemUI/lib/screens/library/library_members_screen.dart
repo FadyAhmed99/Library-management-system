@@ -2,8 +2,8 @@ import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/constants.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -2,8 +2,8 @@ import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

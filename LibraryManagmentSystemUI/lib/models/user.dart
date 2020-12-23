@@ -1,6 +1,5 @@
-import 'package:LibraryManagmentSystem/model/favorite.dart';
-import 'package:LibraryManagmentSystem/model/subscribed_library.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:LibraryManagmentSystem/models/favorite.dart';
+import 'package:LibraryManagmentSystem/models/subscribed_library.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';

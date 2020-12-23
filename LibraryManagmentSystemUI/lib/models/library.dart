@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:LibraryManagmentSystem/model/feedback.dart';
+import 'package:LibraryManagmentSystem/models/feedback.dart';
 
 part 'library.g.dart';
 

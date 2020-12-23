@@ -1,7 +1,7 @@
 import 'package:LibraryManagmentSystem/components/dialog.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/providers/user-provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class _MyTestState extends State<MyTest> {
     _libraryProvider
         .getLibraryRequests(libraryId: "5fdfc30bc8d9a8038b39ed3c")
         .then((value) {
-      if (value!=null) {
+      if (value != null) {
         return ourDialog(context: context, error: value);
       }
     });

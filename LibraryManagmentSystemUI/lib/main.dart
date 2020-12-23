@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
-import 'package:LibraryManagmentSystem/screen/library/libraries_room_screen.dart';
-import 'package:LibraryManagmentSystem/screen/my_test.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './drawer.dart';
 import './theme.dart';
-import 'provider/user-provider.dart';
+import 'providers/user-provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override

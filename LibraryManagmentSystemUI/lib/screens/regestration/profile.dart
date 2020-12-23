@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/user-provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -37,8 +37,7 @@ class _ProfileState extends State<Profile> {
                     child: CircleAvatar(
                         radius: 80,
                         child: ClipOval(
-                            child: userImage(image:_user.profilePhoto)
-                           )),
+                            child: userImage(image: _user.profilePhoto))),
                   ),
                 ),
               ),

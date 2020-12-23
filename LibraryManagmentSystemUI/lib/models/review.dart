@@ -1,4 +1,4 @@
-import 'package:LibraryManagmentSystem/model/user.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'review.g.dart';

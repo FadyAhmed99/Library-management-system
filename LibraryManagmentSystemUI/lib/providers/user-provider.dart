@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:LibraryManagmentSystem/model/favorite.dart';
-import 'package:LibraryManagmentSystem/model/subscribed_library.dart';
+import 'package:LibraryManagmentSystem/models/subscribed_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
-import '../model/user.dart';
+import '../models/user.dart';
 
 String globalToken = '';
 

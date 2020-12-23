@@ -1,8 +1,8 @@
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/library-tile.dart';
 import 'package:LibraryManagmentSystem/constants.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';

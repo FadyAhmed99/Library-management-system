@@ -1,7 +1,6 @@
 import 'package:LibraryManagmentSystem/components/library_image.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_screen.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_screen.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/screens/library/library_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

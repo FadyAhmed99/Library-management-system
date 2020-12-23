@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:LibraryManagmentSystem/model/feedback.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart'
+import 'package:LibraryManagmentSystem/models/feedback.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/user-provider.dart'
     as userProvider;
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;

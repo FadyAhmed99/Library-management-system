@@ -1,7 +1,7 @@
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/item_tile.dart';
-import 'package:LibraryManagmentSystem/model/item.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
+import 'package:LibraryManagmentSystem/models/item.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,7 @@ class LibraryItemsScreen extends StatefulWidget {
 }
 
 class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
- bool _loading = true;
+  bool _loading = true;
   bool _init = true;
 
   List<Item> _lib = [];
@@ -23,7 +23,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
       final _libraryProvider = Provider.of<LibraryProvider>(context);
       _libraryProvider.getLibraries().then((_) {
         setState(() {
-         // _lib = _libraryProvider.libraries;
+          // _lib = _libraryProvider.libraries;
           _loading = false;
         });
       });

@@ -1,11 +1,11 @@
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
-import 'package:LibraryManagmentSystem/provider/user-provider.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_admin_panel.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_info_screen.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_items_screen.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_members_screen.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/providers/user-provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/library_admin_panel.dart';
+import 'package:LibraryManagmentSystem/screens/library/library_info_screen.dart';
+import 'package:LibraryManagmentSystem/screens/library/library_items_screen.dart';
+import 'package:LibraryManagmentSystem/screens/library/library_members_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

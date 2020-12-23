@@ -1,11 +1,10 @@
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/small_button.dart';
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/model/user.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
-import 'package:LibraryManagmentSystem/screen/library/library_feedbacks.dart';
-import 'package:LibraryManagmentSystem/screen/library/send_feedback.dart';
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/models/user.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/send_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';

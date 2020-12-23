@@ -1,5 +1,5 @@
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
-import 'package:LibraryManagmentSystem/screen/library/pending_requests/pending_requests_screen.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/screens/library/pending_requests/pending_requests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

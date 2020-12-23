@@ -1,7 +1,7 @@
 import 'package:LibraryManagmentSystem/components/user_image.dart';
-import 'package:LibraryManagmentSystem/model/feedback.dart' as feed;
-import 'package:LibraryManagmentSystem/model/library.dart';
-import 'package:LibraryManagmentSystem/provider/library_provider.dart';
+import 'package:LibraryManagmentSystem/models/feedback.dart' as feed;
+import 'package:LibraryManagmentSystem/models/library.dart';
+import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
