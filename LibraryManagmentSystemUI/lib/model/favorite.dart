@@ -1,4 +1,3 @@
-import 'package:LibraryManagmentSystem/model/library.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'favorite.g.dart';

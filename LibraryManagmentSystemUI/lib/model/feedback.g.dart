@@ -8,14 +8,18 @@ part of 'feedback.dart';
 
 Feedback _$FeedbackFromJson(Map<String, dynamic> json) {
   return Feedback(
-    user: json['user'] == null
-        ? null
-        : User.fromJson(json['user'] as Map<String, dynamic>),
+    firstname: json['firstname'] as String,
+    lastname: json['lastname'] as String,
+    profilePhoto: json['profilePhoto'] as String,
+    userId: json['userId'] as String,
     feedback: json['feedback'] as String,
   );
 }
 
 Map<String, dynamic> _$FeedbackToJson(Feedback instance) => <String, dynamic>{
-      'user': instance.user?.toJson(),
+      'firstname': instance.firstname,
+      'lastname': instance.lastname,
+      'profilePhoto': instance.profilePhoto,
+      'userId': instance.userId,
       'feedback': instance.feedback,
     };

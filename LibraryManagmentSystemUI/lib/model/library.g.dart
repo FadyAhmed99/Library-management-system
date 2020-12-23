@@ -9,6 +9,7 @@ part of 'library.dart';
 Library _$LibraryFromJson(Map<String, dynamic> json) {
   return Library(
     name: json['name'] as String,
+    id: json['_id'] as String,
     address: json['address'] as String,
     description: json['description'] as String,
     phoneNumber: json['phoneNumber'] as String,
@@ -29,4 +30,5 @@ Map<String, dynamic> _$LibraryToJson(Library instance) => <String, dynamic>{
       'image': instance.image,
       'librarian': instance.librarian,
       'feedback': instance.feedback?.map((e) => e?.toJson())?.toList(),
+      '_id': instance.id,
     };

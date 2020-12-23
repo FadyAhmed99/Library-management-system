@@ -12,9 +12,10 @@ class Library {
   final String image;
   final String librarian;
   List<Feedback> feedback;
-
+  final String id;
   Library(
       {this.name,
+      this.id,
       this.address,
       this.description,
       this.phoneNumber,

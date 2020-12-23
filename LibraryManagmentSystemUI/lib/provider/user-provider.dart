@@ -273,4 +273,29 @@ class UserProvider with ChangeNotifier {
       print(e);
     }
   }
+
+  Future<dynamic> sendJoinRequest({String libraryId}) async {
+    try {
+      final _url = '$apiStart/libraries/$libraryId/requests';
+      final response = await http.post(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+      );
+
+      final extractedData = jsonDecode(response.body);
+
+      if (extractedData == null) {
+        return 'Error';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['status'] + ' ' + extractedData['err'];
+        else {
+          return extractedData['status'];
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

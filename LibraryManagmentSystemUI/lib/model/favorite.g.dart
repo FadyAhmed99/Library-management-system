@@ -8,7 +8,7 @@ part of 'favorite.dart';
 
 Favorite _$FavoriteFromJson(Map<String, dynamic> json) {
   return Favorite(
-    id: json['_id'] as String,
+    id: json['id'] as String,
     type: json['type'] as String,
     name: json['name'] as String,
     genre: json['genre'] as String,
@@ -24,7 +24,7 @@ Favorite _$FavoriteFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$FavoriteToJson(Favorite instance) => <String, dynamic>{
-      '_id': instance.id,
+      'id': instance.id,
       'type': instance.type,
       'name': instance.name,
       'genre': instance.genre,

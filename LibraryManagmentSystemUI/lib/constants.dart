@@ -1,4 +1,3 @@
-import 'package:LibraryManagmentSystem/components/text-field.dart';
 import 'package:flutter/material.dart';
 
 const kTextFieldDecoration = InputDecoration(
@@ -16,3 +15,11 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
+
+const kGridShape = SliverGridDelegateWithMaxCrossAxisExtent(
+    maxCrossAxisExtent: 230, childAspectRatio: 0.75);
+
+const kListTilePadding = EdgeInsets.all(8);
+const kListTileMargin = EdgeInsets.all(8);
+const kUserPlaceholder = AssetImage('assets/images/user.png');
+const kLibraryPlaceholder = AssetImage('assets/images/user.png');

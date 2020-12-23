@@ -15,22 +15,26 @@ class User {
   final String username;
   final String facebookId;
   final bool librarian;
-
+  final String id;
+  bool canBorrowItems;
+  bool canEvaluateItems;
   List<SubscribedLibrary> subscribedLibraries;
   List<Favorite> favorites = new List();
 
-  User({
-    this.facebookId,
-    this.librarian,
-    this.subscribedLibraries,
-    this.favorites,
-    this.firstname,
-    this.lastname,
-    this.email,
-    this.phoneNumber,
-    this.profilePhoto,
-    this.username,
-  });
+  User(
+      {this.facebookId,
+      this.librarian,
+      this.subscribedLibraries,
+      this.favorites,
+      this.firstname,
+      this.lastname,
+      this.email,
+      this.phoneNumber,
+      this.profilePhoto,
+      this.username,
+      this.id,
+      this.canBorrowItems,
+      this.canEvaluateItems});
 
   factory User.fromJson(Map<String, dynamic> data) => _$UserFromJson(data);
   Map<String, dynamic> toJson() => _$UserToJson(this);

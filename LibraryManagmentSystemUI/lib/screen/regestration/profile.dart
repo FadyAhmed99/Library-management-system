@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
-import 'package:LibraryManagmentSystem/config.dart';
+import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/model/user.dart';
 import 'package:LibraryManagmentSystem/provider/user-provider.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,6 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
     User _user = _userProvider.user;
-    print(_user.profilePhoto);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -38,9 +37,8 @@ class _ProfileState extends State<Profile> {
                     child: CircleAvatar(
                         radius: 80,
                         child: ClipOval(
-                            child: _user.profilePhoto != ''
-                                ? Image.network(_user.profilePhoto)
-                                : Image.asset('assets/images/user.png'))),
+                            child: userImage(image:_user.profilePhoto)
+                           )),
                   ),
                 ),
               ),

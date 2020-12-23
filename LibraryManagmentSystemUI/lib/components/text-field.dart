@@ -10,8 +10,11 @@ InputDecoration myTextFieldDecoration(
 }
 
 TextFormField myTextFormField(
-    BuildContext context, String hint, String label, Function validator) {
+    BuildContext context, String hint, String label, Function validator,TextEditingController controller) {
   return TextFormField(
+    validator: validator,
+    controller: controller,
+    
     decoration: kTextFieldDecoration.copyWith(labelText: label, hintText: hint),
         // myTextFieldDecoration(context: context, hint: hint, label: label),
     textAlign: TextAlign.center,
