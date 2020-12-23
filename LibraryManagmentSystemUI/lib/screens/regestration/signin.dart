@@ -1,10 +1,9 @@
-import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
+import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
 import 'package:LibraryManagmentSystem/providers/user-provider.dart';
 import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
-import 'package:LibraryManagmentSystem/screens/regestration/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,14 +47,24 @@ class _SignInState extends State<SignIn> {
       });
       _userProvider.facebookSignin().then((response) {
         if (response != null) {
-          return ourDialog(context: context, error: response);
+          {
+            setState(() {
+              _bigLoading = false;
+            });
+            return ourDialog(context: context, error: response);
+          }
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LibrariesRoomScreen()),
+              (Route<dynamic> route) => false);
         }
       });
     }
 
-    return !_bigLoading
-        ? Scaffold(
-            body: InkWell(
+    return Scaffold(
+      body: _bigLoading
+          ? loading()
+          : InkWell(
               onTap: () {
                 FocusScope.of(context).unfocus();
               },
@@ -99,11 +108,6 @@ class _SignInState extends State<SignIn> {
                 ],
               ),
             ),
-          )
-        : Center(
-            child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [loading(), Text('Please wait ...')],
-          ));
+    );
   }
 }

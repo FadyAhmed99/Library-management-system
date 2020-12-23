@@ -4,7 +4,6 @@ import 'package:LibraryManagmentSystem/components/rounded-button.dart';
 import 'package:LibraryManagmentSystem/components/text-field.dart';
 import 'package:LibraryManagmentSystem/providers/user-provider.dart';
 import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
-import 'package:LibraryManagmentSystem/screens/regestration/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -8,7 +8,7 @@ part of 'subscribed_library.dart';
 
 SubscribedLibrary _$SubscribedLibraryFromJson(Map<String, dynamic> json) {
   return SubscribedLibrary(
-    id: json['id'] as String,
+    id: json['_id'] as String,
     name: json['name'] as String,
     address: json['address'] as String,
     image: json['image'] as String,
@@ -20,7 +20,7 @@ SubscribedLibrary _$SubscribedLibraryFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$SubscribedLibraryToJson(SubscribedLibrary instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      '_id': instance.id,
       'name': instance.name,
       'address': instance.address,
       'image': instance.image,

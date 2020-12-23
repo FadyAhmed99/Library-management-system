@@ -23,7 +23,7 @@ Widget libraryTile(
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => LibraryScreen(
-                library: library,
+                libraryId: library.id,
               ),
             ),
           );

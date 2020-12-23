@@ -20,20 +20,19 @@ User _$UserFromJson(Map<String, dynamic> json) {
             e == null ? null : Favorite.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     firstname: json['firstname'] as String,
-    id: json['_id'] as String,
     lastname: json['lastname'] as String,
     email: json['email'] as String,
     phoneNumber: json['phoneNumber'] as String,
-    canBorrowItems: json['canBorrowItems'] as bool,
-    canEvaluateItems: json['canEvaluateItems'] as bool,
     profilePhoto: json['profilePhoto'] as String,
     username: json['username'] as String,
+    id: json['_id'] as String,
+    canBorrowItems: json['canBorrowItems'] as bool,
+    canEvaluateItems: json['canEvaluateItems'] as bool,
   );
 }
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'firstname': instance.firstname,
-      '_id': instance.id,
       'lastname': instance.lastname,
       'email': instance.email,
       'phoneNumber': instance.phoneNumber,
@@ -41,6 +40,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'username': instance.username,
       'facebookId': instance.facebookId,
       'librarian': instance.librarian,
+      '_id': instance.id,
       'canBorrowItems': instance.canBorrowItems,
       'canEvaluateItems': instance.canEvaluateItems,
       'subscribedLibraries':

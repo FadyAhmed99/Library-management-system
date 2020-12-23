@@ -41,4 +41,8 @@ class User {
   void addFav(dynamic fav) {
     this.favorites.add(Favorite.fromJson(fav));
   }
+
+  bool isLibrarian(String librarianId) {
+    return id == librarianId;
+  }
 }

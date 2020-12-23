@@ -5,6 +5,7 @@ import 'package:LibraryManagmentSystem/constants.dart';
 import 'package:LibraryManagmentSystem/drawer.dart';
 import 'package:LibraryManagmentSystem/models/library.dart';
 import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/providers/user-provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,19 +20,21 @@ class _LibrariesRoomScreenState extends State<LibrariesRoomScreen> {
   bool _loading = true;
   bool _init = true;
 
-  List<Library> _lib = [];
+  List<Library> _lib;
   @override
   void didChangeDependencies() {
     if (_init) {
       final _libraryProvider = Provider.of<LibraryProvider>(context);
-      _libraryProvider.getLibraries().then((_) {
-        setState(() {
-          _lib = _libraryProvider.libraries;
-          _loading = false;
-          _init = false;
+      final _userProdided = Provider.of<UserProvider>(context);
+      _userProdided.getUserProfile().then((value) {
+        _libraryProvider.getLibraries().then((_) {
+          setState(() {
+            _lib = _libraryProvider.libraries;
+            _loading = false;
+            _init = false;
+          });
         });
       });
-      print(_lib);
     }
     super.didChangeDependencies();
   }

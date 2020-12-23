@@ -1,9 +1,9 @@
 import 'package:LibraryManagmentSystem/providers/library_provider.dart';
 import 'package:LibraryManagmentSystem/screens/library/pending_requests/pending_requests_screen.dart';
+import 'package:LibraryManagmentSystem/screens/library/prevented_from_borrowing_screen.dart';
+import 'package:LibraryManagmentSystem/screens/library/prevented_from_evaluate_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'library_members_screen.dart';
 
 class LibraryAdminPanelScreen extends StatefulWidget {
   final String libraryId;
@@ -22,15 +22,10 @@ class _LibraryAdminPanelScreenState extends State<LibraryAdminPanelScreen> {
     Map<String, dynamic> tiles = {
       'Pending Requests': PendingRequests(widget.libraryId),
       'Statistical Report': 'dsa',
-      'Prevented From Reviewing Items': LibraryMembersScreen(
-        borrowBtn: false,
-        removeBtn: false,
-        reviewBtn: true,
-        libraryId: widget.libraryId,
-        fn: _libraryProvider.getBlockedFromReviewing(
-            libraryId: widget.libraryId),
-      ),
-      'Prevented From Borrowing Items': 'dsa'
+      'Prevented From Reviewing Items':
+          PreventedFromEvaluateScreen(libraryId: widget.libraryId),
+      'Prevented From Borrowing Items':
+          PreventedFromBorrowingScreen(libraryId: widget.libraryId),
     };
     return ListView(
         children: tiles.entries.map((e) {
