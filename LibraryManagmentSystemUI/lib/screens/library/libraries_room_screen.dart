@@ -53,7 +53,7 @@ class _LibrariesRoomScreenState extends State<LibrariesRoomScreen> {
       },
       child: Scaffold(
         drawer: drawer(context),
-        appBar: AppBar(title: Text('sda'), centerTitle: true),
+        appBar: AppBar(title: Text('Libraries Room'), centerTitle: true),
         body: _loading
             ? loading()
             : Padding(
