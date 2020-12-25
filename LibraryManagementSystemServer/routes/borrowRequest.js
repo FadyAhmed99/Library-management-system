@@ -4,6 +4,7 @@ const User = require("../models/usersSchema");
 const Transaction = require("../models/transactionSchema");
 const BorrowRequest = require("../models/physicalBorrowRequestSchema");
 const Item = require("../models/itemSchema");
+const Library = require("../models/librarySchema");
 const cors = require("./cors");
 const authenticate = require("../authenticate");
 const config = require("../config");
@@ -35,7 +36,10 @@ borrowRequestRouter.post(
               }
               if (canBorrow) {
                 // check user limits
-                if (userTransactions.length < config.maxNumOfBorrowings) {
+                if (
+                  userTransactions.length <
+                  config.maxNumOfBorrowings - userRequests.length
+                ) {
                   User.findById(req.user._id)
                     .then((user) => {
                       if (user.canBorrowItems == true) {
@@ -54,56 +58,43 @@ borrowRequestRouter.post(
                               ) {
                                 var date = new Date();
                                 date.setDate(date.getDate() + 2);
-                                BorrowRequest.create(
-                                  new BorrowRequest({
-                                    user: req.user._id,
-                                    library: req.params.libraryId,
-                                    item: req.params.itemId,
-                                    deadline: date,
-                                  })
-                                ).then(() => {
-                                  item.available.id(
-                                    req.params.libraryId
-                                  ).amount -= 1;
-                                  item
-                                    .save()
-                                    .then((item) => {
-                                      if (item) {
-                                        res.statusCode = 200;
-                                        res.setHeader(
-                                          "Content-Type",
-                                          "application/json"
-                                        );
-                                        res.json({
-                                          success: true,
-                                          status: "Requested Successfully",
-                                        });
-                                      } else {
-                                        res.statusCode = 500;
-                                        res.setHeader(
-                                          "Content-Type",
-                                          "application/json"
-                                        );
-                                        res.json({
-                                          success: false,
-                                          status: "Request Failed",
-                                          err: err,
-                                        });
-                                      }
-                                    })
-                                    .catch((err) => {
-                                      res.statusCode = 500;
-                                      res.setHeader(
-                                        "Content-Type",
-                                        "application/json"
-                                      );
-                                      res.json({
-                                        success: false,
-                                        status: "Request Failed",
-                                        err: err,
-                                      });
+                                BorrowRequest.create({
+                                  user: req.user._id,
+                                  library: req.params.libraryId,
+                                  item: req.params.itemId,
+                                  deadline: date,
+                                })
+                                  .then(() => {
+                                    res.statusCode = 200;
+                                    res.setHeader(
+                                      "Content-Type",
+                                      "application/json"
+                                    );
+                                    res.json({
+                                      success: true,
+                                      status: "Requested Successfully",
                                     });
-                                });
+                                  })
+                                  .then(() => {
+                                    item.available.id(
+                                      req.params.libraryId
+                                    ).amount -= 1;
+                                    item.save().catch((err) => {
+                                      console.log(err);
+                                    });
+                                  })
+                                  .catch((err) => {
+                                    res.statusCode = 500;
+                                    res.setHeader(
+                                      "Content-Type",
+                                      "application/json"
+                                    );
+                                    res.json({
+                                      success: false,
+                                      status: "Request Failed",
+                                      err: err,
+                                    });
+                                  });
                               }
                               // if item is not physical
                               else {
@@ -201,7 +192,7 @@ borrowRequestRouter.post(
                   res.json({
                     success: false,
                     status: "Request Failed",
-                    err: { message: "Limit Reached" },
+                    err: "Limit Reached",
                   });
                 }
               } else {
@@ -210,7 +201,7 @@ borrowRequestRouter.post(
                 res.json({
                   success: false,
                   status: "Request Failed",
-                  err: { message: "Non Returned Items", },
+                  err: "Non Returned Items",
                 });
               }
             })
@@ -229,7 +220,7 @@ borrowRequestRouter.post(
           res.json({
             success: false,
             status: "Request Failed",
-            err: { message: "Limit Reached" },
+            err: "Limit Reached",
           });
         }
       })
@@ -252,13 +243,44 @@ borrowRequestRouter.get(
   authenticate.verifyUser,
   authenticate.verifyLibrarian,
   (req, res, next) => {
-    BorrowRequest.find({})
-      .where("library", req.user.managedLibrary)
-      .where("borrowed", false)
-      .then((requests) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json({ success: true, requests: requests });
+    Library.findById(req.params.libraryId)
+      .then((lib) => {
+        console.log(lib.librarian);
+        BorrowRequest.find({})
+          .where("library", lib.id)
+          .where("borrowed", false)
+          .populate("user")
+          .populate("item")
+          .then((requests) => {
+            var nRequests = [];
+            for (var i in requests) {
+              nRequests[i] = {
+                firstname: requests[i].user.firstname,
+                lastname: requests[i].user.lastname,
+                profilePhoto: requests[i].user.profilePhoto,
+                phoneNumber: requests[i].user.phoneNumber,
+                userId: requests[i].user._id,
+                username: requests[i].user.username,
+                deadline: requests[i].deadline,
+                borrowed: requests[i].borrowed,
+                itemId: requests[i].item._id,
+                itemName: requests[i].item.type,
+                requestId: requests[i]._id,
+              };
+            }
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json({ success: true, requests: nRequests });
+          })
+          .catch((err = "Server Error") => {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.json({
+              success: false,
+              status: "Request Failed",
+              err: err,
+            });
+          });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -325,6 +347,7 @@ borrowRequestRouter.get(
   authenticate.verifyUser,
   (req, res, next) => {
     BorrowRequest.find({ user: req.user._id })
+      .populate("library")
       .then((requests) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");

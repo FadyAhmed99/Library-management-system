@@ -225,8 +225,10 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         profilePhoto: user.profilePhoto,
         phoneNumber: user.phoneNumber,
         email: user.email,
-        username: user.username
-      };
+        username: user.username,
+        librarian: user.librarian,
+        _id: user.id
+        };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: true, profile:profile});
@@ -378,7 +380,7 @@ userRouter.route('/favorites')
 })
 
 // Delete an existing item from my favorites list
-.delete(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
+.put(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
   User.findById(req.user._id).then((user)=>{
     if(user.favorites.id(req.body._id)){
       user.favorites.id(req.body._id).remove();

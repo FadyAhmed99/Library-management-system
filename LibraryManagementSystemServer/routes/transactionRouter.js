@@ -20,10 +20,52 @@ transactionRouter.get(
   authenticate.verifyUser,
   (req, res, next) => {
     Transaction.find({ user: req.user._id })
+      .populate("item")
+      .populate("borrowedFrom")
       .then((transactions) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json({ success: true, transactions: transactions });
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Process Failed",
+          err: err,
+        });
+      });
+  }
+);
+
+// user get exact transactions
+transactionRouter.get(
+  "/transaction/:transactionId",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    Transaction.findOne({ _id: req.params.transactionId })
+      .populate("item")
+      .populate("borrowedFrom")
+      .then((transaction) => {
+        console.log(transaction);
+        var modTransaction;
+        modTransaction = {
+          itemId: transaction.item._id,
+          name: transaction.item.name,
+          author: transaction.item.author,
+          borrowDate: transaction.createdAt,
+          deadline: transaction.deadline,
+          libraryId: transaction.borrowedFrom._id,
+          libraryName: transaction.borrowedFrom.name,
+          lateFees: transaction.lateFees / 100,
+          requestedToReturn: transaction.requestedToReturn,
+          returned: transaction.returned,
+        };
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: true, transaction: modTransaction });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -50,6 +92,7 @@ transactionRouter.get(
     })
       .populate("item")
       .then((transactions) => {
+        var items = [];
         transactions.forEach((transaction) => {
           transaction.item.available.forEach((library) => {
             console.log(library);
@@ -58,9 +101,22 @@ transactionRouter.get(
             }
           });
         });
+        for (var i in transactions) {
+          console.log(transactions[i]._id);
+          items[i] = {
+            _id: transactions[i]._id,
+            userId: transactions[i].user,
+            type: transactions[i].item.type,
+            name: transactions[i].item.name,
+            itemId: transactions[i].item._id,
+            image: transactions[i].item.available[0].image,
+            itemLink: transactions[i].item.available[0].itemLink,
+            itemType: transactions[i].item.available[0].type,
+          };
+        }
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
-        res.json({ success: true, transactions: transactions });
+        res.json({ success: true, borrowedItems: items });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -74,7 +130,7 @@ transactionRouter.get(
   }
 );
 
-// librarian get all transactions
+// admins get all transactions
 transactionRouter.get(
   "/allTransactions",
   cors.corsWithOptions,
@@ -177,7 +233,7 @@ transactionRouter.put(
                 Fee.create({
                   transactionId: transaction._id,
                   user: req.user._id,
-                  item: item._id,
+                  item: item,
                   paid: false,
                   fees:
                     (item.available.id(transaction.borrowedFrom).lateFees /
@@ -226,7 +282,7 @@ transactionRouter.put(
                 res.setHeader("Content-Type", "application/json");
                 res.json({
                   success: true,
-                  status: "Transaction Requested To Return",
+                  status: "Transaction Requested To Return Successfully",
                 });
               });
             }
@@ -282,12 +338,29 @@ transactionRouter.get(
   (req, res, next) => {
     Transaction.find({
       requestedToReturn: true,
-      hasFees: req.query.hasFees,
+      returned: false,
     })
+      .populate("user")
+      .populate("item")
       .then((transactions) => {
+        var newTransactions = [];
+        for (var i in transactions) {
+          newTransactions[i] = {
+            firstname: transactions[i].user.firstname,
+            lastname: transactions[i].user.lastname,
+            profilePhoto: transactions[i].user.profilePhoto,
+            phoneNumber: transactions[i].user.phoneNumber,
+            userId: transactions[i].user._id,
+            username: transactions[i].user.username,
+            deadline: transactions[i].deadline,
+            itemId: transactions[i].item._id,
+            itemName: transactions[i].item.type,
+            requestId: transactions[i]._id,
+          };
+        }
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
-        res.json({ success: true, transactions: transactions });
+        res.json({ success: true, transactions: newTransactions });
       })
       .catch((err) => {
         res.statusCode = 500;
