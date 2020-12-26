@@ -1,44 +1,44 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
-require('mongoose-currency').loadType(mongoose); 
-const currency = mongoose.Types.Currency
+require("mongoose-currency").loadType(mongoose);
+const currency = mongoose.Types.Currency;
 
 const feeSchema = new schema({
-  user: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", 
-    required: true
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
   transactionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Transaction",
-    required: true
+    required: true,
   },
-  creditCardInfo:{
-    type:String,
-    default: ''
+  creditCardInfo: {
+    type: String,
+    default: "",
   },
-  CCV:{
-    type:Number
+  ccv: {
+    type: Number,
   },
-  item: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Item", 
-    required: true 
+  item: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Item",
+    required: true,
   },
-  fees: { 
-    type: currency, 
+  fees: {
+    type: currency,
     min: 0,
-    required: true 
+    required: true,
   },
-  paid: { 
+  paid: {
     type: Boolean,
-    default:false 
+    default: false,
   },
-  paymentDate: { 
-    type: Date 
-  }
+  paymentDate: {
+    type: Date,
+  },
 });
 
 var Fees = mongoose.model("Fee", feeSchema);

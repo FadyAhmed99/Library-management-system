@@ -312,7 +312,7 @@ borrowRequestRouter.put(
             Transaction.create({
               user: req.user._id,
               item: request.item,
-              lateFees: item.available.id(req.params.libraryId).lateFees / 100,
+              lateFees: item.available.id(req.params.libraryId).lateFees,
               borrowedFrom: req.params.libraryId,
               deadline: date,
               returned: false,

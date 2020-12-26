@@ -19,10 +19,28 @@ transactionRouter.get(
   cors.corsWithOptions,
   authenticate.verifyUser,
   (req, res, next) => {
-    Transaction.find({ user: req.user._id })
+    if (req.query.requestedToReturn == "null") {
+      filter = { user: req.user._id };
+    } else {
+      filter = {
+        user: req.user._id,
+        requestedToReturn: req.query.requestedToReturn,
+      };
+    }
+    Transaction.find(filter)
       .populate("item")
       .populate("borrowedFrom")
+      .populate("user")
       .then((transactions) => {
+        for (var i in transactions) {
+          transactions[i].item = {
+            _id: transactions[i].item.name,
+            image: transactions[i].item.image,
+            name: transactions[i].item.name,
+          };
+          transactions[i].user = null;
+        }
+
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json({ success: true, transactions: transactions });
@@ -52,16 +70,22 @@ transactionRouter.get(
         console.log(transaction);
         var modTransaction;
         modTransaction = {
-          itemId: transaction.item._id,
-          name: transaction.item.name,
-          author: transaction.item.author,
+          item: {
+            _id: transaction.item._id,
+            name: transaction.item.name,
+            author: transaction.item.author,
+            image: transaction.item.image,
+          },
+          borrowedFrom: {
+            _id: transaction.borrowedFrom._id,
+            name: transaction.borrowedFrom.name,
+          },
           borrowDate: transaction.createdAt,
           deadline: transaction.deadline,
-          libraryId: transaction.borrowedFrom._id,
-          libraryName: transaction.borrowedFrom.name,
-          lateFees: transaction.lateFees / 100,
+          lateFees: transaction.lateFees,
           requestedToReturn: transaction.requestedToReturn,
           returned: transaction.returned,
+          _id: transaction._id,
         };
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
@@ -85,6 +109,7 @@ transactionRouter.get(
   cors.corsWithOptions,
   authenticate.verifyUser,
   (req, res, next) => {
+    var items = [];
     Transaction.find({
       user: req.user._id,
       returned: false,
@@ -92,28 +117,30 @@ transactionRouter.get(
     })
       .populate("item")
       .then((transactions) => {
-        var items = [];
-        transactions.forEach((transaction) => {
-          transaction.item.available.forEach((library) => {
-            console.log(library);
-            if (library._id.equals(transaction.borrowedFrom)) {
-              transaction.item.available = library;
-            }
+        if (transactions.length > 0) {
+          transactions.forEach((transaction) => {
+            transaction.item.available.forEach((library) => {
+              if (library._id.equals(transaction.borrowedFrom)) {
+                transaction.item.available = library;
+              }
+            });
           });
-        });
-        for (var i in transactions) {
-          console.log(transactions[i]._id);
-          items[i] = {
-            _id: transactions[i]._id,
-            userId: transactions[i].user,
-            type: transactions[i].item.type,
-            name: transactions[i].item.name,
-            itemId: transactions[i].item._id,
-            image: transactions[i].item.available[0].image,
-            itemLink: transactions[i].item.available[0].itemLink,
-            itemType: transactions[i].item.available[0].type,
-          };
+          for (var i = 0; i < transactions.length; i++) {
+            items.push({
+              _id: transactions[i]._id,
+              item: {
+                type: transactions[i].item.type,
+                name: transactions[i].item.name,
+                _id: transactions[i].item._id,
+                image: transactions[i].item.available[0].image,
+                itemLink: transactions[i].hasFees
+                  ? ""
+                  : transactions[i].item.available[0].itemLink,
+              },
+            });
+          }
         }
+
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json({ success: true, borrowedItems: items });
@@ -236,8 +263,7 @@ transactionRouter.put(
                   item: item,
                   paid: false,
                   fees:
-                    (item.available.id(transaction.borrowedFrom).lateFees /
-                      100) *
+                    item.available.id(transaction.borrowedFrom).lateFees *
                     diffDays,
                 })
                   .then((fee) => {
@@ -310,7 +336,7 @@ transactionRouter.get(
   (req, res, next) => {
     Transaction.find({
       returned: false,
-      hasFees: req.query.hasFees,
+      // hasFees: req.query.hasFees,
     })
       .then((transactions) => {
         res.statusCode = 200;
@@ -346,16 +372,20 @@ transactionRouter.get(
         var newTransactions = [];
         for (var i in transactions) {
           newTransactions[i] = {
-            firstname: transactions[i].user.firstname,
-            lastname: transactions[i].user.lastname,
-            profilePhoto: transactions[i].user.profilePhoto,
-            phoneNumber: transactions[i].user.phoneNumber,
-            userId: transactions[i].user._id,
-            username: transactions[i].user.username,
+            user: {
+              firstname: transactions[i].user.firstname,
+              lastname: transactions[i].user.lastname,
+              profilePhoto: transactions[i].user.profilePhoto,
+              phoneNumber: transactions[i].user.phoneNumber,
+              _id: transactions[i].user._id,
+              username: transactions[i].user.username,
+            },
+            item: {
+              _id: transactions[i].item._id,
+              name: transactions[i].item.name,
+            },
             deadline: transactions[i].deadline,
-            itemId: transactions[i].item._id,
-            itemName: transactions[i].item.type,
-            requestId: transactions[i]._id,
+            _id: transactions[i]._id,
           };
         }
         res.statusCode = 200;
@@ -404,7 +434,7 @@ transactionRouter.put(
                         const date1 = new Date();
                         const date2 = transaction.deadline;
                         const diffTime = Math.abs(date2 - date1);
-                        const diffDays = Math.ceil(
+                        const diffDays = Math.floor(
                           diffTime / (1000 * 60 * 60 * 24)
                         );
                         // create fee on user
@@ -414,10 +444,8 @@ transactionRouter.put(
                           item: item._id,
                           paid: false,
                           fees:
-                            (item.available.id(transaction.borrowedFrom)
-                              .lateFees /
-                              100) *
-                            diffDays,
+                            item.available.id(transaction.borrowedFrom)
+                              .lateFees * diffDays,
                         }).then((fee) => {
                           transaction
                             .save()
