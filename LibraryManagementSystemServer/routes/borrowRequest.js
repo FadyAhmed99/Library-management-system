@@ -243,44 +243,32 @@ borrowRequestRouter.get(
   authenticate.verifyUser,
   authenticate.verifyLibrarian,
   (req, res, next) => {
-    Library.findById(req.params.libraryId)
-      .then((lib) => {
-        console.log(lib.librarian);
-        BorrowRequest.find({})
-          .where("library", lib.id)
-          .where("borrowed", false)
-          .populate("user")
-          .populate("item")
-          .then((requests) => {
-            var nRequests = [];
-            for (var i in requests) {
-              nRequests[i] = {
-                firstname: requests[i].user.firstname,
-                lastname: requests[i].user.lastname,
-                profilePhoto: requests[i].user.profilePhoto,
-                phoneNumber: requests[i].user.phoneNumber,
-                userId: requests[i].user._id,
-                username: requests[i].user.username,
-                deadline: requests[i].deadline,
-                borrowed: requests[i].borrowed,
-                itemId: requests[i].item._id,
-                itemName: requests[i].item.type,
-                requestId: requests[i]._id,
-              };
-            }
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json({ success: true, requests: nRequests });
-          })
-          .catch((err = "Server Error") => {
-            res.statusCode = 500;
-            res.setHeader("Content-Type", "application/json");
-            res.json({
-              success: false,
-              status: "Request Failed",
-              err: err,
-            });
-          });
+    BorrowRequest.find({})
+      .where("library", req.params.libraryId)
+      .where("borrowed", false)
+      .populate("user")
+      .populate("item")
+      .populate("library")
+      .then((requests) => {
+        for (var i in requests) {
+          console.log(requests);
+          requests[i].item = {
+            _id: requests[i].item._id,
+            name: requests[i].item.name,
+          };
+          requests[i].user = {
+            _id: requests[i].user._id,
+            firstname: requests[i].user.firstname,
+            lastname: requests[i].user.lastname,
+            profilePhoto: requests[i].user.profilePhoto,
+            phoneNumber: requests[i].user.phoneNumber,
+            username: requests[i].user.username,
+          };
+          requests[i].library = { _id: requests[i].library._id };
+        }
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: true, requests: requests });
       })
       .catch((err) => {
         res.statusCode = 500;
@@ -310,7 +298,7 @@ borrowRequestRouter.put(
             var date = new Date();
             date.setDate(date.getDate() + config.duration);
             Transaction.create({
-              user: req.user._id,
+              user: request.user,
               item: request.item,
               lateFees: item.available.id(req.params.libraryId).lateFees,
               borrowedFrom: req.params.libraryId,
@@ -340,15 +328,23 @@ borrowRequestRouter.put(
   }
 );
 
-// User get all of his requests
+// User get all of his bending requests
 borrowRequestRouter.get(
   "/myRequests",
   cors.corsWithOptions,
   authenticate.verifyUser,
   (req, res, next) => {
-    BorrowRequest.find({ user: req.user._id })
+    BorrowRequest.find({ user: req.user._id, borrowed: false })
+      .populate("item")
       .populate("library")
+      .populate("user")
       .then((requests) => {
+        for (var i in requests) {
+          console.log(i);
+          requests[i].library = { _id: requests[i].library._id };
+          requests[i].item = { _id: requests[i].item._id };
+          requests[i].user = { _id: requests[i].user._id };
+        }
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json({ success: true, requests: requests });

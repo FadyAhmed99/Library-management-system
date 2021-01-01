@@ -62,19 +62,19 @@ const itemSchema = new schema({
   },
   genre: { 
     type: String, 
-    // required: true 
+    required: true 
   },
   name: { 
     type: String, 
-    // required: true 
+    required: true 
   },
   author: { 
     type: String, 
-    // required: true 
+    required: true 
   },
   language: { 
     type: String,
-    // required: true
+    required: true
   },
   ISBN: { 
     type: String ,

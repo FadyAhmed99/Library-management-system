@@ -5,6 +5,7 @@ const Fee = require("../models/feeSchema");
 const User = require("../models/usersSchema");
 const cors = require("./cors");
 const authenticate = require("../authenticate");
+const Transaction = require("../models/transactionSchema");
 
 var feesRouter = express.Router();
 feesRouter.use(bodyParser.json());
@@ -89,6 +90,7 @@ feesRouter.get(
   }
 );
 
+// pay fee
 feesRouter.put(
   "/pay/:feeId",
   cors.corsWithOptions,
@@ -101,88 +103,94 @@ feesRouter.put(
         if (!err) {
           Fee.find({ _id: req.user._id, paid: false })
             .then((fees) => {
-              if (fees.length == 0) {
-                User.findByIdAndUpdate(
-                  { _id: req.user._id },
-                  { $set: { canBorrowItems: true } }
-                ).then(() => {
-                  var date = new Date();
-                  Fee.findByIdAndUpdate(
-                    req.params.feeId,
-                    {
-                      creditCardInfo: req.body.creditCardInfo,
-                      ccv: req.body.ccv,
-                      paymentDate: date,
-                    },
-                    function (err, doc) {
-                      if (err) {
-                        res.statusCode = 500;
+              Transaction.findByIdAndUpdate(
+                { _id: fee.transactionId },
+                { $set: { hasFees: false } },
+                function (err, trans) {
+                  if (fees.length == 0) {
+                    User.findByIdAndUpdate(
+                      { _id: req.user._id },
+                      { $set: { canBorrowItems: true } }
+                    ).then(() => {
+                      var date = new Date();
+                      Fee.findByIdAndUpdate(
+                        req.params.feeId,
+                        {
+                          creditCardInfo: req.body.creditCardInfo,
+                          ccv: req.body.ccv,
+                          paymentDate: date,
+                        },
+                        function (err, doc) {
+                          if (err) {
+                            res.statusCode = 500;
+                            res.setHeader("Content-Type", "application/json");
+                            res.json({
+                              success: true,
+                              status: "Request Failed",
+                              err: err,
+                            });
+                          }
+                        }
+                      )
+                        .then(() => {
+                          res.statusCode = 200;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: true,
+                            status: "Paid Successfully",
+                            fee: fee,
+                          });
+                        })
+                        .catch((err) => {
+                          res.statusCode = 500;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: false,
+                            status: "Request Failed",
+                          });
+                        });
+                    });
+                  } else {
+                    var date = new Date();
+                    Fee.findByIdAndUpdate(
+                      req.params.feeId,
+                      {
+                        creditCardInfo: req.body.creditCardInfo,
+                        ccv: req.body.ccv,
+                        paymentDate: date,
+                      },
+                      function (err, doc) {
+                        if (err) {
+                          res.statusCode = 500;
+                          res.setHeader("Content-Type", "application/json");
+                          res.json({
+                            success: true,
+                            status: "Request Failed",
+                            err: err,
+                          });
+                        }
+                      }
+                    )
+                      .then(() => {
+                        res.statusCode = 200;
                         res.setHeader("Content-Type", "application/json");
                         res.json({
                           success: true,
-                          status: "Request Failed",
-                          err: err,
+                          status: "Paid Successfully",
+                          fee: fee,
                         });
-                      }
-                    }
-                  )
-                    .then(() => {
-                      res.statusCode = 200;
-                      res.setHeader("Content-Type", "application/json");
-                      res.json({
-                        success: true,
-                        status: "Paid Successfully",
-                        fee: fee,
+                      })
+                      .catch((err) => {
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: false,
+                          status: "Request Failed",
+                        });
                       });
-                    })
-                    .catch((err) => {
-                      res.statusCode = 500;
-                      res.setHeader("Content-Type", "application/json");
-                      res.json({
-                        success: false,
-                        status: "Request Failed",
-                      });
-                    });
-                });
-              } else {
-                var date = new Date();
-                Fee.findByIdAndUpdate(
-                  req.params.feeId,
-                  {
-                    creditCardInfo: req.body.creditCardInfo,
-                    ccv: req.body.ccv,
-                    paymentDate: date,
-                  },
-                  function (err, doc) {
-                    if (err) {
-                      res.statusCode = 500;
-                      res.setHeader("Content-Type", "application/json");
-                      res.json({
-                        success: true,
-                        status: "Request Failed",
-                        err: err,
-                      });
-                    }
                   }
-                )
-                  .then(() => {
-                    res.statusCode = 200;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json({
-                      success: true,
-                      status: "Paid Successfully",
-                      fee: fee,
-                    });
-                  })
-                  .catch((err) => {
-                    res.statusCode = 500;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json({
-                      success: false,
-                      status: "Request Failed",
-                    });
-                  });
-              }
+                }
+              );
             })
             .catch((err) => {
               res.statusCode = 500;
@@ -209,6 +217,49 @@ feesRouter.put(
         status: "Request Failed",
       });
     });
+  }
+);
+
+// admin get all of fees
+feesRouter.get(
+  "/admin/fees",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  (req, res, next) => {
+    Fee.find({})
+      .populate("item")
+      .populate("user")
+      .then((fees) => {
+        for (var i in fees) {
+          fees[i].item = {
+            _id: fees[i].item._id,
+            image: fees[i].item.image,
+            name: fees[i].item.name,
+          };
+          fees[i].user = {
+            firstname: fees[i].user.firstname,
+            lastname: fees[i].user.lastname,
+            profilePhoto: fees[i].user.profilePhoto,
+          };
+        }
+
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: true,
+          status: "Request Succeed",
+          fees: fees,
+        });
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Request Failed",
+          err: err,
+        });
+      });
   }
 );
 

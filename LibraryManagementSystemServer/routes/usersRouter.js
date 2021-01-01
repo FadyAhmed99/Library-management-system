@@ -118,7 +118,7 @@ userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
 userRouter.get('/logout' , cors.corsWithOptions ,(req,res,next)=>{
     req.logout();
     res.clearCookie('session-id');
-    res.redirect('/');   // redirecting to index page.  u need to specify the full path
+    // res.redirect('/');   // redirecting to index page.  u need to specify the full path
 });
 
 
@@ -227,7 +227,9 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         email: user.email,
         username: user.username,
         librarian: user.librarian,
-        _id: user.id
+        _id: user.id,
+        canBorrowItems: user.canBorrowItems,
+        canEvaluateItems: user.canEvaluateItems
         };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
@@ -335,7 +337,8 @@ userRouter.route('/favorites')
         inLibrary: user.favorites[i]._id.available.id(user.favorites[i].library).inLibrary,
         lateFees: user.favorites[i]._id.available.id(user.favorites[i].library).lateFees,
         location: user.favorites[i]._id.available.id(user.favorites[i].library).location,
-        amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount
+        amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount,
+        libraryId: user.favorites[i]._id.available.id(user.favorites[i].library)._id
       });
     }
     res.statusCode = 200;
@@ -386,7 +389,7 @@ userRouter.route('/favorites')
       user.favorites.id(req.body._id).remove();
       user.save().then((user)=>{
         res.statusCode = 200;
-        res.redirect('/users/favorites');    // get the new favorites list
+        res.json({success: false , status: "Item Removed From Favorite List"});    // get the new favorites list
       }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');

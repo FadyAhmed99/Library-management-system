@@ -9,6 +9,8 @@ const Item = require("../models/itemSchema");
 const Fee = require("../models/feeSchema");
 const Library = require("../models/librarySchema");
 const { ObjectID } = require("mongodb");
+const PhysicalBorrowRequests = require("../models/physicalBorrowRequestSchema");
+const Fees = require("../models/feeSchema");
 
 var transactionRouter = express.Router();
 transactionRouter.use(bodyParser.json());
@@ -20,40 +22,112 @@ transactionRouter.get(
   authenticate.verifyUser,
   (req, res, next) => {
     if (req.query.requestedToReturn == "null") {
-      filter = { user: req.user._id };
-    } else {
-      filter = {
-        user: req.user._id,
-        requestedToReturn: req.query.requestedToReturn,
-      };
-    }
-    Transaction.find(filter)
-      .populate("item")
-      .populate("borrowedFrom")
-      .populate("user")
-      .then((transactions) => {
-        for (var i in transactions) {
-          transactions[i].item = {
-            _id: transactions[i].item.name,
-            image: transactions[i].item.image,
-            name: transactions[i].item.name,
-          };
-          transactions[i].user = null;
-        }
+      // borrowed items
+      Transaction.find({ user: req.user._id })
+        .populate("item")
+        .populate("borrowedFrom")
+        .populate("user")
+        .then((transactions) => {
+          for (var i in transactions) {
+            transactions[i].item = {
+              _id: transactions[i].item.name,
+              image: transactions[i].item.image,
+              name: transactions[i].item.name,
+            };
+            transactions[i].user = null;
+          }
+          PhysicalBorrowRequests.find({
+            user: req.user._id,
+            borrowed: false,
+          })
+            .populate("item")
+            .populate("library")
+            .then((bRequests) => {
+              for (var i in bRequests) {
+                bRequests[i].item = {
+                  _id: bRequests[i].item._id,
+                  name: bRequests[i].item.name,
+                  image: bRequests[i].item.image,
+                  available: [
+                    {
+                      lateFees: bRequests[i].item.available.id(
+                        bRequests[i].library._id
+                      ).lateFees,
+                      image: bRequests[i].item.available.id(
+                        bRequests[i].library._id
+                      ).image,
+                    },
+                  ],
+                };
 
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json({ success: true, transactions: transactions });
-      })
-      .catch((err) => {
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.json({
-          success: false,
-          status: "Process Failed",
-          err: err,
+                bRequests[i].user = null;
+                bRequests[i].library = {
+                  _id: bRequests[i].library._id,
+                  name: bRequests[i].library.name,
+                };
+              }
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: true,
+                bRequests: bRequests,
+                transactions: transactions,
+              });
+            })
+            .catch((err) => {
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: false,
+                status: "Process Failed",
+                err: err,
+              });
+            });
+        })
+        .catch((err) => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Process Failed",
+            err: err,
+          });
         });
-      });
+    } else {
+      // returnings
+      Transaction.find({
+        user: req.user._id,
+        requestedToReturn: true,
+      })
+        .populate("item")
+        .populate("borrowedFrom")
+        .populate("user")
+        .then((transactions) => {
+          for (var i in transactions) {
+            transactions[i].item = {
+              _id: transactions[i].item.name,
+              image: transactions[i].item.image,
+              name: transactions[i].item.name,
+            };
+            transactions[i].user = null;
+          }
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: true,
+            transactions: transactions,
+          });
+        })
+        .catch((err) => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status: "Process Failed",
+            err: err,
+          });
+        });
+    }
   }
 );
 
@@ -133,10 +207,12 @@ transactionRouter.get(
                 name: transactions[i].item.name,
                 _id: transactions[i].item._id,
                 image: transactions[i].item.available[0].image,
-                itemLink: transactions[i].hasFees
-                  ? ""
-                  : transactions[i].item.available[0].itemLink,
+                itemLink:
+                  transactions[i].requestedToReturn == true
+                    ? null
+                    : transactions[i].item.available[0].itemLink,
               },
+              borrowedFrom: { _id: transactions[i].borrowedFrom },
             });
           }
         }
@@ -259,7 +335,7 @@ transactionRouter.put(
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 Fee.create({
                   transactionId: transaction._id,
-                  user: req.user._id,
+                  user: transaction.user,
                   item: item,
                   paid: false,
                   fees:
@@ -335,10 +411,34 @@ transactionRouter.get(
   authenticate.verifyAdmin,
   (req, res, next) => {
     Transaction.find({
-      returned: false,
-      // hasFees: req.query.hasFees,
+      requestedToReturn: false,
     })
+      .populate("user")
+      .populate("item")
+      .populate("borrowedFrom")
       .then((transactions) => {
+        var lib;
+        for (var i in transactions) {
+          transactions.forEach((transaction) => {
+            transaction.item.available.forEach((library) => {
+              if (library._id.equals(transaction.borrowedFrom._id)) {
+                lib = library;
+              }
+            });
+          });
+
+          transactions[i].item = {
+            _id: transactions[i].item._id,
+            name: transactions[i].item.name,
+            available: lib,
+          };
+          transactions[i].user = {
+            _id: transactions[i].user._id,
+            firstname: transactions[i].user.firstname,
+            lastname: transactions[i].user.lasttname,
+          };
+        }
+
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json({ success: true, transactions: transactions });
@@ -440,7 +540,7 @@ transactionRouter.put(
                         // create fee on user
                         Fee.create({
                           transactionId: transaction._id,
-                          user: req.user._id,
+                          user: transaction.user,
                           item: item._id,
                           paid: false,
                           fees:
@@ -451,7 +551,7 @@ transactionRouter.put(
                             .save()
                             .then((fee) => {
                               User.findByIdAndUpdate(
-                                { _id: req.user._id },
+                                { _id: fee.user },
                                 { $set: { canBorrowItems: false } }
                               );
                             })
@@ -532,6 +632,57 @@ transactionRouter.put(
         res.json({
           success: false,
           status: "Request Failed",
+          err: err,
+        });
+      });
+  }
+);
+
+// admin get all returnings
+transactionRouter.get(
+  "/admin/returned",
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    Transaction.find({
+      requestedToReturn: true,
+    })
+      .populate("item")
+      .populate("borrowedFrom")
+      .populate("user")
+      .then((transactions) => {
+        var lib;
+        for (var i in transactions) {
+          transactions.forEach((transaction) => {
+            transaction.item.available.forEach((library) => {
+              if (library._id.equals(transaction.borrowedFrom._id)) {
+                lib = library;
+              }
+            });
+          });
+
+          transactions[i].item = {
+            _id: transactions[i].item._id,
+            name: transactions[i].item.name,
+            available: lib,
+          };
+          transactions[i].user = {
+            _id: transactions[i].user._id,
+            firstname: transactions[i].user.firstname,
+            lastname: transactions[i].user.lasttname,
+          };
+        }
+
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: true, transactions: transactions });
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          success: false,
+          status: "Process Failed",
           err: err,
         });
       });

@@ -948,7 +948,7 @@ libraryRouter
               });
               ratings.push(item.reviews[i].rating);
             }
-            var averageRating = 0;
+            var averageRating = 0.0;
             if (ratings.length > 0) {
               for (var j = 0; j < ratings.length; j++) {
                 averageRating += ratings[j];
