@@ -1,4 +1,4 @@
-// 16 Dec 11:07 PM
+// 18 Dec 11:53 PM
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -28,6 +28,7 @@ const borrowRequest = require("./routes/borrowRequest");
 const transactionRouter = require("./routes/transactionRouter");
 const searchRouter = require("./routes/searchRouter");
 const statsReportRouter = require('./routes/statsReportRouter');
+const feesRouter = require('./routes/feesRouter');
 
 // Connecting to DB server
 const url = config.mongoUrl;
@@ -88,6 +89,7 @@ app.use('/borrowRequests', borrowRequest);
 app.use('/transactions',transactionRouter);
 app.use('/search', searchRouter);
 app.use('/stats', statsReportRouter);
+app.use('/fees', feesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

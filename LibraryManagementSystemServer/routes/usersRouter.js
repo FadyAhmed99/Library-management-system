@@ -94,7 +94,7 @@ userRouter.post('/login' , cors.corsWithOptions ,  (req,res,next)=>{
   
 });
 
-/*
+
 userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
   passport.authenticate('jwt' , {session: false} , (err,user,info)=>{
     if(err){
@@ -106,13 +106,13 @@ userRouter.get('/checkJWTToken', cors.corsWithOptions , (req,res,next)=>{
       res.json({status: 'JWT invalid' , success: false, err: info});
     }
     else{
-      res.statusCode = 401;
+      res.statusCode = 200;
       res.setHeader('Content-Type' , 'application/json');
       res.json({status: 'JWT valid' , success: true, user: user});
     }
   })(req,res,next);
 });
-*/
+
 
 // Configuring logout process
 userRouter.get('/logout' , cors.corsWithOptions ,(req,res,next)=>{
@@ -225,8 +225,12 @@ userRouter.route('/profile').put(cors.corsWithOptions ,authenticate.verifyUser, 
         profilePhoto: user.profilePhoto,
         phoneNumber: user.phoneNumber,
         email: user.email,
-        username: user.username
-      };
+        username: user.username,
+        librarian: user.librarian,
+        _id: user.id,
+        canBorrowItems: user.canBorrowItems,
+        canEvaluateItems: user.canEvaluateItems
+        };
       res.statusCode = 200;
       res.setHeader("Content-Type" , 'application/json');
       res.json({success: true, profile:profile});
@@ -334,7 +338,8 @@ userRouter.route('/favorites')
         inLibrary: user.favorites[i]._id.available.id(user.favorites[i].library).inLibrary,
         lateFees: user.favorites[i]._id.available.id(user.favorites[i].library).lateFees,
         location: user.favorites[i]._id.available.id(user.favorites[i].library).location,
-        amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount
+        amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount,
+        libraryId: user.favorites[i]._id.available.id(user.favorites[i].library)._id
       });
     }
     res.statusCode = 200;
@@ -379,7 +384,7 @@ userRouter.route('/favorites')
 })
 
 // Delete an existing item from my favorites list
-.delete(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
+.put(cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
   User.findById(req.user._id).then((user)=>{
     if(user.favorites.id(req.body._id)){
       user.favorites.id(req.body._id).remove();
