@@ -31,12 +31,13 @@ const statsReportRouter = require('./routes/statsReportRouter');
 const feesRouter = require('./routes/feesRouter');
 
 // Connecting to DB server
+Mongoose.set('useCreateIndex', true);
 const url = config.mongoUrl;
-const connect = Mongoose.connect(url);
+const connect = Mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
 
 connect
   .then((db) => {
-    console.log("Connected Successfully!");
+    //console.log("Connected Successfully!");
   })
 
   .catch((err) => {
@@ -46,30 +47,32 @@ connect
 // Initializing Express app
 var app = express();
 
+/*
 // redirecting any non-secure communications to the secure https server  "Me"
 app.all("*", (req, res, next) => {
-  if (req.secure) {
+  if (req.get('x-forwarded-proto') == "https") {
     // if the request is over https then req.secure is true
     return next();
   } else {
+    res.set('x-forwarded-proto', 'https');
     res.redirect(
       307,
-      "https://" + req.hostname + ":" + app.get("secPort") + req.url
-    ); // secPort is defined in /bin/www
+      "https://" + req.hostname + req.url);
+    // secPort is defined in /bin/www
     // 307 is a status code regards redirecting
     // hostname is the name of the site which is localhost at our case here
     // url is the path which was desired to go to
     //                       https://hostname:port/url
   }
 });
-
+*/
 
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
-app.use(logger("dev"));
+//app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
