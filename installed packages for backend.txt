@@ -16,5 +16,10 @@ path
 cookie-parser
 morgan
 cors
-nodemon
 node-cron
+
+nodemon  	---> development-dependency
+mocha    	---> development-dependency
+supertest 	---> development-dependency
+chai		---> development-dependency
+chai-http	---> development-dependency
