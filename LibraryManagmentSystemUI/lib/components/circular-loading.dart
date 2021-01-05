@@ -5,6 +5,7 @@ Widget loading() {
     padding: const EdgeInsets.all(8.0),
     child: Center(
         child: CircularProgressIndicator(
+      valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
       backgroundColor: Colors.blue[700],
       strokeWidth: 3,
     )),
