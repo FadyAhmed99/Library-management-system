@@ -1,15 +1,22 @@
-import 'package:LibraryManagmentSystem/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'review.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Review {
-  User user;
-  double rating;
-  String review;
+  final String firstname;
+  final String lastname;
+  String profilePhoto;
+  final double rating;
+  final String review;
 
-  Review({this.user, this.rating, this.review});
+  Review({
+    this.firstname,
+    this.lastname,
+    this.profilePhoto,
+    this.rating,
+    this.review,
+  });
 
   factory Review.fromJson(Map<String, dynamic> data) => _$ReviewFromJson(data);
   Map<String, dynamic> toJson() => _$ReviewToJson(this);

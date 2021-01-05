@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'available.g.dart';
 
 @JsonSerializable()
-class Available {
+class AvailableSerializer {
   String id;
   String image;
   bool inLibrary;
@@ -12,7 +12,7 @@ class Available {
   int amount;
   String location;
 
-  Available(
+  AvailableSerializer(
       {this.id,
       this.image,
       this.inLibrary,
@@ -21,7 +21,7 @@ class Available {
       this.amount,
       this.location});
 
-  factory Available.fromJson(Map<String, dynamic> data) =>
+  factory AvailableSerializer.fromJson(Map<String, dynamic> data) =>
       _$AvailableFromJson(data);
   Map<String, dynamic> toJson() => _$AvailableToJson(this);
 }

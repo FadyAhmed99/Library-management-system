@@ -1,23 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user.dart';
+part of '../classes/user.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
+UserSerializer _$UserFromJson(Map<String, dynamic> json) {
+  return UserSerializer(
     facebookId: json['facebookId'] as String,
     librarian: json['librarian'] as bool,
     subscribedLibraries: (json['subscribedLibraries'] as List)
         ?.map((e) => e == null
             ? null
-            : SubscribedLibrary.fromJson(e as Map<String, dynamic>))
+            : LibrarySerializer.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     favorites: (json['favorites'] as List)
-        ?.map((e) =>
-            e == null ? null : Favorite.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null
+            ? null
+            : FavoriteSerializer.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     firstname: json['firstname'] as String,
     lastname: json['lastname'] as String,
@@ -28,10 +29,15 @@ User _$UserFromJson(Map<String, dynamic> json) {
     id: json['_id'] as String,
     canBorrowItems: json['canBorrowItems'] as bool,
     canEvaluateItems: json['canEvaluateItems'] as bool,
+    borrowedItems: (json['borrowedItems'] as List)
+        ?.map((e) => e == null
+            ? null
+            : ItemSerializer.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$UserToJson(UserSerializer instance) => <String, dynamic>{
       'firstname': instance.firstname,
       'lastname': instance.lastname,
       'email': instance.email,
@@ -45,5 +51,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'canEvaluateItems': instance.canEvaluateItems,
       'subscribedLibraries':
           instance.subscribedLibraries?.map((e) => e?.toJson())?.toList(),
+      'borrowedItems':
+          instance.borrowedItems?.map((e) => e?.toJson())?.toList(),
       'favorites': instance.favorites?.map((e) => e?.toJson())?.toList(),
     };

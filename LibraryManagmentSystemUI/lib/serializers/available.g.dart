@@ -6,8 +6,8 @@ part of 'available.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Available _$AvailableFromJson(Map<String, dynamic> json) {
-  return Available(
+AvailableSerializer _$AvailableFromJson(Map<String, dynamic> json) {
+  return AvailableSerializer(
     id: json['_id'] as String,
     image: json['image'] as String,
     inLibrary: json['inLibrary'] as bool,
@@ -18,7 +18,7 @@ Available _$AvailableFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$AvailableToJson(Available instance) => <String, dynamic>{
+Map<String, dynamic> _$AvailableToJson(AvailableSerializer instance) => <String, dynamic>{
       '_id': instance.id,
       'image': instance.image,
       'inLibrary': instance.inLibrary,
