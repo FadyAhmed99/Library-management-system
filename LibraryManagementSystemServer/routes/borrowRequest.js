@@ -251,10 +251,10 @@ borrowRequestRouter.get(
       .populate("library")
       .then((requests) => {
         for (var i in requests) {
-          console.log(requests);
           requests[i].item = {
             _id: requests[i].item._id,
             name: requests[i].item.name,
+            image: requests[i].item.available.id(req.params.libraryId).image,
           };
           requests[i].user = {
             _id: requests[i].user._id,
@@ -340,9 +340,11 @@ borrowRequestRouter.get(
       .populate("user")
       .then((requests) => {
         for (var i in requests) {
-          console.log(i);
           requests[i].library = { _id: requests[i].library._id };
-          requests[i].item = { _id: requests[i].item._id };
+          requests[i].item = {
+            _id: requests[i].item._id,
+            image: requests[i].item.available.id(requests[i].library._id).image,
+          };
           requests[i].user = { _id: requests[i].user._id };
         }
         res.statusCode = 200;

@@ -389,34 +389,8 @@ userRouter.route('/favorites')
     if(user.favorites.id(req.body._id)){
       user.favorites.id(req.body._id).remove();
       user.save().then((user)=>{
-        user.populate('favorites._id').then((user)=>{
-          var favs = [];
-          for(var i=0; i<user.favorites.length; i++){
-            favs.push({
-              _id: user.favorites[i]._id._id,
-              type: user.favorites[i]._id.type,
-              name: user.favorites[i]._id.name,
-              genre: user.favorites[i]._id.genre,
-              language: user.favorites[i]._id.language,
-              author: user.favorites[i]._id.author,
-              ISBN: user.favorites[i]._id.ISBN,
-              library: user.favorites[i].library,
-              image: user.favorites[i]._id.available.id(user.favorites[i].library).image,
-              inLibrary: user.favorites[i]._id.available.id(user.favorites[i].library).inLibrary,
-              lateFees: user.favorites[i]._id.available.id(user.favorites[i].library).lateFees,
-              location: user.favorites[i]._id.available.id(user.favorites[i].library).location,
-              amount: user.favorites[i]._id.available.id(user.favorites[i].library).amount
-            });
-          }
-          res.statusCode = 200;
-          res.setHeader("Content-Type" , 'application/json');
-          res.json({success: true, status: "Item Deleted Successfully" ,newList: favs});
-        }).catch((err="Server Failed")=>{
-          res.statusCode = 500;
-          res.setHeader("Content-Type" , 'application/json');
-          res.json({success: false , status: "Process Failed", err:err});
-        });
-        
+        res.statusCode = 200;
+        res.json({success: false , status: "Item Removed From Favorite List"});    // get the new favorites list
       }).catch((err="Server Failed")=>{
         res.statusCode = 500;
         res.setHeader("Content-Type" , 'application/json');

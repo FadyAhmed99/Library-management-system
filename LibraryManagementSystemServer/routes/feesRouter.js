@@ -23,7 +23,10 @@ feesRouter.get(
           for (var i in fees) {
             fees[i].item = {
               _id: fees[i].item._id,
-              image: fees[i].item.image,
+              available: {
+                // work around
+                image: fees[i].item.available[0].image,
+              },
               name: fees[i].item.name,
             };
             fees[i].user = null;
@@ -233,7 +236,10 @@ feesRouter.get(
         for (var i in fees) {
           fees[i].item = {
             _id: fees[i].item._id,
-            image: fees[i].item.image,
+            available: {
+              // work around
+              image: fees[i].item.available[0].image,
+            },
             name: fees[i].item.name,
           };
           fees[i].user = {

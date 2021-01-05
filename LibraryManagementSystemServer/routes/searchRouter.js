@@ -16,14 +16,14 @@ searchRouter.options('*' , cors.corsWithOptions , (req,res,next)=>{
 });
 
 searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,next)=>{
-    if(req.body.filter == "" || req.body.filter == " "){
+    if(req.query.filter == "" || req.query.filter == " "){
         res.statusCode = 404;
         res.setHeader("Content-Type", "application/json");
         res.json({success: false, status: "Process Failed", err:"No Value Specified"});
     }
     else{
         if(req.query.by == "name"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({name: regex}).then((items)=>{
                 var itemS = [];
 
@@ -51,7 +51,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                             language: items[i].language,
                             ISBN: items[i].ISBN,
                             averageRating: averageRating,
-                            library: items[i].available[j]._id,
+                            libraryId: items[i].available[j]._id,
                             lateFees: items[i].available[j].lateFees,
                             location: items[i].available[j].location,
                             amount: items[i].available[j].amount,
@@ -74,7 +74,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
 
 
         else if(req.query.by == "genre"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({genre: regex}).then((items)=>{
                 var itemS = [];
 
@@ -102,7 +102,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                             language: items[i].language,
                             ISBN: items[i].ISBN,
                             averageRating: averageRating,
-                            library: items[i].available[j]._id,
+                            libraryId: items[i].available[j]._id,
                             lateFees: items[i].available[j].lateFees,
                             location: items[i].available[j].location,
                             amount: items[i].available[j].amount,
@@ -125,7 +125,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
 
 
         else if(req.query.by == "author"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({author: regex}).then((items)=>{
                 var itemS = [];
 
@@ -153,7 +153,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                             language: items[i].language,
                             ISBN: items[i].ISBN,
                             averageRating: averageRating,
-                            library: items[i].available[j]._id,
+                            libraryId: items[i].available[j]._id,
                             lateFees: items[i].available[j].lateFees,
                             location: items[i].available[j].location,
                             amount: items[i].available[j].amount,
@@ -176,7 +176,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
 
 
         else if(req.query.by == "language"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({language: regex}).then((items)=>{
                 var itemS = [];
 
@@ -204,7 +204,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                             language: items[i].language,
                             ISBN: items[i].ISBN,
                             averageRating: averageRating,
-                            library: items[i].available[j]._id,
+                            libraryId: items[i].available[j]._id,
                             lateFees: items[i].available[j].lateFees,
                             location: items[i].available[j].location,
                             amount: items[i].available[j].amount,
@@ -227,7 +227,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
 
 
         else if(req.query.by == "type"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({type: regex}).then((items)=>{
                 var itemS = [];
 
@@ -255,7 +255,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                                 language: items[i].language,
                                 ISBN: items[i].ISBN,
                                 averageRating: averageRating,
-                                library: items[i].available[j]._id,
+                                libraryId: items[i].available[j]._id,
                                 lateFees: items[i].available[j].lateFees,
                                 location: items[i].available[j].location,
                                 amount: items[i].available[j].amount,
@@ -278,7 +278,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
 
 
         else if(req.query.by == "ISBN"){
-            var regex = new RegExp(req.body.filter, 'i');
+            var regex = new RegExp(req.query.filter, 'i');
             Item.find({ISBN: regex}).then((items)=>{
                 var itemS = [];
 
@@ -306,7 +306,7 @@ searchRouter.get('/', cors.corsWithOptions, authenticate.verifyUser, (req,res,ne
                             language: items[i].language,
                             ISBN: items[i].ISBN,
                             averageRating: averageRating,
-                            library: items[i].available[j]._id,
+                            libraryId: items[i].available[j]._id,
                             lateFees: items[i].available[j].lateFees,
                             location: items[i].available[j].location,
                             amount: items[i].available[j].amount,

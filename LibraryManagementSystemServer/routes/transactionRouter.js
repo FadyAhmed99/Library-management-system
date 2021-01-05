@@ -23,19 +23,25 @@ transactionRouter.get(
   (req, res, next) => {
     if (req.query.requestedToReturn == "null") {
       // borrowed items
-      Transaction.find({ user: req.user._id })
+      Transaction.find({ user: req.user._id, returned: false })
         .populate("item")
         .populate("borrowedFrom")
         .populate("user")
+
         .then((transactions) => {
           for (var i in transactions) {
             transactions[i].item = {
-              _id: transactions[i].item.name,
-              image: transactions[i].item.image,
+              _id: transactions[i].item._id,
+              available: {
+                image: transactions[i].item.available.id(
+                  transactions[i].borrowedFrom._id
+                ).image,
+              },
               name: transactions[i].item.name,
             };
-            transactions[i].user = null;
+            transactions[i].user = {};
           }
+          console.log(transactions.length);
           PhysicalBorrowRequests.find({
             user: req.user._id,
             borrowed: false,
@@ -47,17 +53,13 @@ transactionRouter.get(
                 bRequests[i].item = {
                   _id: bRequests[i].item._id,
                   name: bRequests[i].item.name,
-                  image: bRequests[i].item.image,
-                  available: [
-                    {
-                      lateFees: bRequests[i].item.available.id(
-                        bRequests[i].library._id
-                      ).lateFees,
-                      image: bRequests[i].item.available.id(
-                        bRequests[i].library._id
-                      ).image,
-                    },
-                  ],
+                  available: {
+                    lateFees: bRequests[i].item.available.id(
+                      bRequests[i].library
+                    ).lateFees,
+                    image: bRequests[i].item.available.id(bRequests[i].library)
+                      .image,
+                  },
                 };
 
                 bRequests[i].user = null;
@@ -102,11 +104,16 @@ transactionRouter.get(
         .populate("item")
         .populate("borrowedFrom")
         .populate("user")
+        .populate("returnedTo")
         .then((transactions) => {
           for (var i in transactions) {
             transactions[i].item = {
               _id: transactions[i].item.name,
-              image: transactions[i].item.image,
+              available: {
+                image: transactions[i].item.available.id(
+                  transactions[i].borrowedFrom._id
+                ).image,
+              },
               name: transactions[i].item.name,
             };
             transactions[i].user = null;
@@ -141,7 +148,6 @@ transactionRouter.get(
       .populate("item")
       .populate("borrowedFrom")
       .then((transaction) => {
-        console.log(transaction);
         var modTransaction;
         modTransaction = {
           item: {
@@ -241,6 +247,7 @@ transactionRouter.get(
   authenticate.verifyAdmin,
   (req, res, next) => {
     Transaction.find({})
+      .populate("item")
       .then((transactions) => {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
@@ -417,20 +424,18 @@ transactionRouter.get(
       .populate("item")
       .populate("borrowedFrom")
       .then((transactions) => {
-        var lib;
         for (var i in transactions) {
-          transactions.forEach((transaction) => {
-            transaction.item.available.forEach((library) => {
-              if (library._id.equals(transaction.borrowedFrom._id)) {
-                lib = library;
-              }
-            });
-          });
-
           transactions[i].item = {
             _id: transactions[i].item._id,
             name: transactions[i].item.name,
-            available: lib,
+            available: {
+              image: transactions[i].item.available.id(
+                transactions[i].borrowedFrom._id
+              ).image,
+              lateFees: transactions[i].item.available.id(
+                transactions[i].borrowedFrom._id
+              ).lateFees,
+            },
           };
           transactions[i].user = {
             _id: transactions[i].user._id,
@@ -520,11 +525,9 @@ transactionRouter.put(
             var date = new Date();
             transaction.returnDate = date;
 
-            console.log(library._id);
             Item.findById(transaction.item).then((item) => {
               // item amount +1
               item.available.id(library._id).amount += 1;
-              console.log("item");
               item
                 .save()
                 .then(() => {
@@ -645,9 +648,11 @@ transactionRouter.get(
   authenticate.verifyAdmin,
   (req, res, next) => {
     Transaction.find({
-      requestedToReturn: true,
+      // requestedToReturn: true,
+      returned: true,
     })
       .populate("item")
+      .populate("returnedTo")
       .populate("borrowedFrom")
       .populate("user")
       .then((transactions) => {

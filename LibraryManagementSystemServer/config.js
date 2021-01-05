@@ -2,6 +2,7 @@
 
 module.exports = {
     'secretKey': '12345-67890-09876-54321',
+    // 'mongoUrl' : 'mongodb+srv://librica:librica1234@cluster0.hkday.mongodb.net/LibraryManagementSystem?retryWrites=true&w=majority',
     'mongoUrl' : 'mongodb://localhost:27017/LibraryManagementSystem',
     'facebook' : {
         clientId: '890641605030884',     

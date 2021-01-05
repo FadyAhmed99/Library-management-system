@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const User = require("../models/usersSchema");
 const Library = require("../models/librarySchema");
 const Item = require("../models/itemSchema");
+const Transaction = require("../models/transactionSchema");
 const passport = require("passport");
 var libraryRouter = express.Router();
 libraryRouter.use(bodyParser.json());
@@ -336,16 +337,42 @@ libraryRouter.put(
           // Reject Incoming Requests or Delete existing memebers
           else if (req.query.action == "reject") {
             // reject join request or delete the user if he is already a memeber
-            user.subscribedLibraries.id(req.params.libraryId).remove();
-            user
-              .save()
-              .then((user) => {
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                res.json({
-                  success: true,
-                  status: "User Rejected Successfuly",
-                });
+            Transaction.find({
+              user: req.params.userId,
+              borrowedFrom: req.params.libraryId,
+              returned: false,
+            })
+              .then((tranasctions) => {
+                if (tranasctions.length == 0) {
+                  user.subscribedLibraries.id(req.params.libraryId).remove();
+                  user
+                    .save()
+                    .then((user) => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json({
+                        success: true,
+                        status: "User Rejected Successfuly",
+                      });
+                    })
+                    .catch((err = "Server Failed") => {
+                      res.statusCode = 500;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json({
+                        success: false,
+                        status: "Process Failed",
+                        err: err,
+                      });
+                    });
+                } else {
+                  res.statusCode = 403;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({
+                    success: false,
+                    status: "Process Failed",
+                    err: "User has non-returned items",
+                  });
+                }
               })
               .catch((err = "Server Failed") => {
                 res.statusCode = 500;
@@ -427,45 +454,40 @@ libraryRouter
     }
   )
   // view library feedbacks
-  .get(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyLibrarian,
-    (req, res, next) => {
-      Library.findById(req.params.libraryId)
-        .populate("feedback.user")
-        .then((library) => {
-          if (library == null) {
-            res.statusCode = 404;
-            res.setHeader("Content-Type", "application/json");
-            res.json({
-              success: false,
-              status: "Process Failed",
-              err: "Library Not Found",
-            });
-          } else {
-            var feedbacks = [];
-            for (var i = 0; i < library.feedback.length; i++) {
-              feedbacks.push({
-                firstname: library.feedback[i].user.firstname,
-                lastname: library.feedback[i].user.lastname,
-                profilePhoto: library.feedback[i].user.profilePhoto,
-                userId: library.feedback[i].user._id,
-                feedback: library.feedback[i].feedback,
-              });
-            }
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json({ success: true, feedbacks: feedbacks });
-          }
-        })
-        .catch((err = "Server Failed") => {
-          res.statusCode = 500;
+  .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    Library.findById(req.params.libraryId)
+      .populate("feedback.user")
+      .then((library) => {
+        if (library == null) {
+          res.statusCode = 404;
           res.setHeader("Content-Type", "application/json");
-          res.json({ success: false, status: "Process Failed", err: err });
-        });
-    }
-  );
+          res.json({
+            success: false,
+            status: "Process Failed",
+            err: "Library Not Found",
+          });
+        } else {
+          var feedbacks = [];
+          for (var i = 0; i < library.feedback.length; i++) {
+            feedbacks.push({
+              firstname: library.feedback[i].user.firstname,
+              lastname: library.feedback[i].user.lastname,
+              profilePhoto: library.feedback[i].user.profilePhoto,
+              userId: library.feedback[i].user._id,
+              feedback: library.feedback[i].feedback,
+            });
+          }
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({ success: true, feedbacks: feedbacks });
+        }
+      })
+      .catch((err = "Server Failed") => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: false, status: "Process Failed", err: err });
+      });
+  });
 
 // Get all blocked users from something in your library
 libraryRouter.get(
