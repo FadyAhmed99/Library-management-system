@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const kTextFieldDecoration = InputDecoration(
-  hintText: 'Enter value.',
+  hintText: 'Enter value',
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
@@ -16,11 +16,17 @@ const kTextFieldDecoration = InputDecoration(
   ),
 );
 
-const kGridShape = SliverGridDelegateWithMaxCrossAxisExtent(
-    maxCrossAxisExtent:360/2, childAspectRatio: 0.7);
+SliverGridDelegateWithMaxCrossAxisExtent kGridShape(
+    {@required BuildContext context}) {
+  return SliverGridDelegateWithMaxCrossAxisExtent(
+    maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
+    childAspectRatio: 0.75,
+  );
+}
 
 const kListTilePadding = EdgeInsets.all(8);
 const kListTileMargin = EdgeInsets.all(8);
 const kUserPlaceholder = AssetImage('assets/images/user.png');
-const kLibraryPlaceholder = AssetImage('assets/images/user.png');
-const kItemPlaceholder = AssetImage('assets/images/user.png');
+const kLibraryPlaceholder = AssetImage('assets/images/library.png');
+const kItemPlaceholder = AssetImage('assets/images/book.png');
+const kLogo = 'assets/images/app-logo1.png';

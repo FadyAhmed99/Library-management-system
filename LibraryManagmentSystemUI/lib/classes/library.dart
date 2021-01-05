@@ -1,71 +1,101 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:LibraryManagmentSystem/models/feedback.dart';
-import 'package:LibraryManagmentSystem/models/item.dart';
-import 'package:LibraryManagmentSystem/models/library.dart';
-import 'package:LibraryManagmentSystem/models/user.dart';
-import 'package:LibraryManagmentSystem/providers/user-provider.dart'
-    as userProvider;
+import 'package:LibraryManagmentSystem/classes/feedback.dart';
+import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-String token = userProvider.globalToken;
+import 'item.dart';
 
-class LibraryProvider extends ChangeNotifier {
-  List<Feedback> _feedbacks = [];
-  List<Feedback> get feedbacks {
-    return _feedbacks;
+part '../serializers/library.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class LibrarySerializer {
+  final String id;
+  String name;
+  final String address;
+  final String description;
+  final String phoneNumber;
+  final String image;
+  final String librarian;
+  List<FeedbackSerializer> feedback;
+  String status;
+
+  LibrarySerializer(
+      {this.status,
+      this.name,
+      this.id,
+      this.address,
+      this.description,
+      this.phoneNumber,
+      this.image,
+      this.librarian,
+      this.feedback});
+  factory LibrarySerializer.fromJson(Map<String, dynamic> data) =>
+      _$LibraryFromJson(data);
+  Map<String, dynamic> toJson() => _$LibraryToJson(this);
+
+  void changeName(String newName) {
+    name = newName;
   }
+}
 
-  List<Library> _libraries = [];
-  List<Library> get libraries {
+class Library extends ChangeNotifier {
+  List<LibrarySerializer> _libraries = [];
+  List<LibrarySerializer> get libraries {
     return _libraries;
   }
 
-  List<User> _members = [];
-  List<User> get members {
+  List<UserSerializer> _members = [];
+  List<UserSerializer> get members {
     return _members;
   }
 
-  List<User> _requests = [];
-  List<User> get requests {
+  List<UserSerializer> _requests = [];
+  List<UserSerializer> get requests {
     return _requests;
   }
 
-  List<User> _blockedFromReviewing = [];
-  List<User> get blockedFromReviewing {
+  List<UserSerializer> _blockedFromReviewing = [];
+  List<UserSerializer> get blockedFromReviewing {
     return _blockedFromReviewing;
   }
 
-  List<User> _blockedFromBorrowing = [];
-  List<User> get blockedFromBorrowing {
+  List<UserSerializer> _blockedFromBorrowing = [];
+  List<UserSerializer> get blockedFromBorrowing {
     return _blockedFromBorrowing;
   }
 
-  User _librarian;
-  User get librarian {
+  UserSerializer _librarian;
+  UserSerializer get librarian {
     return _librarian;
   }
 
-  Library _library;
-  Library get library {
+  LibrarySerializer _library;
+  LibrarySerializer get library {
     return _library;
   }
 
-  List<Item> _items = [];
-  List<Item> get items {
+  List<ItemSerializer> _items = [];
+  List<ItemSerializer> get items {
     return _items;
   }
 
-  Future<String> getLibraries() async {
+  List<ItemSerializer> _libraryItems = [];
+  List<ItemSerializer> get libraryItems {
+    return _libraryItems;
+  }
+
+  Future<String> getLibrary() async {
     try {
       final _url = '$apiStart/libraries';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -77,7 +107,7 @@ class LibraryProvider extends ChangeNotifier {
         else {
           _libraries.clear();
           extractedData['libraries'].forEach((library) {
-            _libraries.add(Library.fromJson(library));
+            _libraries.add(LibrarySerializer.fromJson(library));
           });
           notifyListeners();
         }
@@ -87,12 +117,12 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> getLibrary({String libraryId}) async {
+  Future<String> getLibraryInfo({String libraryId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId/info';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -100,72 +130,15 @@ class LibraryProvider extends ChangeNotifier {
         return 'Error';
       } else {
         if (response.statusCode != 200)
-          return extractedData['err'];
+          return "extractedData['err']";
         else {
-          _librarian = User.fromJson(extractedData['librarian']);
-          _library = Library.fromJson(extractedData['library']);
+          _librarian = UserSerializer.fromJson(extractedData['librarian']);
+          _library = LibrarySerializer.fromJson(extractedData['library']);
           notifyListeners();
         }
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  Future<String> sendFeedback({String libraryId, String feedback}) async {
-    try {
-      final _url = '$apiStart/libraries/$libraryId/feedback';
-      final response = await http.post(_url,
-          headers: {
-            HttpHeaders.authorizationHeader: "bearer $token",
-            "Content-Type": "application/json"
-          },
-          body: jsonEncode({"feedback": feedback}));
-
-      final extractedData = jsonDecode(response.body);
-      if (extractedData == null) {
-        return 'Error';
-      } else {
-        if (response.statusCode != 200)
-          return extractedData['status'] + extractedData['err'];
-        else {
-          return null;
-        }
-      }
-    } catch (e) {
-      print(e);
-      throw e;
-    }
-  }
-
-  Future<dynamic> getFeedbacks({String libraryId}) async {
-    try {
-      final _url = '$apiStart/libraries/$libraryId/feedback';
-      final response = await http.get(
-        _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
-      );
-
-      final extractedData = jsonDecode(response.body);
-      print(extractedData);
-
-      if (extractedData == null) {
-        return 'Error';
-      } else {
-        if (response.statusCode != 200)
-          return extractedData['status'] + ' ' + extractedData['err'];
-        else {
-          _feedbacks.clear();
-          extractedData['feedbacks'].forEach((feed) {
-            _feedbacks.add(Feedback.fromJson(feed));
-            return null;
-          });
-          notifyListeners();
-        }
-      }
-    } catch (e) {
-      print(e);
-      throw e;
     }
   }
 
@@ -174,7 +147,7 @@ class LibraryProvider extends ChangeNotifier {
       final _url = '$apiStart/libraries/$libraryId?option=members';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -187,10 +160,9 @@ class LibraryProvider extends ChangeNotifier {
         else {
           _members.clear();
           extractedData['members'].forEach((member) {
-            _members.add(User.fromJson(member));
+            _members.add(UserSerializer.fromJson(member));
             return null;
           });
-          print(_members);
           notifyListeners();
         }
       }
@@ -200,12 +172,12 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getLibraryRequests({String libraryId}) async {
+  Future<dynamic> getLibraryJoinRequests({String libraryId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId?option=requests';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -218,10 +190,9 @@ class LibraryProvider extends ChangeNotifier {
         else {
           _requests.clear();
           extractedData['requests'].forEach((request) {
-            _requests.add(User.fromJson(request));
+            _requests.add(UserSerializer.fromJson(request));
             return null;
           });
-          print(_requests);
           notifyListeners();
         }
       }
@@ -231,13 +202,13 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> libraryAcceptRequest(
+  Future<dynamic> librarianAcceptRequest(
       {String libraryId, String userId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId/$userId?action=approve';
       final response = await http.put(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -257,13 +228,13 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> libraryRejectRequest(
+  Future<dynamic> librarianRejectRequest(
       {String libraryId, String userId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId/$userId?action=reject';
       final response = await http.put(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -274,7 +245,7 @@ class LibraryProvider extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          return extractedData['status'];
+          return extractedData['err'];
         }
       }
     } catch (e) {
@@ -283,14 +254,14 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> setPermissions(
+  Future<dynamic> setUserPermissions(
       {String libraryId, String userId, String action, String from}) async {
     try {
       final _url =
           '$apiStart/libraries/$libraryId/permissions/$userId/set?action=$action&from=$from';
       final response = await http.put(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -310,13 +281,13 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getBlockedFromReviewing({String libraryId}) async {
+  Future<dynamic> getBlockedUsersFromReviewing({String libraryId}) async {
     try {
       final _url =
           '$apiStart/libraries/$libraryId/permissions/get?blockedFrom=evaluating';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -329,7 +300,7 @@ class LibraryProvider extends ChangeNotifier {
         else {
           _blockedFromReviewing.clear();
           extractedData['blockedUsers'].forEach((user) {
-            _blockedFromReviewing.add(User.fromJson(user));
+            _blockedFromReviewing.add(UserSerializer.fromJson(user));
             return null;
           });
           notifyListeners();
@@ -341,14 +312,13 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getBlockedFromBorrowing({String libraryId}) async {
-    print('object');
+  Future<dynamic> getBlockedUsersFromBorrowing({String libraryId}) async {
     try {
       final _url =
           '$apiStart/libraries/$libraryId/permissions/get?blockedFrom=borrowing';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
@@ -361,7 +331,7 @@ class LibraryProvider extends ChangeNotifier {
         else {
           _blockedFromBorrowing.clear();
           extractedData['blockedUsers'].forEach((user) {
-            _blockedFromBorrowing.add(User.fromJson(user));
+            _blockedFromBorrowing.add(UserSerializer.fromJson(user));
             return null;
           });
           notifyListeners();
@@ -379,12 +349,11 @@ class LibraryProvider extends ChangeNotifier {
       String desc,
       String phoneNum,
       String address}) async {
-    print('object');
     try {
       final _url = '$apiStart/libraries/$libraryId/info';
       final response = await http.put(_url,
           headers: {
-            HttpHeaders.authorizationHeader: "bearer $token",
+            HttpHeaders.authorizationHeader: "bearer $globalToken",
             "Content-Type": "application/json"
           },
           body: jsonEncode({
@@ -402,7 +371,7 @@ class LibraryProvider extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          getLibraries();
+          getLibrary();
           notifyListeners();
           return null;
         }
@@ -418,11 +387,43 @@ class LibraryProvider extends ChangeNotifier {
       final _url = '$apiStart/libraries/$libraryId/items';
       final response = await http.get(
         _url,
-        headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
 
       final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return 'Error';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['status'] + ' ' + extractedData['err'];
+        else {
+          _libraryItems.clear();
+          extractedData['items'].forEach((item) {
+            try {
+              _libraryItems.add(ItemSerializer.fromJson(item));
+            } catch (e) {
+              print(e);
+            }
+          });
+          notifyListeners();
+          return null;
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 
+  Future<dynamic> latestAddition(int i) async {
+    try {
+      final _url = '$apiStart/stats/libraries/lib$i';
+      final response = await http.get(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
+      );
+
+      final extractedData = jsonDecode(response.body);
       if (extractedData == null) {
         return 'Error';
       } else {
@@ -430,12 +431,11 @@ class LibraryProvider extends ChangeNotifier {
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
           _items.clear();
-          print(extractedData['items']);
-          extractedData['items'].forEach((item) {
-            _items.add(Item.fromJson(item));
-            return null;
+          extractedData['latest$i'].forEach((item) {
+            _items.add(ItemSerializer.fromJson(item));
           });
           notifyListeners();
+          return null;
         }
       }
     } catch (e) {
