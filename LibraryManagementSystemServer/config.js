@@ -13,5 +13,6 @@ module.exports = {
     'lib2': '5fd53f8e0f2d076ac295de1e',
     'lib3': '5fd53f910f2d076ac295de1f',
     'maxNumOfBorrowings': 3,
-    'jwtDuration': 36000
+    'jwtDuration': 36000,
+    'startPoint':"https://156.213.70.91:3443/",
 };

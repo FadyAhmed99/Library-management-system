@@ -6,6 +6,7 @@ const User = require("../models/usersSchema");
 const cors = require("./cors");
 const authenticate = require("../authenticate");
 const Transaction = require("../models/transactionSchema");
+const { correctPath } = require("../photo_correction");
 
 var feesRouter = express.Router();
 feesRouter.use(bodyParser.json());
@@ -245,7 +246,7 @@ feesRouter.get(
           fees[i].user = {
             firstname: fees[i].user.firstname,
             lastname: fees[i].user.lastname,
-            profilePhoto: fees[i].user.profilePhoto,
+            profilePhoto: correctPath(fees[i].user.profilePhoto,req.hostname),
           };
         }
 

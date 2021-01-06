@@ -11,6 +11,7 @@ const Library = require("../models/librarySchema");
 const { ObjectID } = require("mongodb");
 const PhysicalBorrowRequests = require("../models/physicalBorrowRequestSchema");
 const Fees = require("../models/feeSchema");
+const { correctPath } = require("../photo_correction");
 
 var transactionRouter = express.Router();
 transactionRouter.use(bodyParser.json());
@@ -30,6 +31,11 @@ transactionRouter.get(
 
         .then((transactions) => {
           for (var i in transactions) {
+            var revs = [];
+            transactions[i].item.reviews.forEach((review) => {
+              if (review._id.equals(req.user._id)) revs.push(review.rating);
+            });
+
             transactions[i].item = {
               _id: transactions[i].item._id,
               available: {
@@ -37,11 +43,15 @@ transactionRouter.get(
                   transactions[i].borrowedFrom._id
                 ).image,
               },
+              reviews: [
+                {
+                  rating: revs.pop(),
+                },
+              ],
               name: transactions[i].item.name,
             };
             transactions[i].user = {};
           }
-          console.log(transactions.length);
           PhysicalBorrowRequests.find({
             user: req.user._id,
             borrowed: false,
@@ -96,6 +106,7 @@ transactionRouter.get(
           });
         });
     } else {
+      console.log(req.hostname);
       // returnings
       Transaction.find({
         user: req.user._id,
@@ -107,13 +118,23 @@ transactionRouter.get(
         .populate("returnedTo")
         .then((transactions) => {
           for (var i in transactions) {
+            var revs = [];
+            transactions[i].item.reviews.forEach((review) => {
+              if (review._id.equals(req.user._id)) revs.push(review.rating);
+            });
+
             transactions[i].item = {
-              _id: transactions[i].item.name,
+              _id: transactions[i].item._id,
               available: {
                 image: transactions[i].item.available.id(
                   transactions[i].borrowedFrom._id
                 ).image,
               },
+              reviews: [
+                {
+                  rating: revs.pop(),
+                },
+              ],
               name: transactions[i].item.name,
             };
             transactions[i].user = null;
@@ -280,10 +301,7 @@ transactionRouter.put(
             item.type == "audioMaterial" ||
             item.type == "magazine"
           ) {
-            if (
-              item.available.id(transaction.borrowedFrom).lateFees / 100 ==
-              0
-            ) {
+            if (item.available.id(transaction.borrowedFrom).lateFees == 0) {
               transaction.requestedToReturn = true;
               transaction.returned = false;
               transaction.hasFees = false;
@@ -315,10 +333,7 @@ transactionRouter.put(
               });
             }
           } else {
-            if (
-              item.available.id(transaction.borrowedFrom).lateFees / 100 ==
-              0
-            ) {
+            if (item.available.id(transaction.borrowedFrom).lateFees == 0) {
               transaction.requestedToReturn = true;
               transaction.hasFees = false;
               transaction.returned = true;
@@ -480,7 +495,10 @@ transactionRouter.get(
             user: {
               firstname: transactions[i].user.firstname,
               lastname: transactions[i].user.lastname,
-              profilePhoto: transactions[i].user.profilePhoto,
+              profilePhoto: correctPath(
+                transactions[i].user.profilePhoto,
+                req.hostname
+              ),
               phoneNumber: transactions[i].user.phoneNumber,
               _id: transactions[i].user._id,
               username: transactions[i].user.username,

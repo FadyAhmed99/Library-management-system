@@ -8,6 +8,7 @@ const Library = require("../models/librarySchema");
 const cors = require("./cors");
 const authenticate = require("../authenticate");
 const config = require("../config");
+const { correctPath } = require("../photo_correction");
 
 var borrowRequestRouter = express.Router();
 borrowRequestRouter.use(bodyParser.json());
@@ -260,7 +261,7 @@ borrowRequestRouter.get(
             _id: requests[i].user._id,
             firstname: requests[i].user.firstname,
             lastname: requests[i].user.lastname,
-            profilePhoto: requests[i].user.profilePhoto,
+            profilePhoto: correctPath(requests[i].user.profilePhoto,req.hostname),
             phoneNumber: requests[i].user.phoneNumber,
             username: requests[i].user.username,
           };

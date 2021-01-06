@@ -11,6 +11,7 @@ const cors = require("./cors");
 const multer = require("multer");
 const authenticate = require("../authenticate");
 const upload = require("../upload");
+const { correctPath } = require("../photo_correction");
 
 libraryRouter.options("*", cors.corsWithOptions, (req, res, next) => {
   res.sendStatus(200);
@@ -88,7 +89,7 @@ libraryRouter
             firstname: library.librarian.firstname,
             lastname: library.librarian.lastname,
             email: library.librarian.email,
-            profilePhoto: library.librarian.profilePhoto,
+            profilePhoto: correctPath(library.librarian.profilePhoto,req.hostname),
             phoneNumber: library.librarian.phoneNumber,
             _id: library.librarian._id,
           };
@@ -198,7 +199,7 @@ libraryRouter.get(
                 firstname: requests[i].firstname,
                 lastname: requests[i].lastname,
                 _id: requests[i]._id,
-                profilePhoto: requests[i].profilePhoto,
+                profilePhoto: correctPath(requests[i].profilePhoto,req.hostname),
               };
             }
             res.statusCode = 200;
@@ -235,7 +236,7 @@ libraryRouter.get(
                 canBorrowItems: members[i].canBorrowItems,
                 canEvaluateItems: members[i].canEvaluateItems,
                 _id: members[i]._id,
-                profilePhoto: members[i].profilePhoto,
+                profilePhoto: correctPath(members[i].profilePhoto,req.hostname),
               };
             }
             res.statusCode = 200;
@@ -472,7 +473,7 @@ libraryRouter
             feedbacks.push({
               firstname: library.feedback[i].user.firstname,
               lastname: library.feedback[i].user.lastname,
-              profilePhoto: library.feedback[i].user.profilePhoto,
+              profilePhoto: correctPath(library.feedback[i].user.profilePhoto,req.hostname),
               userId: library.feedback[i].user._id,
               feedback: library.feedback[i].feedback,
             });
@@ -509,7 +510,7 @@ libraryRouter.get(
             bUsers.push({
               firstname: users[i].firstname,
               lastname: users[i].lastname,
-              profilePhoto: users[i].profilePhoto,
+              profilePhoto: correctPath(users[i].profilePhoto,req.hostname),
               canBorrowItems: users[i].canBorrowItems,
               canEvaluateItems: users[i].canEvaluateItems,
               _id: users[i]._id,
@@ -537,7 +538,7 @@ libraryRouter.get(
             bUsers.push({
               firstname: users[i].firstname,
               lastname: users[i].lastname,
-              profilePhoto: users[i].profilePhoto,
+              profilePhoto: correctPath(users[i].profilePhoto,req.hostname),
               canBorrowItems: users[i].canBorrowItems,
               canEvaluateItems: users[i].canEvaluateItems,
               _id: users[i]._id,
@@ -964,7 +965,7 @@ libraryRouter
               reviewS.push({
                 firstname: item.reviews[i]._id.firstname,
                 lastname: item.reviews[i]._id.lastname,
-                profilePhoto: item.reviews[i]._id.profilePhoto,
+                profilePhoto: correctPath(item.reviews[i]._id.profilePhoto,req.hostname),
                 rating: item.reviews[i].rating,
                 review: item.reviews[i].review,
               });
