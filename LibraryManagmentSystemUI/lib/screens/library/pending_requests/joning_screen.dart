@@ -1,15 +1,15 @@
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
-import 'package:LibraryManagmentSystem/models/user.dart';
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/classes/library.dart';
+import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
 class JoiningScreen extends StatefulWidget {
-  String libraryId;
+  final String libraryId;
   JoiningScreen(this.libraryId);
   @override
   _JoiningScreenState createState() => _JoiningScreenState();
@@ -17,13 +17,13 @@ class JoiningScreen extends StatefulWidget {
 
 class _JoiningScreenState extends State<JoiningScreen> {
   bool _init = true;
-  List<User> _requests;
+  List<UserSerializer> _requests;
   @override
   void didChangeDependencies() {
     if (_init) {
-      final _libraryProvider = Provider.of<LibraryProvider>(context);
+      final _libraryProvider = Provider.of<Library>(context);
       _libraryProvider
-          .getLibraryRequests(libraryId: widget.libraryId)
+          .getLibraryJoinRequests(libraryId: widget.libraryId)
           .then((err) {
         if (err != null) {
           ourDialog(context: context, error: err);
@@ -38,7 +38,7 @@ class _JoiningScreenState extends State<JoiningScreen> {
 
   @override
   Widget build(BuildContext context) {
-        final _libraryProvider = Provider.of<LibraryProvider>(context);
+    final _libraryProvider = Provider.of<Library>(context);
 
     return _requests == null
         ? loading()
@@ -62,7 +62,7 @@ class _JoiningScreenState extends State<JoiningScreen> {
                           child: InkWell(
                               onTap: () {
                                 _libraryProvider
-                                    .libraryAcceptRequest(
+                                    .librarianAcceptRequest(
                                         libraryId: widget.libraryId,
                                         userId: _requests[index].id)
                                     .then((status) {
@@ -83,7 +83,7 @@ class _JoiningScreenState extends State<JoiningScreen> {
                           child: InkWell(
                               onTap: () {
                                 _libraryProvider
-                                    .libraryRejectRequest(
+                                    .librarianRejectRequest(
                                         libraryId: widget.libraryId,
                                         userId: _requests[index].id)
                                     .then((status) {

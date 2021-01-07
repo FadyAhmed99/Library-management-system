@@ -1,9 +1,8 @@
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/screens/drawer/admin_panel_screen.dart';
 import 'package:LibraryManagmentSystem/screens/library/pending_requests/pending_requests_screen.dart';
 import 'package:LibraryManagmentSystem/screens/library/prevented_from_borrowing_screen.dart';
 import 'package:LibraryManagmentSystem/screens/library/prevented_from_evaluate_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class LibraryAdminPanelScreen extends StatefulWidget {
   final String libraryId;
@@ -17,11 +16,10 @@ class LibraryAdminPanelScreen extends StatefulWidget {
 class _LibraryAdminPanelScreenState extends State<LibraryAdminPanelScreen> {
   @override
   Widget build(BuildContext context) {
-    final _libraryProvider =
-        Provider.of<LibraryProvider>(context, listen: false);
+ 
     Map<String, dynamic> tiles = {
       'Pending Requests': PendingRequests(widget.libraryId),
-      'Statistical Report': 'dsa',
+      'Statistical Report': AdminPanelScreen(),
       'Prevented From Reviewing Items':
           PreventedFromEvaluateScreen(libraryId: widget.libraryId),
       'Prevented From Borrowing Items':

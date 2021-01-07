@@ -1,14 +1,14 @@
+import 'package:LibraryManagmentSystem/components/app_bar.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/rounded-button.dart';
-import 'package:LibraryManagmentSystem/components/text-field.dart';
-import 'package:LibraryManagmentSystem/models/library.dart';
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/components/rounded_card.dart';
+import 'package:LibraryManagmentSystem/classes/library.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditLibraryInfoScreen extends StatefulWidget {
-  final Library library;
+  final LibrarySerializer library;
 
   const EditLibraryInfoScreen({this.library});
 
@@ -57,20 +57,23 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
             if (text.length == 0) return 'Empty Description';
           }),
       KFormField(
-          controller: _phone,
-          hint: 'Type Phone Number Here',
-          label: "Library Phone Number",
-          validator: (text) {
-            if (text.length == 0) return 'Empty Phone Number';
-          }),
+        controller: _phone,
+        hint: 'Type Phone Number Here',
+        label: "Library Phone Number",
+        validator: (String s) => s.length == 0
+            ? 'Empty'
+            : double.parse(s, (e) => null) == null
+                ? 'Not A Number!'
+                : (s.startsWith('01') && s.length == 12)
+                    ? null
+                    : 'Invalid Number',
+      ),
     ];
-    final _libraryProvider = Provider.of<LibraryProvider>(context);
+    final _libraryProvider = Provider.of<Library>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Library Info'),
-        centerTitle: true,
-      ),
+      appBar: appBar(
+          title: 'Edit Library Info', context: context, backTheme: false),
       body: Container(
         margin: EdgeInsets.symmetric(vertical: 16),
         child: Center(
@@ -83,10 +86,13 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: fields.map((e) {
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: myTextFormField(context, e.hint, e.label,
-                            e.validator, e.controller),
-                      );
+                          padding: const EdgeInsets.all(8.0),
+                          child: RoundedCard(
+                              controller: e.controller,
+                              data: e.controller.text,
+                              edit: true,
+                              validator: e.validator,
+                              label: e.label));
                     }).toList()),
                 SizedBox(height: 20),
                 _loading
@@ -111,7 +117,8 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
                               else {
                                 // TODO: add snackbar
                                 _libraryProvider
-                                    .getLibrary(libraryId: widget.library.id)
+                                    .getLibraryInfo(
+                                        libraryId: widget.library.id)
                                     .then((value) {
                                   Navigator.pop(context);
                                 });
