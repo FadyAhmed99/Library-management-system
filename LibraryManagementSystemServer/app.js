@@ -32,7 +32,7 @@ const feesRouter = require('./routes/feesRouter');
 
 // Connecting to DB server
 const url = config.mongoUrl;
-const connect = Mongoose.connect(url);
+const connect = Mongoose.connect(url,{useNewUrlParser: true});
 
 connect
   .then((db) => {
