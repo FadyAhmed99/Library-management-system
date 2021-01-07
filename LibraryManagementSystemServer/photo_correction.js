@@ -6,7 +6,7 @@ exports.correctPath = (photo, hostname) => {
     return photo;
   } else {
     correctedPhoto =
-      `https://${hostname}:3443/` + photo.substring(6, photo.length); //TODO: modify port before deploy
+      `https://${hostname}/` + photo.substring(6, photo.length); //TODO: modify port before deploy
     return correctedPhoto;
   }
 };
