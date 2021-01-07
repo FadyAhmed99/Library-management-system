@@ -4,6 +4,8 @@ const User = require("../models/usersSchema");
 const Library = require("../models/librarySchema");
 const Item = require("../models/itemSchema");
 const Transaction = require("../models/transactionSchema");
+const BorrowRequest = require("../models/physicalBorrowRequestSchema");
+const Fee = require("../models/feeSchema");
 const passport = require("passport");
 var libraryRouter = express.Router();
 libraryRouter.use(bodyParser.json());
@@ -1140,13 +1142,28 @@ libraryRouter
               item
                 .save()
                 .then((item) => {
-                  res.statusCode = 200;
-                  res.setHeader("Content-Type", "application/json");
-                  res.json({
-                    success: true,
-                    status: "Item Deleted Successfully From This Library",
-                  });
-                })
+                     BorrowRequest.findByIdAndDelete(item._id).then(()=>{
+                        Transaction.findByIdAndDelete(item._id).then(()=>{
+                            Fee.findByIdAndDelete(item._id).then(()=>{
+                              res.statusCode = 200;
+                              res.setHeader("Content-Type", "application/json");
+                              res.json({success:true, status:"Item Deleted Successfully"});
+                            }).catch((err)=>{
+                              res.statusCode = 500;
+                              res.setHeader("Content-Type", "application/json");
+                              res.json({success:false, status:"Process Failed Successfully"});
+                            })
+                        }).catch((err)=>{
+                              res.statusCode = 500;
+                              res.setHeader("Content-Type", "application/json");
+                              res.json({success:false, status:"Process Failed Successfully"});
+                        })
+                     }).catch(()=>{
+                              res.statusCode = 500;
+                              res.setHeader("Content-Type", "application/json");
+                              res.json({success:false, status:"Process Failed Successfully"});
+                     })
+                    })
                 .catch((err = "Server Failed") => {
                   res.statusCode = 500;
                   res.setHeader("Content-Type", "application/json");
