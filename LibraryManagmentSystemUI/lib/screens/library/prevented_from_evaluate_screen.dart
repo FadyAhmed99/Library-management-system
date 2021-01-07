@@ -1,14 +1,15 @@
+import 'package:LibraryManagmentSystem/components/app_bar.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/constants.dart';
-import 'package:LibraryManagmentSystem/models/user.dart';
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/classes/library.dart';
+import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PreventedFromEvaluateScreen extends StatefulWidget {
-  String libraryId;
+  final String libraryId;
 
   PreventedFromEvaluateScreen({
     this.libraryId,
@@ -22,13 +23,13 @@ class _PreventedFromEvaluateScreenState
     extends State<PreventedFromEvaluateScreen> {
   bool _loading = true;
   bool _init = true;
-  List<User> _members = [];
+  List<UserSerializer> _members = [];
   @override
   void didChangeDependencies() {
     if (_init) {
-      final _libraryProvider = Provider.of<LibraryProvider>(context);
+      final _libraryProvider = Provider.of<Library>(context);
       _libraryProvider
-          .getBlockedFromReviewing(libraryId: widget.libraryId)
+          .getBlockedUsersFromReviewing(libraryId: widget.libraryId)
           .then((err) {
         if (err != null)
           ourDialog(context: context, error: err);
@@ -46,11 +47,11 @@ class _PreventedFromEvaluateScreenState
 
   @override
   Widget build(BuildContext context) {
-    final _libraryProvider = Provider.of<LibraryProvider>(context);
+    final _libraryProvider = Provider.of<Library>(context);
 
     void setPermission(int index, String action, String from, String message) {
       _libraryProvider
-          .setPermissions(
+          .setUserPermissions(
               libraryId: widget.libraryId,
               userId: _members[index].id,
               action: action,
@@ -72,10 +73,10 @@ class _PreventedFromEvaluateScreenState
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Prevented From Evaluating'),
-        centerTitle: true,
-      ),
+      appBar: appBar(
+          title: 'Prevented From Evaluating',
+          context: context,
+          backTheme: false),
       body: _loading
           ? loading()
           : ListView.builder(

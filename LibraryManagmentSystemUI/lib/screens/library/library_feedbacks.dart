@@ -1,12 +1,12 @@
 import 'package:LibraryManagmentSystem/components/user_image.dart';
-import 'package:LibraryManagmentSystem/models/feedback.dart' as feed;
-import 'package:LibraryManagmentSystem/models/library.dart';
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
+import 'package:LibraryManagmentSystem/classes/feedback.dart' as feed;
+import 'package:LibraryManagmentSystem/classes/library.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FeedBackList extends StatefulWidget {
-  final Library library;
+  final LibrarySerializer library;
 
   const FeedBackList({this.library});
 
@@ -16,17 +16,15 @@ class FeedBackList extends StatefulWidget {
 
 class _FeedBackListState extends State<FeedBackList> {
   bool _init = true;
-  bool _loading = true;
-  List<feed.Feedback> _feedbacks;
+  List<feed.FeedbackSerializer> _feedbacks;
   @override
   void didChangeDependencies() {
-    final _libraryProvider = Provider.of<LibraryProvider>(context);
+    final _feedbackProvider = Provider.of<feed.Feedback>(context);
     if (_init) {
-      _libraryProvider.getFeedbacks(libraryId: widget.library.id).then((_) {
-        _feedbacks = _libraryProvider.feedbacks;
+      _feedbackProvider.getFeedbacks(libraryId: widget.library.id).then((_) {
+        _feedbacks = _feedbackProvider.feedbacks;
         setState(() {
           _init = false;
-          _loading = false;
         });
       });
       super.didChangeDependencies();
