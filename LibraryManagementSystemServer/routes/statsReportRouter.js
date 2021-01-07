@@ -11,6 +11,7 @@ const multer = require('multer');
 const authenticate = require('../authenticate');
 const upload = require('../upload');
 const config = require('../config');
+const { correctPath } = require('../photo_correction');
 
 statsReport.options('*' , cors.corsWithOptions , (req,res,next)=>{
     res.sendStatus(200);
@@ -25,7 +26,7 @@ statsReport.get('/users' , cors.corsWithOptions ,  authenticate.verifyUser , aut
             _id: users[i]._id,
             firstname: users[i].firstname,
             lastname: users[i].lastname,
-            profilePhoto: users[i].profilePhoto
+            profilePhoto: correctPath(users[i].profilePhoto,req.hostname)
         });
       }
 
