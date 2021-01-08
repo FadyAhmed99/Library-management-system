@@ -1,7 +1,4 @@
-import 'package:LibraryManagmentSystem/components/dialog.dart';
-import 'package:LibraryManagmentSystem/models/library.dart';
-import 'package:LibraryManagmentSystem/providers/library_provider.dart';
-import 'package:LibraryManagmentSystem/providers/user-provider.dart';
+import 'package:LibraryManagmentSystem/classes/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,17 +10,8 @@ class MyTest extends StatefulWidget {
 class _MyTestState extends State<MyTest> {
   @override
   Widget build(BuildContext context) {
-    final _libraryProvider = Provider.of<LibraryProvider>(context);
-    final _userProvider = Provider.of<UserProvider>(context);
-    String token = _userProvider.token;
-    List<Library> _lib = _libraryProvider.libraries;
-    _libraryProvider
-        .getLibraryRequests(libraryId: "5fdfc30bc8d9a8038b39ed3c")
-        .then((value) {
-      if (value != null) {
-        return ourDialog(context: context, error: value);
-      }
-    });
+    final _transactionProvider = Provider.of<Transaction>(context);
+    _transactionProvider.userBorrowings();
     return Container();
   }
 }
