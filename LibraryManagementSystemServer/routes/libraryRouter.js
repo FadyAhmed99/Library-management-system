@@ -1142,9 +1142,9 @@ libraryRouter
               item
                 .save()
                 .then((item) => {
-                     BorrowRequest.findByIdAndDelete(item._id).then(()=>{
-                        Transaction.findByIdAndDelete(item._id).then(()=>{
-                            Fee.findByIdAndDelete(item._id).then(()=>{
+                     BorrowRequest.deleteMany(item._id).then(()=>{
+                        Transaction.deleteMany(item._id).then(()=>{
+                            Fee.deleteMany(item._id).then(()=>{
                               res.statusCode = 200;
                               res.setHeader("Content-Type", "application/json");
                               res.json({success:true, status:"Item Deleted Successfully"});
