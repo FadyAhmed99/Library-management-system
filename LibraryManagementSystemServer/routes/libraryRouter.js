@@ -351,11 +351,21 @@ libraryRouter.put(
                   user
                     .save()
                     .then((user) => {
-                      res.statusCode = 200;
+                      BorrowRequest.deleteMany({user: user._id, library: req.params.libraryId, borrowed: false}).then(()=>{
+                        res.statusCode = 200;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          success: true,
+                          status: "User Rejected Successfuly",
+                        });
+                      }).catch((err)=>{
+                        res.statusCode = 500;
                       res.setHeader("Content-Type", "application/json");
                       res.json({
-                        success: true,
-                        status: "User Rejected Successfuly",
+                        success: false,
+                        status: "Process Failed",
+                        err: err,
+                      });
                       });
                     })
                     .catch((err = "Server Failed") => {
