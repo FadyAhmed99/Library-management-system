@@ -176,6 +176,7 @@ transactionRouter.get(
             name: transaction.item.name,
             author: transaction.item.author,
             image: transaction.item.image,
+            inLibrary: transaction.item.available.id(transaction.borrowedFrom._id).inLibrary
           },
           borrowedFrom: {
             _id: transaction.borrowedFrom._id,

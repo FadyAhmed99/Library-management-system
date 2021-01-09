@@ -105,56 +105,18 @@ feesRouter.put(
       { $set: { paid: true } },
       function (err, fee) {
         if (!err) {
-          Fee.find({ _id: req.user._id, paid: false })
+          Fee.find({ user: req.user._id, paid: false })
             .then((fees) => {
               Transaction.findByIdAndUpdate(
                 { _id: fee.transactionId },
                 { $set: { hasFees: false } },
                 function (err, trans) {
-                  if (fees.length == 0) {
-                    User.findByIdAndUpdate(
-                      { _id: req.user._id },
-                      { $set: { canBorrowItems: true } }
-                    ).then(() => {
-                      var date = new Date();
-                      Fee.findByIdAndUpdate(
-                        req.params.feeId,
-                        {
-                          creditCardInfo: req.body.creditCardInfo,
-                          ccv: req.body.ccv,
-                          paymentDate: date,
-                        },
-                        function (err, doc) {
-                          if (err) {
-                            res.statusCode = 500;
-                            res.setHeader("Content-Type", "application/json");
-                            res.json({
-                              success: true,
-                              status: "Request Failed",
-                              err: err,
-                            });
-                          }
-                        }
-                      )
-                        .then(() => {
-                          res.statusCode = 200;
-                          res.setHeader("Content-Type", "application/json");
-                          res.json({
-                            success: true,
-                            status: "Paid Successfully",
-                            fee: fee,
-                          });
-                        })
-                        .catch((err) => {
-                          res.statusCode = 500;
-                          res.setHeader("Content-Type", "application/json");
-                          res.json({
-                            success: false,
-                            status: "Request Failed",
-                          });
-                        });
-                    });
-                  } else {
+                  User.findByIdAndUpdate(
+                    { _id: req.user._id },
+                    {
+                      $set: { canBorrowItems: fees.length == 0 ? true : false },
+                    }
+                  ).then(() => {
                     var date = new Date();
                     Fee.findByIdAndUpdate(
                       req.params.feeId,
@@ -192,7 +154,7 @@ feesRouter.put(
                           status: "Request Failed",
                         });
                       });
-                  }
+                  });
                 }
               );
             })
@@ -246,7 +208,7 @@ feesRouter.get(
           fees[i].user = {
             firstname: fees[i].user.firstname,
             lastname: fees[i].user.lastname,
-            profilePhoto: correctPath(fees[i].user.profilePhoto,req.hostname),
+            profilePhoto: correctPath(fees[i].user.profilePhoto, req.hostname),
           };
         }
 
