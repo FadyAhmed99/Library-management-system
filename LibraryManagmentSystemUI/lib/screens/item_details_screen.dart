@@ -59,7 +59,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
     final _libraryProvider = Provider.of<Library>(context);
     final _transactionProvider = Provider.of<Transaction>(context);
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
-    final _itemProvider = Provider.of<Item>(context,listen: true);
+    final _itemProvider = Provider.of<Item>(context, listen: true);
 
     _item = _itemProvider.item;
     _librarian = _libraryProvider.librarian;

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LibraryLatestAddition extends StatefulWidget {
-  final int libraryNumber;
+  final String libraryNumber;
 
   const LibraryLatestAddition({Key key, this.libraryNumber}) : super(key: key);
   @override
@@ -32,7 +32,10 @@ class _LibraryLatestAdditionState extends State<LibraryLatestAddition> {
     if (_init) {
       final _libraryProvider = Provider.of<Library>(context);
 
-      _libraryProvider.latestAddition(widget.libraryNumber).then((_) {
+      _libraryProvider
+          .latestAddition(
+              libs.keys.firstWhere((lib) => libs[lib] == widget.libraryNumber))
+          .then((_) {
         setState(() {
           _loading = false;
           _items = _libraryProvider.items;
@@ -49,14 +52,17 @@ class _LibraryLatestAdditionState extends State<LibraryLatestAddition> {
 
     return Scaffold(
       appBar: appBar(
-          backTheme: true,
-          context: context,
-          title: 'Library 1 Latest Addition'),
+        backTheme: true,
+        context: context,
+        title:
+            "Library ${libs.keys.firstWhere((lib) => libs[lib] == widget.libraryNumber).toString()} latest addition",
+      ),
       body: _loading
           ? loading()
           : RefreshIndicator(
               onRefresh: () async {
-                await _libraryProvider.latestAddition(widget.libraryNumber);
+                await _libraryProvider.latestAddition(libs.keys
+                    .firstWhere((lib) => libs[lib] == widget.libraryNumber));
               },
               child: ListView.builder(
                   itemCount: _items.length,
@@ -71,7 +77,7 @@ class _LibraryLatestAdditionState extends State<LibraryLatestAddition> {
                               children: [
                                 Container(
                                   width: 130,
-                                  height: 100,
+                                  height: 80,
                                   padding: EdgeInsets.all(8),
                                   child: itemImage(
                                       image: _items[index].image,

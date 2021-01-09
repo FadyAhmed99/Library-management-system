@@ -62,24 +62,22 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                               value == null ? 'Empty Type' : null,
                           items: _libraryProvider.libraries
                               .map((e) {
-                                return e.name;
+                                return e;
                               })
                               .toList()
                               .map((e) => DropdownMenuItem(
                                   value: e,
                                   child: Text(
-                                    e,
+                                    e.name,
                                     style:
                                         Theme.of(context).textTheme.headline1,
                                   )))
                               .toList(),
-                          onChanged: (String val) {
+                          onChanged: (LibrarySerializer val) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => LibraryLatestAddition(
-                                  libraryNumber:
-                                      double.parse(val.split(' ')[1]).toInt(),
-                                ),
+                                    libraryNumber: val.id),
                               ),
                             );
                           }),
