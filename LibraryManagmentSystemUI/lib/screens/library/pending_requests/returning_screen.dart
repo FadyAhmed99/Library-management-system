@@ -23,7 +23,7 @@ class _ReturningScrrenState extends State<ReturningScrren> {
     if (_init) {
       final _transactionsProvider = Provider.of<Transaction>(context);
 
-      _transactionsProvider.getRequestedToReturn().then((err) {
+      _transactionsProvider.getReturnRequests().then((err) {
         if (err != null) {
           ourDialog(context: context, error: err);
         } else {

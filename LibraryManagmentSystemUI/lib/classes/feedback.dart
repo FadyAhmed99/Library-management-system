@@ -32,9 +32,9 @@ class FeedbackSerializer {
 }
 
 class Feedback extends ChangeNotifier {
-  List<FeedbackSerializer> _feedbacks = [];
+  List<FeedbackSerializer> _loadedFeedbacks = [];
   List<FeedbackSerializer> get feedbacks {
-    return _feedbacks;
+    return _loadedFeedbacks.reversed.toList();
   }
 
   Future<String> sendFeedback({String libraryId, String feedback}) async {
@@ -63,7 +63,7 @@ class Feedback extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getFeedbacks({String libraryId}) async {
+  Future<dynamic> getLibraryFeedbacks({String libraryId}) async {
     try {
       final _url = '$apiStart/libraries/$libraryId/feedback';
       final response = await http.get(
@@ -79,9 +79,9 @@ class Feedback extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          _feedbacks.clear();
+          _loadedFeedbacks.clear();
           extractedData['feedbacks'].forEach((feed) {
-            _feedbacks.add(FeedbackSerializer.fromJson(feed));
+            _loadedFeedbacks.add(FeedbackSerializer.fromJson(feed));
             return null;
           });
           notifyListeners();

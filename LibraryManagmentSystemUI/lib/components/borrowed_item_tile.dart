@@ -26,6 +26,7 @@ class _BorrowedItemTileState extends State<BorrowedItemTile> {
               MaterialPageRoute(
                 builder: (context) => ViewPDF(
                   fileLink: widget.transaction.item.itemLink,
+                  title: widget.transaction.item.name
                 ),
               ),
             );

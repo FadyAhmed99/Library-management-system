@@ -7,11 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 Widget libraryTile(
     {BuildContext context,
     LibrarySerializer library,
-    bool joined,
-    String trueButton,
-    String falseButton,
-    Function onPressedFunction,
-    IconData icon,
+    @required bool joined,
+    @required bool requested,
+    bool icon,
     int index}) {
   return GridTile(
     child: InkWell(
@@ -34,15 +32,23 @@ Widget libraryTile(
               margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
               color: Colors.white,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 4,
-                      ),
-                      child: FaIcon(icon,
-                          color: joined ? Colors.blue : Colors.transparent)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 4,
+                    ),
+                    child: FaIcon(
+                        requested
+                            ? FontAwesomeIcons.paperPlane
+                            : joined
+                                ? Icons.check
+                                : Icons.check,
+                        color: (requested || joined)
+                            ? Colors.blue
+                            : Colors.transparent),
+                  ),
                 ],
               ),
             ),

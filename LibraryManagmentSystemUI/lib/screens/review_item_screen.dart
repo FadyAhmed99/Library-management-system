@@ -1,3 +1,5 @@
+import 'package:LibraryManagmentSystem/classes/transaction.dart';
+import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:LibraryManagmentSystem/components/app_bar.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
@@ -8,12 +10,15 @@ import 'package:LibraryManagmentSystem/classes/item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReviewItemScreen extends StatefulWidget {
   final String libraryId;
   final String itemId;
   final String itemName;
-  const ReviewItemScreen({this.libraryId, this.itemId, this.itemName});
+  final bool refresh;
+  const ReviewItemScreen(
+      {this.libraryId, this.itemId, this.itemName, this.refresh});
 
   @override
   _ReviewItemScreenState createState() => _ReviewItemScreenState();
@@ -29,6 +34,8 @@ class _ReviewItemScreenState extends State<ReviewItemScreen> {
   @override
   Widget build(BuildContext context) {
     final _itemProvider = Provider.of<Item>(context);
+    final _userProvider = Provider.of<User>(context);
+    final _transactionProvider = Provider.of<Transaction>(context);
 
     return Scaffold(
       appBar: appBar(backTheme: true, title: 'Review Item', context: context),
@@ -111,16 +118,39 @@ class _ReviewItemScreenState extends State<ReviewItemScreen> {
                                     libraryId: widget.libraryId,
                                     review: _text.text,
                                     rating: _rating)
-                                .then((value) {
+                                .then((value) async {
                               if (value == null) {
                                 // TODO: Snack
+                                // caching rev
+                                SharedPreferences _prefs =
+                                    await SharedPreferences.getInstance();
+                                await _prefs.setString(
+                                    _userProvider.user.id + widget.itemId,
+                                    'rev');
+                                widget.refresh == null
+                                    ? null
+                                    : widget.refresh
+                                        ? await _transactionProvider
+                                            .getReturningLogs()
+                                        : await _transactionProvider
+                                            .getBorrwingLogs();
                                 Navigator.pop(context);
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                   duration: Duration(seconds: 2),
                                   content: Text(value),
                                 ));
                               } else {
-                                ourDialog(context: context, error: value);
+                                ourDialog(
+                                    context: context,
+                                    error: value,
+                                    btn1: '',
+                                    button2: FlatButton(
+                                      child: Text('ok'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ));
                               }
                             });
                           } else {

@@ -42,7 +42,9 @@ class _LibraryInfoScreenState extends State<LibraryInfoScreen> {
           _loading = false;
         });
       });
-      _feedbackProvider.getFeedbacks(libraryId: widget.libraryId).then((_) {
+      _feedbackProvider
+          .getLibraryFeedbacks(libraryId: widget.libraryId)
+          .then((_) {
         _feedbacks = _feedbackProvider.feedbacks;
         setState(() {
           _init = false;
@@ -73,7 +75,8 @@ class _LibraryInfoScreenState extends State<LibraryInfoScreen> {
             onRefresh: () async {
               await _libraryProvider.getLibraryInfo(
                   libraryId: widget.libraryId);
-              await _feedbackProvider.getFeedbacks(libraryId: widget.libraryId);
+              await _feedbackProvider.getLibraryFeedbacks(
+                  libraryId: widget.libraryId);
             },
             child: Center(
               child: ListView(children: [
@@ -86,12 +89,14 @@ class _LibraryInfoScreenState extends State<LibraryInfoScreen> {
                           Expanded(
                             flex: 2,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: RoundedButton(
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => EditLibraryInfoScreen(
-                                          library: _library)));
+                                      builder: (context) =>
+                                          EditLibraryInfoScreen(
+                                              library: _library)));
                                 },
                                 title: 'Edit Info',
                               ),
@@ -192,65 +197,50 @@ class _LibraryInfoScreenState extends State<LibraryInfoScreen> {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                _feedbacks.length == 0
-                    ? Container()
-                    : Container(
-                        child: Expanded(
-                          child: ListView.builder(
-                            itemCount: _feedbacks.length,
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 8),
-                                child: ListTile(
-                                    leading: userImage(
-                                        image: _feedbacks[index].profilePhoto),
-                                    isThreeLine: true,
-                                    title: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 8.0),
-                                      child: _feedbacks[index]
-                                                      .firstname
-                                                      .length !=
-                                                  0 ||
-                                              _feedbacks[index]
-                                                      .lastname
-                                                      .length !=
-                                                  0
-                                          ? Text(
-                                              _feedbacks[index].firstname +
-                                                  ' ' +
-                                                  _feedbacks[index].lastname,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText2
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                            )
-                                          : Text(
-                                              'Unknown',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText2
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                            ),
+                Container(
+                  child: ListView.builder(
+                    itemCount: _feedbacks.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child: ListTile(
+                            leading: userImage(
+                                image: _feedbacks[index].profilePhoto),
+                            isThreeLine: true,
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: _feedbacks[index].firstname.length != 0 ||
+                                      _feedbacks[index].lastname.length != 0
+                                  ? Text(
+                                      _feedbacks[index].firstname +
+                                          ' ' +
+                                          _feedbacks[index].lastname,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    )
+                                  : Text(
+                                      'Unknown',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
                                     ),
-                                    contentPadding: EdgeInsets.all(8),
-                                    subtitle: Text(_feedbacks[index].feedback,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1),
-                                    tileColor: Colors.white),
-                              );
-                            },
-                          ),
-                        ),
-                      )
+                            ),
+                            contentPadding: EdgeInsets.all(8),
+                            subtitle: Text(_feedbacks[index].feedback,
+                                style: Theme.of(context).textTheme.bodyText1),
+                            tileColor: Colors.white),
+                      );
+                    },
+                  ),
+                )
               ]),
             ),
           ));

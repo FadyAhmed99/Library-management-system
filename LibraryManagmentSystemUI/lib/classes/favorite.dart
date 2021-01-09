@@ -48,12 +48,12 @@ class FavoriteSerializer {
 }
 
 class Favorite extends ChangeNotifier {
-  List<ItemSerializer> _favItems = [];
+  List<ItemSerializer> _loadedFavItems = [];
   List<ItemSerializer> get favorites {
-    return _favItems;
+    return _loadedFavItems.reversed.toList();
   }
 
-  Future<dynamic> getFavourite() async {
+  Future<dynamic> getFavourites() async {
     try {
       final _url = '$apiStart/users/favorites';
       final response = await http.get(
@@ -61,16 +61,17 @@ class Favorite extends ChangeNotifier {
         headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
       final extractedData = jsonDecode(response.body);
+      print(response.body);
       if (extractedData == null) {
         return 'Error!';
       } else {
         if (response.statusCode != 200)
           return extractedData['err'];
         else {
-          _favItems.clear();
+          _loadedFavItems.clear();
           if (extractedData['items'].length != 0) {
             extractedData['items'].forEach((item) {
-              _favItems.add(ItemSerializer.fromJson(item));
+              _loadedFavItems.add(ItemSerializer.fromJson(item));
             });
           }
           notifyListeners();
@@ -81,7 +82,7 @@ class Favorite extends ChangeNotifier {
       print(e);
     }
   }
-// name will be changed
+
   Future<dynamic> addToFavourites({String itemId, String libraryId}) async {
     try {
       final _url = '$apiStart/users/favorites';
@@ -109,7 +110,7 @@ class Favorite extends ChangeNotifier {
   }
 
   Future<dynamic> deleteFromFavourites(
-      {String itemId, String libraryId}) async {
+      {String itemId,@required String libraryId}) async {
     try {
       final _url = '$apiStart/users/favorites';
       final response = await http.put(
@@ -118,7 +119,7 @@ class Favorite extends ChangeNotifier {
           HttpHeaders.authorizationHeader: "bearer $globalToken",
           "Content-Type": "application/json"
         },
-        body: jsonEncode({"_id": itemId}),
+        body: jsonEncode({"_id": itemId,"library":libraryId }),
       );
       final extractedData = jsonDecode(response.body);
       if (extractedData == null) {
@@ -127,7 +128,7 @@ class Favorite extends ChangeNotifier {
         if (response.statusCode != 200) {
           return extractedData['err'];
         } else {
-          _favItems.removeWhere((element) => element.id == itemId);
+          _loadedFavItems.removeWhere((element) => element.id == itemId);
           notifyListeners();
           return extractedData['status'];
         }

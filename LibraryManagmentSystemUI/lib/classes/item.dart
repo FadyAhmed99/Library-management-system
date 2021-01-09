@@ -62,14 +62,14 @@ class ItemSerializer {
 }
 
 class Item extends ChangeNotifier {
-  ItemSerializer _item;
+  ItemSerializer _loadedItem;
   ItemSerializer get item {
-    return _item;
+    return _loadedItem;
   }
 
-  List<ItemSerializer> _items = [];
+  List<ItemSerializer> _loadedItems = [];
   List<ItemSerializer> get items {
-    return _items;
+    return _loadedItems.reversed.toList();
   }
 
   Future<dynamic> reviewItem(
@@ -113,8 +113,8 @@ class Item extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['err'];
         else {
-          _item = ItemSerializer.fromJson(extractedData['item']);
-          for (int i = 0; i < _item.reviews.length; i++) {
+          _loadedItem = ItemSerializer.fromJson(extractedData['item']);
+          for (int i = 0; i < _loadedItem.reviews.length; i++) {
             return null;
           }
           notifyListeners();
@@ -156,7 +156,7 @@ class Item extends ChangeNotifier {
       String location,
       int amount,
       String language,
-      String lateFees,
+      double lateFees,
       String link,
       String image,
       bool inLibrary}) async {
@@ -202,7 +202,7 @@ class Item extends ChangeNotifier {
     String name,
     String location,
     String amount,
-    String lateFees,
+    double lateFees,
     String link,
     String image,
     String author,
@@ -241,41 +241,6 @@ class Item extends ChangeNotifier {
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
           return null;
-        }
-      }
-    } catch (e) {
-      print(e);
-      throw e;
-    }
-  }
-
-  Future<List<ItemSerializer>> search({String by, String filter}) async {
-    try {
-      final _url = '$apiStart/search?by=$by&filter=$filter';
-      final response = await http.get(
-        _url,
-        headers: {
-          HttpHeaders.authorizationHeader: "bearer $globalToken",
-          "Content-Type": "application/json"
-        },
-      );
-
-      final extractedData = jsonDecode(response.body);
-      if (extractedData == null) {
-        return null;
-      } else {
-        if (response.statusCode != 200)
-          return null;
-        else {
-          List<ItemSerializer> it = [];
-          extractedData['items'].forEach((item) {
-            try {
-              it.add(ItemSerializer.fromJson(item));
-            } catch (e) {
-              print(e);
-            }
-          });
-          return it;
         }
       }
     } catch (e) {

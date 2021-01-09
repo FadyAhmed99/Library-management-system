@@ -18,7 +18,7 @@ class _SystemUsersListState extends State<SystemUsersList> {
   void didChangeDependencies() {
     if (_init) {
       final _userProvider = Provider.of<User>(context);
-      _userProvider.systemUsersList().then((users) {
+      _userProvider.getSystemUsersList().then((users) {
         setState(() {
           _users = users;
           _loading = false;

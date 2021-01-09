@@ -1,8 +1,10 @@
 import 'package:LibraryManagmentSystem/components/small_button.dart';
+import 'package:LibraryManagmentSystem/components/tap_to_review.dart';
 import 'package:LibraryManagmentSystem/components/three_cells_row.dart';
 import 'package:LibraryManagmentSystem/classes/borrow_request.dart';
 import 'package:LibraryManagmentSystem/classes/transaction.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'library_image.dart';
 
@@ -20,6 +22,30 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
   bool _showDetails = false;
   @override
   Widget build(BuildContext context) {
+    Widget _stars(double size) {
+      return widget.transaction == null
+          ? Container()
+          : widget.transaction.item.reviews[0].rating == null
+              ? TapToReview(
+                  size: size,
+                  title: true,
+                  refresh: false,
+                  rating: widget.transaction.item.reviews[0].rating,
+                  itemId: widget.transaction.item.id,
+                  itemName: widget.transaction.item.name,
+                  libraryId: widget.transaction.borrowedFrom.id,
+                )
+              : TapToReview(
+                  size: size,
+                  title: false,
+                  refresh: false,
+                  rating: widget.transaction.item.reviews[0].rating,
+                  itemId: widget.transaction.item.id,
+                  itemName: widget.transaction.item.name,
+                  libraryId: widget.transaction.borrowedFrom.id,
+                );
+    }
+
     String trimDate(DateTime date) {
       if (date == null) return '';
       return date.toString().split(' ')[0].replaceAll('-', '/');
@@ -28,7 +54,7 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
     String requiredFees() {
       int diff = widget.transaction.deadline.difference(DateTime.now()).inDays;
       return diff < 0
-          ? '\$${diff.abs() * widget.transaction.lateFees / 100}'
+          ? '\$${diff.abs() * widget.transaction.lateFees   }'
           : 'No Fees';
     }
 
@@ -52,12 +78,19 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: (MediaQuery.of(context).size.width / 4),
-                        child: itemImage(
-                            image: widget.transaction == null
-                                ? widget.borrowRequest.item.available[0].image
-                                : widget.transaction.item.available[0].image),
+                      Column(
+                        children: [
+                          Container(
+                            width: (MediaQuery.of(context).size.width / 4),
+                            child: itemImage(
+                                image: widget.transaction == null
+                                    ? widget
+                                        .borrowRequest.item.available[0].image
+                                    : widget
+                                        .transaction.item.available[0].image),
+                          ),
+                          _showDetails ? Container() : _stars(20)
+                        ],
                       ),
                       Table(
                         // border: TableBorder.all(),
@@ -142,8 +175,8 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
                                     ? widget.transaction.borrowedFrom.name
                                     : widget.borrowRequest.library.name,
                                 secondLabel: widget.borrowRequest == null
-                                    ? "\$${(widget.transaction.lateFees / 100)}/day"
-                                    : "\$${(widget.borrowRequest.item.available[0].lateFees / 100)}/day",
+                                    ? "\$${(widget.transaction.lateFees   )}/day"
+                                    : "\$${(widget.borrowRequest.item.available[0].lateFees   )}/day",
                                 thirdLabel: widget.borrowRequest == null
                                     ? requiredFees()
                                     : ''),
@@ -151,6 +184,7 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
                           ],
                         )
                       : Container(),
+                  _showDetails ? _stars(30) : Container()
                 ],
               ),
             ),

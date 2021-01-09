@@ -5,6 +5,7 @@ import 'package:LibraryManagmentSystem/classes/library.dart';
 import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class UserSubscribedLibraries extends StatefulWidget {
@@ -50,11 +51,12 @@ class _UserSubscribedLibrariesState extends State<UserSubscribedLibraries> {
               gridDelegate: kGridShape(context: context),
               itemBuilder: (context, index) {
                 return libraryTile(
-                    context: context,
-                    library: _libs[index],
-                    joined: true,
-                    trueButton: 'Joined',
-                    icon: Icons.check);
+                  context: context,
+                  icon: true,
+                  library: _libs[index],
+                  joined: _libs[index].status=='member' ,
+                  requested: _libs[index].status=='pending'
+                );
               }),
         ),
       ),

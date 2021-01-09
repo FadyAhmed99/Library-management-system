@@ -113,12 +113,17 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: fields.map((e) {
-                        // if ((widget.item.type == 'ebook' ||
-                        //             widget.item.type == 'article') &&
-                        //         e.label == 'Location' ||
-                        //     e.label == 'Amount') {
-                        //   return Container();
-                        // }
+                        if ((widget.item.type == 'ebook' ||
+                                widget.item.type == 'article') &&
+                            (e.label == 'Location' || e.label == 'Amount')) {
+                          return Container();
+                        }
+                        if ((widget.item.type == 'book' ||
+                                widget.item.type == 'audio' ||
+                                widget.item.type == 'magazine') &&
+                            (e.label == 'Item link')) {
+                          return Container();
+                        }
                         return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
                             child: myTextFormField(
@@ -130,89 +135,101 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
                                 validator: e.validator,
                                 controller: e.controller));
                       }).toList()),
-                  Text('  Must be read in library',
-                      style: Theme.of(context).textTheme.bodyText2.copyWith(
-                            color: Colors.grey[700],
-                          )),
+                  (widget.item.type == 'ebook' || widget.item.type == 'article')
+                      ? Container()
+                      : Text(
+                          widget.item.type == 'audio'
+                              ? '   Must be listened in library'
+                              : '   Must be read in library',
+                          style: Theme.of(context).textTheme.bodyText2.copyWith(
+                                color: Colors.grey[700],
+                              )),
                   SizedBox(height: 10),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 22),
-                    child: Table(
-                      // border: TableBorder.all(),
-                      defaultVerticalAlignment:
-                          TableCellVerticalAlignment.middle,
-                      columnWidths: {
-                        0: FlexColumnWidth(1),
-                        1: FlexColumnWidth(2.5),
-                        2: FlexColumnWidth(1),
-                        3: FlexColumnWidth(2.5),
-                      },
-                      children: [
-                        TableRow(children: [
-                          Radio(
-                            value: true,
-                            groupValue: inLibrary,
-                            onChanged: (val) {
-                              setState(() {
-                                inLibrary = val;
-                              });
+                    child: (widget.item.type == 'ebook' ||
+                            widget.item.type == 'article')
+                        ? Container()
+                        : Table(
+                            // border: TableBorder.all(),
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            columnWidths: {
+                              0: FlexColumnWidth(1),
+                              1: FlexColumnWidth(2.5),
+                              2: FlexColumnWidth(1),
+                              3: FlexColumnWidth(2.5),
                             },
+                            children: [
+                              TableRow(children: [
+                                Radio(
+                                  value: true,
+                                  groupValue: inLibrary,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      inLibrary = val;
+                                    });
+                                  },
+                                ),
+                                Text('Yes'),
+                                Radio(
+                                  value: false,
+                                  groupValue: inLibrary,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      inLibrary = val;
+                                    });
+                                  },
+                                ),
+                                Text('No')
+                              ]),
+                            ],
                           ),
-                          Text('Yes'),
-                          Radio(
-                            value: false,
-                            groupValue: inLibrary,
-                            onChanged: (val) {
-                              setState(() {
-                                inLibrary = val;
-                              });
-                            },
-                          ),
-                          Text('No')
-                        ]),
-                      ],
-                    ),
                   ),
                   SizedBox(height: 10),
                   _loading
                       ? loading()
-                      : RoundedButton(
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              setState(() {
-                                FocusScope.of(context).unfocus();
-                                _loading = true;
-                              });
-                              _itemProvider
-                                  .editItemInfo(
-                                      libraryId: widget.libraryId,
-                                      itemId: widget.item.id,
-                                      amount: num.parse(_amount.text) ?? 0,
-                                      image: _imageLink.text,
-                                      lateFees: _lateFees.text,
-                                      link: _itemLink.text,
-                                      inLibrary: inLibrary,
-                                      location: _location.text,
-                                      name: _name.text)
-                                  .then((err) {
-                                if (err != null) {
-                                  ourDialog(context: context, error: err);
-                                } else {
-                                  // TODO: add snackbar
-                                  _itemProvider
-                                      .getItemDetails(
-                                          libraryId: widget.libraryId,
-                                          itemId: widget.item.id)
-                                      .then((value) {
-                                    Navigator.pop(context);
-                                  });
-                                }
-                              });
-                            }
-                          },
-                          title: 'Submit',
+                      : Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: RoundedButton(
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                  FocusScope.of(context).unfocus();
+                                  _loading = true;
+                                });
+                                _itemProvider
+                                    .editItemInfo(
+                                        libraryId: widget.libraryId,
+                                        itemId: widget.item.id,
+                                        amount: num.parse(_amount.text) ?? 0,
+                                        image: _imageLink.text ?? '',
+                                        lateFees:
+                                            double.parse(_lateFees.text) ?? 0.0,
+                                        link: _itemLink.text ?? '',
+                                        inLibrary: inLibrary,
+                                        location: _location.text ?? '',
+                                        name: _name.text ?? '')
+                                    .then((err) {
+                                  if (err != null) {
+                                    ourDialog(context: context, error: err);
+                                  } else {
+                                    // TODO: add snackbar
+                                    _itemProvider
+                                        .getItemDetails(
+                                            libraryId: widget.libraryId,
+                                            itemId: widget.item.id)
+                                        .then((value) {
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                });
+                              }
+                            },
+                            title: 'Submit',
+                          ),
                         ),
-                  SizedBox(height: 15)
+                  SizedBox(height: 30)
                 ],
               ),
             ),

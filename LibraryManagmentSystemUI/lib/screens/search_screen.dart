@@ -150,7 +150,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Divider(),
             Container(
               child: FutureBuilder(
-                future: _itemProvider.search(by: filter, filter: _query.text),
+                future: _libraryProvider.search(by: filter, filter: _query.text),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting)
                     return loading();
@@ -275,7 +275,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   threeRows(
                                                       firstLabel: item.name,
                                                       secondLabel:
-                                                          "\$${item.lateFees / 100}/day",
+                                                          "\$${item.lateFees   }/day",
                                                       thirdLabel:
                                                           item.amount == 0
                                                               ? 'Not available'

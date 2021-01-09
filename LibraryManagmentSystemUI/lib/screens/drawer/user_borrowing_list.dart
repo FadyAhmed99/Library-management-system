@@ -23,15 +23,20 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
   bool _init = true;
 
   List<TransactionSerializer> _items = [];
+  List<BorrowRequestSerializer> _requests = [];
+  int length = 0;
   @override
   void didChangeDependencies() {
     if (_init) {
       final _transactionProvider = Provider.of<Transaction>(context);
+      final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
 
-      _transactionProvider.userBorrowings().then((_) {
-        setState(() {
-          _loading = false;
-          _items = _transactionProvider.borrowedItems;
+      _transactionProvider.getUserBorrowings().then((_) {
+        _transactionProvider.getBorrwingLogs().then((value) {
+          setState(() {
+            _loading = false;
+            _items = _transactionProvider.borrowedItems ;
+          });
         });
       });
     }
@@ -44,12 +49,15 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
     final _transactionProvider = Provider.of<Transaction>(context);
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
 
+    _requests = _borrowRequestProvider.requests;
+    _items = _transactionProvider.borrowedItems ;
+
     // _userProvider.userBorrowings();
     final _user = Provider.of<User>(context).user;
-    int remain = 3 -
-        (_borrowRequestProvider.borrowRequests.length +
-                _transactionProvider.borrowedItems.length)
-            .abs();
+    int remain = (3 -
+            (_transactionProvider.transactions.length +
+                _transactionProvider.borrowRequests.length))
+        .abs();
     return Scaffold(
       appBar: appBar(
         title: 'Borrowed Items',
@@ -60,7 +68,10 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
           ? loading()
           : RefreshIndicator(
               onRefresh: () async {
-                await _transactionProvider.userBorrowings();
+                await _transactionProvider.getUserBorrowings();
+                await _borrowRequestProvider.getUserBorrowRequests();
+                _items = _transactionProvider.borrowedItems ;
+                _requests = _borrowRequestProvider.requests;
               },
               child: Column(
                 children: [

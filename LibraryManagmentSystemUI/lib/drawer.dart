@@ -1,6 +1,8 @@
+import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/classes/library.dart';
 import 'package:LibraryManagmentSystem/classes/user.dart';
+import 'package:LibraryManagmentSystem/config.dart';
 
 import 'package:LibraryManagmentSystem/screens/drawer/favourite_list_screen.dart';
 import 'package:LibraryManagmentSystem/screens/drawer/subscribed_libraries.dart';
@@ -61,18 +63,19 @@ Widget drawer(BuildContext context) {
                   ? Column(
                       children: [
                         ListTile(
-                            leading: FaIcon(
-                              FontAwesomeIcons.user,
-                            ),
-                            title: Text('Profile',
-                                style: Theme.of(context).textTheme.headline2),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return Profile(edit: false);
-                              }));
-                            }),
+                          leading: FaIcon(
+                            FontAwesomeIcons.user,
+                          ),
+                          title: Text('Profile',
+                              style: Theme.of(context).textTheme.headline2),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return Profile(edit: false);
+                            }));
+                          },
+                        ),
                         ListTile(
                           enabled: true,
                           leading: Icon(Icons.security),
@@ -97,8 +100,9 @@ Widget drawer(BuildContext context) {
                         ),
                         ListTile(
                           enabled: true,
-                          onTap: () {
-                            _userProvider.facebookLogout().then((_) {
+                          onTap: () async {
+                            await _userProvider.logOut();
+                            _userProvider.logOutFacebook().then((_) async {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (context) => WelcomeScreen()),
@@ -182,9 +186,9 @@ Widget drawer(BuildContext context) {
                               }),
                           ListTile(
                             enabled: true,
-                            onTap: () {
-                              _userProvider.logoutUser();
-                              _userProvider.facebookLogout().then((_) {
+                            onTap: () async {
+                              await _userProvider.logOut();
+                              _userProvider.logOutFacebook().then((_) async {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => WelcomeScreen()),

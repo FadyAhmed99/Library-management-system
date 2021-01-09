@@ -1,13 +1,19 @@
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
 import 'package:LibraryManagmentSystem/components/rounded-button.dart';
-import 'package:LibraryManagmentSystem/providers/user-provider.dart';
+import 'package:LibraryManagmentSystem/classes/borrow_request.dart';
+import 'package:LibraryManagmentSystem/classes/favorite.dart';
+import 'package:LibraryManagmentSystem/classes/transaction.dart';
+import 'package:LibraryManagmentSystem/classes/user.dart';
+import 'package:LibraryManagmentSystem/config.dart';
+import 'package:LibraryManagmentSystem/constants.dart';
 import 'package:LibraryManagmentSystem/screens/library/libraries_room_screen.dart';
 import 'package:LibraryManagmentSystem/screens/regestration/signin.dart';
 import 'package:LibraryManagmentSystem/screens/regestration/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -18,25 +24,67 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _init = true;
   bool _loading = true;
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (_init) {
-      final _userProvider = Provider.of<UserProvider>(context);
-      _userProvider.facebookLogin.currentAccessToken.then((value) {
-        if (value != null && value.isValid()) {
-          _userProvider.logInFacebookUser(value.token).then((_) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LibrariesRoomScreen()),
-                (Route<dynamic> route) => false);
+      final _userProvider = Provider.of<User>(context);
+      final _transactionProvider = Provider.of<Transaction>(context);
+      final _favProvider = Provider.of<Favorite>(context);
+      final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
+
+      Future<void> userData() async {
+        _userProvider.getProfile().then((_) {
+          _borrowRequestProvider.getUserBorrowRequests().then((_) {
+            _transactionProvider.getUserBorrowings().then((_) {
+              _userProvider.getSubscribedLibraries().then((_) {
+                _favProvider.getFavourites().then((_) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => LibrariesRoomScreen()),
+                      (Route<dynamic> route) => false);
+                });
+              });
+            });
           });
-        } else {
+        });
+      }
+
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      // login with old token if valid
+      globalToken = _prefs.getString('token');
+      await _userProvider.getProfile().then((err) async {
+        if (err != null) {
           setState(() {
             _loading = false;
           });
+        } else {
+          await userData();
         }
-        setState(() {
-          _init = false;
-        });
       });
+
+      // if facebook true
+      if (_prefs.getBool('facebook') ?? false) {
+        _userProvider.facebookLogin.currentAccessToken.then((value) {
+          if (value != null && value.isValid()) {
+            _userProvider.logInByFacebook(value.token).then((_) {
+              print(value.token);
+
+              userData().then((_) {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) => LibrariesRoomScreen()),
+                    (Route<dynamic> route) => false);
+              });
+            });
+          } else {
+            setState(() {
+              _loading = false;
+            });
+          }
+        });
+      }
+      // else show form
+      _init = false;
     }
 
     super.didChangeDependencies();
@@ -48,62 +96,51 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       onWillPop: () async {
         return ourDialog(
             context: context,
-            error: 'Are You Sure Exit?',
+            error: 'Do you want to exit?',
+            btn1: 'No',
             button2: FlatButton(
                 child: Text('Exit'),
                 onPressed: () => SystemChannels.platform
                     .invokeMethod('SystemNavigator.pop')));
       },
       child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Column(
-                children: [
-                  Image.asset(
-                    'assets/images/user.png',
-                    height: 150,
-                    width: 150,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            SizedBox(height: 15),
+            Row(
+              children: [
+                Hero(
+                  tag: 'logo',
+                  child: Image.asset(
+                    kLogo,
+                    height: 100,
+                    // width: 250,
+                    fit: BoxFit.fill,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Library',
-                        style: TextStyle(
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      Text(
-                        'Mangement',
-                        style: TextStyle(
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      Text(
-                        'System',
-                        style: TextStyle(
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 48.0,
-              ),
-              _loading
-                  ? loading()
-                  // register buttons
-                  : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 0.0),
+                  child: Text(
+                    'Librica',
+                    style: TextStyle(
+                      fontSize: 40.0,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.grey[900],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            _loading
+                ? loading()
+                // register buttons
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         RoundedButton(
                           title: 'Log In',
@@ -115,6 +152,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             );
                           },
                         ),
+                        SizedBox(height: 10),
                         RoundedButton(
                           title: 'Register',
                           onPressed: () {
@@ -124,8 +162,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ],
                     ),
-            ],
-          ),
+                  ),
+          ],
         ),
       ),
     );

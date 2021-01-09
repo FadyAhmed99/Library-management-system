@@ -27,6 +27,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
   bool _init = true;
 
   List<ItemSerializer> _items = [];
+  bool _btnLoading = false;
   @override
   void didChangeDependencies() {
     if (_init) {
@@ -34,7 +35,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
 
       _libraryProvider.getLibraryItems(libraryId: widget.libraryId).then((_) {
         setState(() {
-          _items = _libraryProvider.libraryItems;
+          _items = _libraryProvider.libraryItems ;
           _loading = false;
         });
       });
@@ -52,10 +53,13 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
     final _favProvider = Provider.of<Favorite>(context);
     final _subsLibrariesProvider = Provider.of<User>(context);
 
+    _items = _libraryProvider.libraryItems;
+
     bool borrowed = false;
     bool requested = false;
 
     void requestBorrow(int index) {
+      setState(() => _btnLoading = true);
       bool pending = _subsLibrariesProvider.subs
               .where((sub) =>
                   sub.status == 'pending' && sub.id == widget.libraryId)
@@ -66,13 +70,15 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
           .requestToBorrow(
               itemId: _items[index].id, libraryId: widget.libraryId)
           .then((err) async {
+        setState(() => _btnLoading = false);
+
         if (err != null)
           ourDialog(
               btn1: 'ok',
               context: context,
               error: err,
               button2: FlatButton(
-                child: pending ? null : Text('Send join request'),
+                child: !pending ? null : Text('Send join request'),
                 onPressed: () async {
                   await _userProvider
                       .sendJoinRequest(libraryId: widget.libraryId)
@@ -88,8 +94,8 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                 },
               ));
         else {
-          await _borrowRequestProvider.getBorrowRequest();
-          await _transactionProvider.userBorrowings();
+          await _borrowRequestProvider.getUserBorrowRequests();
+          await _transactionProvider.getUserBorrowings();
           setState(() {
             requested = true;
           });
@@ -97,9 +103,11 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
       });
     }
 
-    return Scaffold(
-      floatingActionButton:
-          _userProvider.user.id == _libraryProvider.librarian.id
+    return Stack(
+      children: [
+        Scaffold(
+          floatingActionButton: _userProvider.user.id ==
+                  _libraryProvider.librarian.id
               ? FloatingActionButton(
                   onPressed: () {
                     Navigator.push(
@@ -111,37 +119,40 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                   child: Icon(Icons.add, color: Colors.blue, size: 25),
                 )
               : null,
-      body: _loading
-          ? loading()
-          : RefreshIndicator(
-              onRefresh: () async {
-                await _libraryProvider.getLibraryItems(
-                    libraryId: widget.libraryId);
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: ListView(
-                  children: [
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            _loading
-                                ? ''
-                                : "Library have ${_items.length.toString()} items",
-                            style: Theme.of(context).textTheme.headline1),
-                      ),
-                    ),
-                    Container(
-                      child: Center(
-                        child: GridView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate: kGridShape(context: context),
-                          itemCount: _items.length,
-                          itemBuilder: (context, index) {
-                            borrowed =
-                                (_transactionProvider.borrowedItems.length != 0
+          body: _loading
+              ? loading()
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    await _libraryProvider.getLibraryItems(
+                        libraryId: widget.libraryId);
+                    await _borrowRequestProvider.getUserBorrowRequests();
+                    await _transactionProvider.getUserBorrowings();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: ListView(
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                _loading
+                                    ? ''
+                                    : "Library have ${_items.length.toString()} items",
+                                style: Theme.of(context).textTheme.headline1),
+                          ),
+                        ),
+                        Container(
+                          child: Center(
+                            child: GridView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate: kGridShape(context: context),
+                              itemCount: _items.length,
+                              itemBuilder: (context, index) {
+                                borrowed = (_transactionProvider
+                                            .borrowedItems.length !=
+                                        0
                                     ? _transactionProvider.borrowedItems
                                                 .where((element) =>
                                                     element.item.id ==
@@ -152,8 +163,8 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                                         ? false
                                         : true
                                     : false);
-                            requested =
-                                (_borrowRequestProvider.borrowRequests.length !=
+                                requested = (_borrowRequestProvider
+                                            .borrowRequests.length !=
                                         0
                                     ? _borrowRequestProvider.borrowRequests
                                                 .where((element) =>
@@ -165,16 +176,17 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                                         ? false
                                         : true
                                     : false);
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: ItemTile(
-                                      borrowed: false,
-                                      item: _items[index],
-                                      libraryId: widget.libraryId,
-                                      favorite:
-                                          _favProvider.favorites.length != 0
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: ItemTile(
+                                          borrowed: false,
+                                          item: _items[index],
+                                          libraryId: widget.libraryId,
+                                          favorite: _favProvider
+                                                      .favorites.length !=
+                                                  0
                                               ? _favProvider.favorites
                                                           .where((element) =>
                                                               element.id ==
@@ -185,38 +197,48 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                                                   ? false
                                                   : true
                                               : false),
-                                ),
-                                _userProvider.user.librarian
-                                    ? Container()
-                                    : Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: SmallButton(
-                                            onPressed: borrowed || requested
-                                                ? null
-                                                : () {
-                                                    requestBorrow(index);
-                                                  },
-                                            child: FittedBox(
-                                              child: Text(
-                                                requested
-                                                    ? 'Requested'
-                                                    : borrowed
-                                                        ? "Borrowed"
-                                                        : "Request Borrowing",
-                                              ),
-                                            )),
-                                      ),
-                              ],
-                            );
-                          },
+                                    ),
+                                    _userProvider.user.librarian
+                                        ? Container()
+                                        : Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            child: SmallButton(
+                                                onPressed: borrowed || requested
+                                                    ? null
+                                                    : () {
+                                                        requestBorrow(index);
+                                                      },
+                                                child: FittedBox(
+                                                  child: Text(
+                                                    requested
+                                                        ? 'Requested'
+                                                        : borrowed
+                                                            ? "Borrowed"
+                                                            : "Request Borrowing",
+                                                  ),
+                                                )),
+                                          ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+        ),
+        _btnLoading
+            ? Container(
+                color: Colors.grey.withOpacity(0.5),
+                child: Center(
+                  child: loading(),
+                ),
+              )
+            : Container()
+      ],
     );
   }
 }

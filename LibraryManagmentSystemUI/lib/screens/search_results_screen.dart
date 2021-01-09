@@ -1,7 +1,8 @@
+import 'package:LibraryManagmentSystem/classes/item.dart';
+import 'package:LibraryManagmentSystem/classes/library.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/library_image.dart';
 import 'package:LibraryManagmentSystem/components/three_cells_row.dart';
-import 'package:LibraryManagmentSystem/classes/item.dart';
 import 'package:LibraryManagmentSystem/screens/item_details_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class DataSearch extends SearchDelegate<String> {
   var suggList;
   @override
   Widget buildSuggestions(BuildContext context) {
-    final _itemProvider = Provider.of<Item>(context);
+    final _libraryProvider = Provider.of<Library>(context);
     String filter = '';
     return Column(
       children: [
@@ -59,7 +60,7 @@ class DataSearch extends SearchDelegate<String> {
         ),
         Expanded(
           child: FutureBuilder(
-            future: _itemProvider.search(by: 'name', filter: query),
+            future: _libraryProvider.search(by: 'name', filter: query),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return loading();
@@ -159,7 +160,7 @@ class DataSearch extends SearchDelegate<String> {
                                         threeRows(
                                             firstLabel: item.name,
                                             secondLabel:
-                                                "\$${item.lateFees / 100}/day",
+                                                "\$${item.lateFees   }/day",
                                             thirdLabel: item.amount == 0
                                                 ? 'Not available'
                                                 : 'Available'),

@@ -17,9 +17,9 @@ TableRow row(String label, String data, BuildContext context) {
   ]);
 }
 
-TableRow emptyRow() {
+TableRow emptyRow({double height = 25}) {
   return TableRow(children: [
-    Container(height: 25),
-    Container(height: 25),
+    Container(height: height),
+    Container(height: height),
   ]);
 }

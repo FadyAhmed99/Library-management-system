@@ -23,7 +23,7 @@ class _BorrowingScreenState extends State<BorrowingScreen> {
     if (_init) {
       final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
       _borrowRequestProvider
-          .getLibraryBorrowRequest(libraryId: widget.libraryId)
+          .getLibraryBorrowRequests(libraryId: widget.libraryId)
           .then((err) {
         if (err != null) {
           ourDialog(context: context, error: err);
@@ -39,12 +39,11 @@ class _BorrowingScreenState extends State<BorrowingScreen> {
   @override
   Widget build(BuildContext context) {
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
-    print(_requests[1].user.profilePhoto);
     return _requests == null
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _borrowRequestProvider.getLibraryBorrowRequest(
+              await _borrowRequestProvider.getLibraryBorrowRequests(
                   libraryId: widget.libraryId);
             },
             child: ListView.builder(

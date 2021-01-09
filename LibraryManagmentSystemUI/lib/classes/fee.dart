@@ -42,9 +42,9 @@ class FeeSerializer {
 }
 
 class Fee extends ChangeNotifier {
-  List<FeeSerializer> _fees = [];
+  List<FeeSerializer> _loadedFees = [];
   List<FeeSerializer> get fees {
-    return _fees;
+    return _loadedFees.reversed.toList();
   }
 
   Future<dynamic> getFees() async {
@@ -62,9 +62,9 @@ class Fee extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          _fees.clear();
+          _loadedFees.clear();
           extractedData['fees'].forEach((fee) {
-            _fees.add(FeeSerializer.fromJson(fee));
+            _loadedFees.add(FeeSerializer.fromJson(fee));
           });
           notifyListeners();
           return null;

@@ -9,8 +9,6 @@ import 'package:LibraryManagmentSystem/classes/item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InLibraryState { yes, no }
-
 class AddItemScreen extends StatefulWidget {
   final String libraryId;
   const AddItemScreen({@required this.libraryId});
@@ -34,7 +32,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
 
-  InLibraryState _inlibrary = InLibraryState.yes;
+  bool _inlibrary = false;
   String _type = 'ebook';
 
   @override
@@ -69,15 +67,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
             if (text.length == 0) return 'Empty';
           }),
       KFormField(
-        textInputType: TextInputType.number,
+        textInputType: TextInputType.text,
         controller: _isbn,
         hint: 'Enter ISBN ',
         label: "ISBN",
-        validator: (String s) => s.length == 0
-            ? 'Empty'
-            : double.parse(s, (e) => null) == null
-                ? 'Not A Number!'
-                : null,
+        validator: (String s) => s.length == 0 ? 'Empty' : null,
       ),
       KFormField(
         textInputType: TextInputType.number,
@@ -124,50 +118,53 @@ class _AddItemScreenState extends State<AddItemScreen> {
     ];
     final _itemsProvider = Provider.of<Item>(context);
     final _libraryProvider = Provider.of<Library>(context);
-
+    print(_lateFees.text);
     AutovalidateMode _autoValidate = AutovalidateMode.disabled;
     return Scaffold(
       appBar: appBar(title: 'Add Item', context: context, backTheme: false),
       body: Container(
-        margin: EdgeInsets.only(top: 16),
         child: Center(
           child: Form(
             autovalidateMode: _autoValidate,
             key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ListView(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    child: DropdownButtonFormField(
-                        hint: Text(
-                          'Enter Item\'s type',
-                        ),
-                        validator: (value) =>
-                            value == null ? 'Empty Enter' : null,
-                        autovalidateMode: _autoValidate,
-                        items: <String>[
-                          'book',
-                          'magazine',
-                          'ebook',
-                          'audio',
-                          'article'
-                        ]
-                            .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e,
-                                  style: Theme.of(context).textTheme.headline1,
-                                )))
-                            .toList(),
-                        onChanged: (String val) {
-                          setState(() {
-                            _type = val;
-                          });
-                        }),
-                  ),
-                  Column(
+            child: ListView(
+              cacheExtent: 500,
+              addAutomaticKeepAlives: true,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: DropdownButtonFormField(
+                      hint: Text(
+                        'Enter Item\'s type',
+                      ),
+                      validator: (value) =>
+                          value == null ? 'Empty Enter' : null,
+                      autovalidateMode: _autoValidate,
+                      items: <String>[
+                        'book',
+                        'magazine',
+                        'ebook',
+                        'audio',
+                        'article'
+                      ]
+                          .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(
+                                e,
+                                style: Theme.of(context).textTheme.headline1,
+                              )))
+                          .toList(),
+                      onChanged: (String val) {
+                        setState(() {
+                          _type = val;
+                        });
+                      }),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: fields.map((e) {
                         if (e.label == 'ISBN') {
@@ -182,12 +179,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   controller: e.controller),
                             );
                           } else {
+                            _isbn.clear();
                             return Container();
                           }
+                        }
+                        if (_inlibrary && e.label == "Item's late fees") {
+                          _lateFees.clear();
+                          return Container();
                         }
                         if (_type == 'ebook' || _type == 'article') {
                           if (e.label == "Item's location" ||
                               e.label == "Item's Amount") {
+                            _location.clear();
+                            _amount.clear();
                             return Container();
                           } else {
                             return Padding(
@@ -202,6 +206,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           }
                         } else {
                           if (e.label == "Item's Link") {
+                            _itemLink.clear();
                             return Container();
                           } else {
                             return Padding(
@@ -216,54 +221,63 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           }
                         }
                       }).toList()),
-                  _type == 'ebook' || _type == 'article'
-                      ? Container()
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                (_type == 'ebook' || _type == 'article')
+                    ? Container()
+                    : Text(
+                        _type == 'audio'
+                            ? '   Must be listened in library'
+                            : '   Must be read in library',
+                        style: Theme.of(context).textTheme.bodyText2.copyWith(
+                              color: Colors.grey[700],
+                            )),
+                _type == 'ebook' || _type == 'article'
+                    ? Container(padding: EdgeInsets.only(bottom: 10))
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        child: Table(
+                          // border: TableBorder.all(),
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          columnWidths: {
+                            0: FlexColumnWidth(1),
+                            1: FlexColumnWidth(2.5),
+                            2: FlexColumnWidth(1),
+                            3: FlexColumnWidth(2.5),
+                          },
                           children: [
-                            Text(
-                              'Must Read In Library',
-                              style: Theme.of(context).textTheme.headline1,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const Text('Yes'),
-                                Radio(
-                                  activeColor: Theme.of(context).primaryColor,
-                                  value: InLibraryState.yes,
-                                  groupValue: _inlibrary,
-                                  onChanged: (InLibraryState value) {
-                                    setState(() {
-                                      _inlibrary = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const Text('No'),
-                                Radio(
-                                  activeColor: Theme.of(context).primaryColor,
-                                  value: InLibraryState.no,
-                                  groupValue: _inlibrary,
-                                  onChanged: (InLibraryState value) {
-                                    setState(() {
-                                      _inlibrary = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
+                            TableRow(children: [
+                              Radio(
+                                value: true,
+                                groupValue: _inlibrary,
+                                onChanged: (bool val) {
+                                  setState(() {
+                                    _inlibrary = val;
+                                  });
+                                },
+                              ),
+                              Text('Yes'),
+                              Radio(
+                                value: false,
+                                groupValue: _inlibrary,
+                                onChanged: (bool val) {
+                                  setState(() {
+                                    _inlibrary = val;
+                                  });
+                                },
+                              ),
+                              Text('No')
+                            ]),
                           ],
                         ),
-                  SizedBox(height: 20),
-                  _loading
-                      ? loading()
-                      : RoundedButton(
+                      ),
+                _loading
+                    ? loading()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 0),
+                        child: RoundedButton(
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
                               setState(() {
@@ -276,14 +290,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   .addItem(
                                       isbn: _isbn.text,
                                       libraryId: widget.libraryId,
-                                      inLibrary:
-                                          _inlibrary.index == 0 ? true : false,
+                                      inLibrary: _inlibrary,
                                       amount: _amount.text.toString(),
                                       author: _author.text.toString(),
                                       genre: _genre.text.toString(),
                                       image: _imageLink.text,
-                                      lateFees: double.parse(_lateFees.text)
-                                          .toString(),
+                                      lateFees: _lateFees.text.length == 0
+                                          ? null
+                                          : double.parse(_lateFees.text),
                                       link: _itemLink.text,
                                       location: _location.text,
                                       name: _name.text,
@@ -304,6 +318,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     Navigator.pop(context);
                                   });
                                 }
+                              }).catchError(() {
+                                ourDialog(
+                                    context: context, error: "Request failed");
+                                setState(() {
+                                  _loading = false;
+                                });
                               });
                             } else {
                               setState(() {
@@ -314,9 +334,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             }
                           },
                           title: 'Add Item',
-                        )
-                ],
-              ),
+                        ),
+                      ),
+                SizedBox(height: 15)
+              ],
             ),
           ),
         ),

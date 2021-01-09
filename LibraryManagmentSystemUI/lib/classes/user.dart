@@ -67,32 +67,32 @@ class UserSerializer {
 class User with ChangeNotifier {
   final facebookLogin = FacebookLogin();
 
-  UserSerializer _user;
+  UserSerializer _loadedUser;
   UserSerializer get user {
-    return _user;
+    return _loadedUser;
   }
 
   List<LibrarySerializer> _subscribedLibraries = [];
   List<LibrarySerializer> get subs {
-    return _subscribedLibraries;
+    return _subscribedLibraries.reversed.toList();
   }
 
   List<TransactionSerializer> _systemBorrowingsItems = [];
   List<TransactionSerializer> get allBorrowedItems {
-    return _systemBorrowingsItems;
+    return _systemBorrowingsItems.reversed.toList();
   }
 
   List<TransactionSerializer> _systemReturnings = [];
   List<TransactionSerializer> get systemReturnings {
-    return _systemReturnings;
+    return _systemReturnings.reversed.toList();
   }
 
   List<FeeSerializer> _systemFees = [];
   List<FeeSerializer> get allFees {
-    return _systemFees;
+    return _systemFees.reversed.toList();
   }
 
-  Future<String> signUpUser({
+  Future<String> signUp({
     String firstName,
     String lastName,
     String userName,
@@ -122,7 +122,7 @@ class User with ChangeNotifier {
         if (response.statusCode != 200) {
           return extractedData['err']['message'];
         } else {
-          await logInUser(userName, password);
+          await logIn(userName, password);
         }
       }
     } catch (e) {
@@ -130,7 +130,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<String> logInUser(String userName, String password) async {
+  Future<String> logIn(String userName, String password) async {
     try {
       final _url = '$apiStart/users/login';
       final response = await http.post(
@@ -188,7 +188,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<String> getUserProfile() async {
+  Future<String> getProfile() async {
     try {
       final _url = '$apiStart/users/profile';
       final response = await http.get(
@@ -203,8 +203,7 @@ class User with ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['err']['message'];
         else {
-          _user = UserSerializer.fromJson(extractedData['profile']);
-         
+          _loadedUser = UserSerializer.fromJson(extractedData['profile']);
 
           notifyListeners();
           return null;
@@ -215,18 +214,18 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<String> logoutUser() async {
+  Future<String> logOut() async {
     try {
       final _url = '$apiStart/users/logout';
       await http.get(
         _url,
         headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
       );
-      await facebookLogout();
+      await logOutFacebook();
       SharedPreferences _prefs = await SharedPreferences.getInstance();
       await _prefs.remove('token');
       await _prefs.setBool('facebook', false);
-      _user = null;
+
       globalToken = null;
       notifyListeners();
     } catch (e) {
@@ -235,7 +234,7 @@ class User with ChangeNotifier {
   }
 
 // get user jwt token
-  Future<void> logInFacebookUser(String token) async {
+  Future<void> logInByFacebook(String token) async {
     try {
       final _url = '$apiStart/users/facebook/token';
       final response = await http.get(
@@ -264,11 +263,11 @@ class User with ChangeNotifier {
   }
 
 // facebook access token
-  Future<String> facebookSignin() async {
+  Future<String> signInByFacebook() async {
     final result = await facebookLogin.logIn(['email']);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
-        await logInFacebookUser(result.accessToken.token);
+        await logInByFacebook(result.accessToken.token);
         return null;
         break;
       case FacebookLoginStatus.cancelledByUser:
@@ -280,9 +279,8 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<Null> facebookLogout() async {
+  Future<Null> logOutFacebook() async {
     await facebookLogin.logOut().then((value) async {
-      _user = null;
       globalToken = null;
       SharedPreferences _prefs = await SharedPreferences.getInstance();
       await _prefs.remove('token');
@@ -292,7 +290,7 @@ class User with ChangeNotifier {
   }
 
 // get all users list
-  Future<dynamic> systemUsersList() async {
+  Future<dynamic> getSystemUsersList() async {
     try {
       final _url = '$apiStart/stats/users';
       final response = await http.get(
@@ -307,11 +305,11 @@ class User with ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          List<UserSerializer> _users = [];
+          List<UserSerializer> _loadedUsers = [];
           extractedData['users'].forEach((user) {
-            _users.add(UserSerializer.fromJson(user));
+            _loadedUsers.add(UserSerializer.fromJson(user));
           });
-          return _users;
+          return _loadedUsers;
         }
       }
     } catch (e) {
@@ -379,7 +377,7 @@ class User with ChangeNotifier {
       //Get the response from the server
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-      await getUserProfile();
+      await getProfile();
     } catch (e) {
       print(e);
       throw e;
@@ -411,7 +409,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<dynamic> systemFees() async {
+  Future<dynamic> getSystemFees() async {
     try {
       final _url = '$apiStart/fees/admin/fees';
       final response = await http.get(
@@ -441,7 +439,7 @@ class User with ChangeNotifier {
   }
 
 // librarian system returnings log
-  Future<dynamic> allSystemReturnings() async {
+  Future<dynamic> getSystemReturnings() async {
     try {
       final _url = '$apiStart/transactions/admin/returned';
       final response = await http.get(
@@ -471,7 +469,7 @@ class User with ChangeNotifier {
   }
 
 // admin get all borrowed items
-  Future<dynamic> systemBorrowedItems() async {
+  Future<dynamic> getSystemBorrowedItems() async {
     try {
       final _url = '$apiStart/transactions/allTransactions/nonReturned';
       final response = await http.get(

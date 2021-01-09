@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Library Managment System',
         theme: mainTheme,
+        debugShowCheckedModeBanner: false,
         home: WelcomeScreen(),
       ),
     );
