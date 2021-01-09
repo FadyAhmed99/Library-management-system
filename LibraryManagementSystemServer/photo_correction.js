@@ -1,7 +1,6 @@
 const config = require("./config");
 
 exports.correctPath = (photo, hostname) => {
-  console.log(hostname);
   if (photo.startsWith("http")) {
     return photo;
   } else {

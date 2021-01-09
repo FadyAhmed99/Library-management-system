@@ -122,7 +122,8 @@ userRouter.get("/checkJWTToken", cors.corsWithOptions, (req, res, next) => {
 // Configuring logout process
 userRouter.get("/logout", cors.corsWithOptions, (req, res, next) => {
   req.logout();
-  res.clearCookie("session-id");
+  res.clearCookie('session-id');
+  res.sendStatus(200);
   //res.redirect('/');   // redirecting to index page.  u need to specify the full path
 });
 
@@ -402,37 +403,55 @@ userRouter
       .then((user) => {
         var favs = [];
         for (var i = 0; i < user.favorites.length; i++) {
-          favs.push({
-            _id: user.favorites[i]._id._id,
-            type: user.favorites[i]._id.type,
-            name: user.favorites[i]._id.name,
-            genre: user.favorites[i]._id.genre,
-            language: user.favorites[i]._id.language,
-            author: user.favorites[i]._id.author,
-            ISBN: user.favorites[i]._id.ISBN,
-            library: user.favorites[i].library,
-            image: user.favorites[i]._id.available.id(user.favorites[i].library)
-              .image,
-            inLibrary: user.favorites[i]._id.available.id(
-              user.favorites[i].library
-            ).inLibrary,
-            lateFees: user.favorites[i]._id.available.id(
-              user.favorites[i].library
-            ).lateFees,
-            location: user.favorites[i]._id.available.id(
-              user.favorites[i].library
-            ).location,
-            amount: user.favorites[i]._id.available.id(
-              user.favorites[i].library
-            ).amount,
-            libraryId: user.favorites[i]._id.available.id(
-              user.favorites[i].library
-            )._id,
-          });
+          var del = false;
+          for(var j=0; j<user.favorites[i]._id.deletedFrom.length; j++){
+            if(user.favorites[i].library.equals(user.favorites[i]._id.deletedFrom[j]._id)){
+              del = true;
+              break;
+            }
+          }
+          if(del == true){
+            user.favorites.splice(i,1);
+          }
+          else{
+            favs.push({
+              _id: user.favorites[i]._id._id,
+              type: user.favorites[i]._id.type,
+              name: user.favorites[i]._id.name,
+              genre: user.favorites[i]._id.genre,
+              language: user.favorites[i]._id.language,
+              author: user.favorites[i]._id.author,
+              ISBN: user.favorites[i]._id.ISBN,
+              library: user.favorites[i].library,
+              image: user.favorites[i]._id.available.id(user.favorites[i].library)
+                .image,
+              inLibrary: user.favorites[i]._id.available.id(
+                user.favorites[i].library
+              ).inLibrary,
+              lateFees: user.favorites[i]._id.available.id(
+                user.favorites[i].library
+              ).lateFees,
+              location: user.favorites[i]._id.available.id(
+                user.favorites[i].library
+              ).location,
+              amount: user.favorites[i]._id.available.id(
+                user.favorites[i].library
+              ).amount,
+              libraryId: user.favorites[i]._id.available.id(
+                user.favorites[i].library
+              )._id,
+            });
+          }
         }
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json({ success: true, items: favs });
+        user.save().then((user)=>{
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json({ success: true, items: favs });
+        }).catch((err)=>{
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({ success: false, status: "Process Failed", err: err });
+        });
       })
       .catch((err = "Server Failed") => {
         res.statusCode = 500;
@@ -487,23 +506,28 @@ userRouter
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     User.findById(req.user._id)
       .then((user) => {
-        if (user.favorites.id(req.body._id)) {
-          user.favorites.id(req.body._id).remove();
-          user
-            .save()
-            .then((user) => {
-              res.statusCode = 200;
+        var itemFound = false;
+        for(var i=0; i<user.favorites.length; i++){
+          if(user.favorites[i]._id.equals(req.body._id) && user.favorites[i].library.equals(req.body.library)){
+            user.favorites[i].remove();
+            itemFound = true;
+            break;
+          }
+        }
+        if(itemFound == true){
+          user.save().then((user)=>{
+            res.statusCode = 200;
               res.json({
-                success: false,
+                success: true,
                 status: "Item Removed From Favorite List",
-              }); // get the new favorites list
-            })
-            .catch((err = "Server Failed") => {
+              });
+          }).catch((err)=>{
               res.statusCode = 500;
               res.setHeader("Content-Type", "application/json");
               res.json({ success: false, status: "Process Failed", err: err });
-            });
-        } else {
+          })
+        }
+        else{
           res.statusCode = 403;
           res.setHeader("Content-Type", "application/json");
           res.json({

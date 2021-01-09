@@ -54,6 +54,13 @@ const reviewSchema = new schema({
   },
 });
 
+const deletedSchema = new schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Library"
+  }
+});
+
 const itemSchema = new schema({
   // Essential info
   type: { 
@@ -81,7 +88,8 @@ const itemSchema = new schema({
     default: ''
   },
   available: [availableSchema],
-  reviews: [reviewSchema]
+  reviews: [reviewSchema],
+  deletedFrom: [deletedSchema]
 });
 
 var Items = mongoose.model("Item", itemSchema);

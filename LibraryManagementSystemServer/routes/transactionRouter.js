@@ -455,7 +455,7 @@ transactionRouter.get(
           transactions[i].user = {
             _id: transactions[i].user._id,
             firstname: transactions[i].user.firstname,
-            lastname: transactions[i].user.lasttname,
+            lastname: transactions[i].user.lastname,
           };
         }
 
@@ -692,7 +692,7 @@ transactionRouter.get(
           transactions[i].user = {
             _id: transactions[i].user._id,
             firstname: transactions[i].user.firstname,
-            lastname: transactions[i].user.lasttname,
+            lastname: transactions[i].user.lastname,
           };
         }
 

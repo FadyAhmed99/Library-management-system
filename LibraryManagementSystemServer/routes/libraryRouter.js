@@ -14,6 +14,7 @@ const multer = require("multer");
 const authenticate = require("../authenticate");
 const upload = require("../upload");
 const { correctPath } = require("../photo_correction");
+const { ObjectID } = require("mongodb");
 
 libraryRouter.options("*", cors.corsWithOptions, (req, res, next) => {
   res.sendStatus(200);
@@ -24,7 +25,7 @@ libraryRouter
   .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Library.find({})
       .then((libs) => {
-        if (libs == null) {
+        if (libs.length == 0) {
           res.statusCode = 500;
           res.setHeader("Content-Type", "application/json");
           res.json({
@@ -874,6 +875,9 @@ libraryRouter
                 });
               });
           } else {
+            if(item.deletedFrom.id(req.params.libraryId)){
+              item.deletedFrom.id(req.params.libraryId).remove();
+            }
             if (item.available.id(req.params.libraryId)) {
               res.statusCode = 403;
               res.setHeader("Content-Type", "application/json");
@@ -1149,15 +1153,20 @@ libraryRouter
           } else {
             if (item.available.id(req.params.libraryId)) {
               item.available.id(req.params.libraryId).remove();
+              item.deletedFrom.push(req.params.libraryId);
               item
                 .save()
                 .then((item) => {
                      BorrowRequest.deleteMany({item: item._id}).then(()=>{
+                      
                         Transaction.deleteMany({item: item._id}).then(()=>{
+                          
                             Fee.deleteMany({item: item._id}).then(()=>{
+                              
                               res.statusCode = 200;
                               res.setHeader("Content-Type", "application/json");
                               res.json({success:true, status:"Item Deleted Successfully"});
+                            
                             }).catch((err)=>{
                               res.statusCode = 500;
                               res.setHeader("Content-Type", "application/json");
