@@ -164,7 +164,7 @@ class Transaction extends ChangeNotifier {
   }
 
 // user get his borrowing log requestedToReturn = null or returnings requestedToReturn = true
-  Future<dynamic> getBorrwingLogs() async {
+  Future<dynamic> getBorrowinglogs() async {
     try {
       final _url =
           '$apiStart/transactions/myTransactions?requestedToReturn=null';

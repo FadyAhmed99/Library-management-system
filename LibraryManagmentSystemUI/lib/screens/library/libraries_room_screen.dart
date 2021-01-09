@@ -56,8 +56,8 @@ class _LibrariesRoomScreenState extends State<LibrariesRoomScreen> {
     final _userProvider = Provider.of<User>(context);
     final _user = Provider.of<User>(context).user;
     final _subsLibrariesProvider = Provider.of<User>(context);
+    _subs = _subsLibrariesProvider.subs;
 
-    print(_subs);
 
     return WillPopScope(
       onWillPop: () async {

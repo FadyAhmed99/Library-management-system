@@ -133,7 +133,7 @@ class _ReviewItemScreenState extends State<ReviewItemScreen> {
                                         ? await _transactionProvider
                                             .getReturningLogs()
                                         : await _transactionProvider
-                                            .getBorrwingLogs();
+                                            .getBorrowinglogs();
                                 Navigator.pop(context);
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                   duration: Duration(seconds: 2),

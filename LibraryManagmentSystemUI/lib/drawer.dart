@@ -89,9 +89,8 @@ Widget drawer(BuildContext context) {
                                 MaterialPageRoute(
                                     builder: (context) => LibraryScreen(
                                         libraryId: _libraryProvider.libraries
-                                            .where((element) =>
+                                            .firstWhere((element) =>
                                                 element.librarian == user.id)
-                                            .toList()[0]
                                             .id,
                                         page: 3)),
                               );

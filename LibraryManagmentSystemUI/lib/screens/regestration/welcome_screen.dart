@@ -67,8 +67,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         _userProvider.facebookLogin.currentAccessToken.then((value) {
           if (value != null && value.isValid()) {
             _userProvider.logInByFacebook(value.token).then((_) {
-              print(value.token);
-
               userData().then((_) {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(

@@ -366,11 +366,9 @@ class User with ChangeNotifier {
       var request = http.MultipartRequest(
           "PUT", Uri.parse("$apiStart/users/profile/profilePic"));
       request.headers.addAll(headers);
-      //add text fields
-      // request.fields["text_field"] = text;
-      //create multipart using filepath, string or bytes
+
       var pic = await http.MultipartFile.fromPath("profilePic", image);
-      //add multipart to request
+
       request.files.add(pic);
 
       var response = await request.send();

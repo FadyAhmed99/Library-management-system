@@ -35,7 +35,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
 
       _libraryProvider.getLibraryItems(libraryId: widget.libraryId).then((_) {
         setState(() {
-          _items = _libraryProvider.libraryItems ;
+          _items = _libraryProvider.libraryItems;
           _loading = false;
         });
       });
@@ -70,8 +70,6 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
           .requestToBorrow(
               itemId: _items[index].id, libraryId: widget.libraryId)
           .then((err) async {
-        setState(() => _btnLoading = false);
-
         if (err != null)
           ourDialog(
               btn1: 'ok',
@@ -98,6 +96,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
           await _transactionProvider.getUserBorrowings();
           setState(() {
             requested = true;
+            _btnLoading = false;
           });
         }
       });

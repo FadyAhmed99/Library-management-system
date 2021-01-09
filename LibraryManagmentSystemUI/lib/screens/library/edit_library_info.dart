@@ -61,7 +61,7 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
         hint: 'Type Phone Number Here',
         label: "Library Phone Number",
         validator: (String s) => s.length == 0
-            ? 'Empty'
+            ? null
             : double.parse(s, (e) => null) == null
                 ? 'Not A Number!'
                 : (s.startsWith('01') && s.length == 11)
@@ -98,38 +98,40 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
                 _loading
                     ? loading()
                     : Padding(
-                      padding:EdgeInsets.symmetric(horizontal:16),
-                      child:RoundedButton(
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            setState(() {
-                              FocusScope.of(context).unfocus();
-                              _loading = true;
-                            });
-                            _libraryProvider
-                                .editLibraryInfo(
-                                    libraryId: widget.library.id,
-                                    address: _address.text,
-                                    desc: _desc.text,
-                                    name: _name.text,
-                                    phoneNum: _phone.text)
-                                .then((err) {
-                              if (err != null)
-                                ourDialog(context: context, error: err);
-                              else {
-                                // TODO: add snackbar
-                                _libraryProvider
-                                    .getLibraryInfo(
-                                        libraryId: widget.library.id)
-                                    .then((value) {
-                                  Navigator.pop(context);
-                                });
-                              }
-                            });
-                          }
-                        },
-                        title: 'Submit',
-                      )),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: RoundedButton(
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              setState(() {
+                                FocusScope.of(context).unfocus();
+                                _loading = true;
+                              });
+                              _libraryProvider
+                                  .editLibraryInfo(
+                                      libraryId: widget.library.id,
+                                      address: _address.text,
+                                      desc: _desc.text,
+                                      name: _name.text,
+                                      phoneNum: _phone.text.length == 0
+                                          ? ' '
+                                          : _phone.text)
+                                  .then((err) {
+                                if (err != null)
+                                  ourDialog(context: context, error: err);
+                                else {
+                                  // TODO: add snackbar
+                                  _libraryProvider
+                                      .getLibraryInfo(
+                                          libraryId: widget.library.id)
+                                      .then((value) {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              });
+                            }
+                          },
+                          title: 'Submit',
+                        )),
               ],
             ),
           ),

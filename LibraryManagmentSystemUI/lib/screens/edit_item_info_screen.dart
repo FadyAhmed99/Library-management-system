@@ -1,3 +1,4 @@
+import 'package:LibraryManagmentSystem/classes/library.dart';
 import 'package:LibraryManagmentSystem/components/app_bar.dart';
 import 'package:LibraryManagmentSystem/components/circular-loading.dart';
 import 'package:LibraryManagmentSystem/components/dialog.dart';
@@ -56,9 +57,11 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
           hint: 'Enter late fees ',
           label: "Late Fees",
           obsecure: false,
-          validator: (text) {
-            if (text.length == 0) return 'Empty';
-          }),
+          validator: (String s) => s.length == 0
+              ? 'Empty'
+              : double.parse(s, (e) => null) == null
+                  ? 'Not A Number!'
+                  : null),
       KFormField(
           controller: _amount,
           hint: 'Enter item\'s amount',
@@ -87,6 +90,10 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
           }),
     ];
     final _itemProvider = Provider.of<Item>(context);
+    final _libraryProvider = Provider.of<Library>(context);
+
+    print(_amount.text);
+
     return Scaffold(
       appBar:
           appBar(title: 'Edit Item Info', context: context, backTheme: false),
@@ -116,14 +123,21 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
                         if ((widget.item.type == 'ebook' ||
                                 widget.item.type == 'article') &&
                             (e.label == 'Location' || e.label == 'Amount')) {
+                          _location.clear();
+                          _amount.clear();
+                          return Container();
+                        }
+                        if (inLibrary && (e.label == 'Late Fees')) {
+                          _lateFees.clear();
                           return Container();
                         }
                         if ((widget.item.type == 'book' ||
-                                widget.item.type == 'audio' ||
+                                widget.item.type == 'audioMaterial' ||
                                 widget.item.type == 'magazine') &&
                             (e.label == 'Item link')) {
                           return Container();
                         }
+
                         return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
                             child: myTextFormField(
@@ -138,7 +152,7 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
                   (widget.item.type == 'ebook' || widget.item.type == 'article')
                       ? Container()
                       : Text(
-                          widget.item.type == 'audio'
+                          widget.item.type == 'audioMaterial'
                               ? '   Must be listened in library'
                               : '   Must be read in library',
                           style: Theme.of(context).textTheme.bodyText2.copyWith(
@@ -200,26 +214,33 @@ class _EditItemInfoScreenState extends State<EditItemInfoScreen> {
                                 });
                                 _itemProvider
                                     .editItemInfo(
-                                        libraryId: widget.libraryId,
-                                        itemId: widget.item.id,
-                                        amount: num.parse(_amount.text) ?? 0,
-                                        image: _imageLink.text ?? '',
-                                        lateFees:
-                                            double.parse(_lateFees.text) ?? 0.0,
-                                        link: _itemLink.text ?? '',
-                                        inLibrary: inLibrary,
-                                        location: _location.text ?? '',
-                                        name: _name.text ?? '')
-                                    .then((err) {
+                                  language: '',
+                                  libraryId: widget.libraryId,
+                                  itemId: widget.item.id,
+                                  amount: (_amount.text.length == 0)
+                                      ? 0
+                                      : num.parse(_amount.text) ?? 0,
+                                  image: _imageLink.text ?? '',
+                                  lateFees: _lateFees.text.length == 0
+                                      ? 0
+                                      : double.parse(_lateFees.text) ?? 0.0,
+                                  link: _itemLink.text ?? '',
+                                  inLibrary: inLibrary ?? true,
+                                  location: _location.text ?? '',
+                                  name: _name.text ?? '',
+                                )
+                                    .then((err) async {
                                   if (err != null) {
                                     ourDialog(context: context, error: err);
                                   } else {
                                     // TODO: add snackbar
-                                    _itemProvider
+                                    await _libraryProvider.getLibraryItems(
+                                        libraryId: widget.libraryId);
+                                    await _itemProvider
                                         .getItemDetails(
                                             libraryId: widget.libraryId,
                                             itemId: widget.item.id)
-                                        .then((value) {
+                                        .then((_) {
                                       Navigator.pop(context);
                                     });
                                   }

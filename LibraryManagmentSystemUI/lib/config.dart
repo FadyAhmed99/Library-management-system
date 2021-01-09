@@ -1,3 +1,3 @@
-String apiStart = 'https://156.213.70.91:3443';
+String apiStart = 'https://192.168.1.6:3443';
 
 String globalToken = '';

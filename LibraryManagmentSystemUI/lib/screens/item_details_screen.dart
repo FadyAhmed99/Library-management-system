@@ -59,7 +59,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
     final _libraryProvider = Provider.of<Library>(context);
     final _transactionProvider = Provider.of<Transaction>(context);
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
-    final _itemProvider = Provider.of<Item>(context);
+    final _itemProvider = Provider.of<Item>(context,listen: true);
 
     _item = _itemProvider.item;
     _librarian = _libraryProvider.librarian;
@@ -96,6 +96,9 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                 onRefresh: () async {
                   await _itemProvider.getItemDetails(
                       itemId: widget.itemId, libraryId: widget.libraryId);
+                  setState(() {
+                    _item = _itemProvider.item;
+                  });
                 },
                 child: ListView(
                   children: [
@@ -111,62 +114,69 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                               children: [
                                 Expanded(
                                   flex: 2,
-                                  child: RoundedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditItemInfoScreen(
-                                                      item: _item,
-                                                      libraryId:
-                                                          widget.libraryId)));
-                                    },
-                                    title: 'Edit Info',
-                                  ),
+                                  child:
+                                      _libraryProvider.librarian.id != _user.id
+                                          ? Container()
+                                          : RoundedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditItemInfoScreen(
+                                                                item: _item,
+                                                                libraryId: widget
+                                                                    .libraryId)));
+                                              },
+                                              title: 'Edit Info',
+                                            ),
                                 ),
                                 SizedBox(width: 15),
-                                RaisedButton(
-                                  color: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))),
-                                  onPressed: () async {
-                                    ourDialog(
-                                        context: context,
-                                        btn1: 'back',
-                                        button2: FlatButton(
-                                          child: Text(
-                                            'Remove',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                          onPressed: () async {
-                                            await _itemProvider
-                                                .deleteItem(
-                                              itemId: _item.id,
-                                              libraryId: widget.libraryId,
-                                            )
-                                                .then((err) async {
-                                              await _libraryProvider
-                                                  .getLibraryItems(
-                                                      libraryId:
-                                                          widget.libraryId);
-
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                              Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                      'Item deleted successfully'),
+                                _libraryProvider.librarian.id != _user.id
+                                    ? Container()
+                                    : RaisedButton(
+                                        color: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        onPressed: () async {
+                                          ourDialog(
+                                              context: context,
+                                              btn1: 'back',
+                                              button2: FlatButton(
+                                                child: Text(
+                                                  'Remove',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
                                                 ),
-                                              );
-                                            });
-                                          },
-                                        ),
-                                        error:
-                                            'Are you sure Remove this item?');
-                                  },
-                                  child: Icon(Icons.delete),
-                                ),
+                                                onPressed: () async {
+                                                  await _itemProvider
+                                                      .deleteItem(
+                                                    itemId: _item.id,
+                                                    libraryId: widget.libraryId,
+                                                  )
+                                                      .then((err) async {
+                                                    await _libraryProvider
+                                                        .getLibraryItems(
+                                                            libraryId: widget
+                                                                .libraryId);
+
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Scaffold.of(context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            'Item deleted successfully'),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                              ),
+                                              error:
+                                                  'Are you sure Remove this item?');
+                                        },
+                                        child: Icon(Icons.delete),
+                                      ),
                               ],
                             ),
                           )
@@ -276,7 +286,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                                     : 'Available'),
                             _emptyRow(15),
                             _row(
-                                _item.type == 'audio'
+                                _item.type == 'audioMaterial'
                                     ? 'Must be listened in library'
                                     : 'Must be read in library',
                                 _item.inLibrary ? 'Yes' : 'No'),

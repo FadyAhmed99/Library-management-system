@@ -93,7 +93,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           }),
       KFormField(
           controller: _location,
-          hint: 'Enter Item Location',
+          hint: 'Enter item\'s location in library',
           label: "Item's location",
           validator: (text) {
             if (text.length == 0) return 'Empty Item\'s location';

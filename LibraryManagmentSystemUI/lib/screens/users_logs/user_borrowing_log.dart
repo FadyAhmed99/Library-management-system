@@ -21,7 +21,7 @@ class _UserBorrowingScreenState extends State<UserBorrowingScreen> {
     if (_init) {
       final _transactionProvider = Provider.of<Transaction>(context);
 
-      _transactionProvider.getBorrwingLogs().then((_) {
+      _transactionProvider.getBorrowinglogs().then((_) {
         setState(() {
           _loading = false;
           _transactions = _transactionProvider.transactions;
@@ -41,7 +41,7 @@ class _UserBorrowingScreenState extends State<UserBorrowingScreen> {
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _transactionProvider.getBorrwingLogs();
+              await _transactionProvider.getBorrowinglogs();
             },
             child: ListView.builder(
                 itemCount: _transactions.length + _borrowRequests.length,

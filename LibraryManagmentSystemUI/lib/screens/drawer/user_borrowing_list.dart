@@ -32,10 +32,10 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
       final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
 
       _transactionProvider.getUserBorrowings().then((_) {
-        _transactionProvider.getBorrwingLogs().then((value) {
+        _transactionProvider.getBorrowinglogs().then((value) {
           setState(() {
             _loading = false;
-            _items = _transactionProvider.borrowedItems ;
+            _items = _transactionProvider.borrowedItems;
           });
         });
       });
@@ -50,7 +50,7 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
 
     _requests = _borrowRequestProvider.requests;
-    _items = _transactionProvider.borrowedItems ;
+    _items = _transactionProvider.borrowedItems;
 
     // _userProvider.userBorrowings();
     final _user = Provider.of<User>(context).user;
@@ -70,7 +70,7 @@ class _UserBorrowingListState extends State<UserBorrowingList> {
               onRefresh: () async {
                 await _transactionProvider.getUserBorrowings();
                 await _borrowRequestProvider.getUserBorrowRequests();
-                _items = _transactionProvider.borrowedItems ;
+                _items = _transactionProvider.borrowedItems;
                 _requests = _borrowRequestProvider.requests;
               },
               child: Column(

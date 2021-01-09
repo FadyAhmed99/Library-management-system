@@ -114,9 +114,6 @@ class Item extends ChangeNotifier {
           return extractedData['err'];
         else {
           _loadedItem = ItemSerializer.fromJson(extractedData['item']);
-          for (int i = 0; i < _loadedItem.reviews.length; i++) {
-            return null;
-          }
           notifyListeners();
           return null;
         }

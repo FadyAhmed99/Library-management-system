@@ -130,7 +130,11 @@ class _ProfileState extends State<Profile> {
                             _photoLoading = true;
                           });
                           getImage().then((value) {
-                            if (_image == null) return;
+                            if (_image == null) {
+                              setState(() {
+                                _photoLoading = false;
+                              });
+                            }
 
                             _userProvider
                                 .changeProfileImage(image: _image.path)
@@ -206,7 +210,7 @@ class _ProfileState extends State<Profile> {
                         edit: widget.edit,
                         controller: _num,
                         validator: (String s) => s.length == 0
-                            ? 'Empty'
+                            ? null
                             : double.parse(s, (e) => null) == null
                                 ? 'Not A Number!'
                                 : (s.startsWith('01') && s.length == 11)
@@ -241,13 +245,12 @@ class _ProfileState extends State<Profile> {
                                     firstname: _fName.text,
                                     email: _email.text,
                                     lastanme: _lName.text,
-                                    phoneNum: _num.text)
+                                    phoneNum:
+                                        _num.text.length == 0 ? ' ' : _num.text)
                                 .then((err) async {
                               // TODO: snackBar
                               if (err == null) {
-                                await _userProvider
-                                    .getProfile()
-                                    .then((value) {
+                                await _userProvider.getProfile().then((value) {
                                   setState(() {
                                     _fName.text = _user.firstname;
                                     _lName.text = _user.lastname;
