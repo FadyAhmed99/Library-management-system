@@ -1,0 +1,25 @@
+passport-facebook-token
+multer
+passport-jwt 
+jsonwebtoken
+passport
+passport-local
+passport-local-mongoose
+mongoose-currency
+mongoose
+assert
+mongodb
+express-generator
+body-parser
+express
+path
+cookie-parser
+morgan
+cors
+node-cron
+
+nodemon  	---> development-dependency
+mocha    	---> development-dependency
+supertest 	---> development-dependency
+chai		---> development-dependency
+chai-http	---> development-dependency
