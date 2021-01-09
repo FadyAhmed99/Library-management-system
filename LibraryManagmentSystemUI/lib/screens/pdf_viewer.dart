@@ -16,7 +16,7 @@ class _ViewPDFState extends State<ViewPDF> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(backTheme: true, title: widget.title, context: context),
+      appBar: appBar(backTheme: false, title: widget.title, context: context),
       body: PDF.network(
         widget.fileLink,
         width: double.infinity,

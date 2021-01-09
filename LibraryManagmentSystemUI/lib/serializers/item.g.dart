@@ -16,9 +16,9 @@ ItemSerializer _$ItemFromJson(Map<String, dynamic> json) {
     author: json['author'] as String,
     language: json['language'] as String,
     isbn: json['ISBN'] as String,
-    image: json['image'] as String,
-    inLibrary: json['inLibrary'] as bool,
-    lateFees: json['lateFees'] as num,
+    image: json['image'] as String??'',
+    inLibrary: json['inLibrary'] as bool ?? true,
+    lateFees: json['lateFees'] as num ?? 0.0,
     location: json['location'] as String,
     reviews: (json['reviews'] as List)
         ?.map((e) =>
