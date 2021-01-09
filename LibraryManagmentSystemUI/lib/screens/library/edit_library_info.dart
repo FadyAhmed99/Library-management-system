@@ -64,7 +64,7 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
             ? 'Empty'
             : double.parse(s, (e) => null) == null
                 ? 'Not A Number!'
-                : (s.startsWith('01') && s.length == 12)
+                : (s.startsWith('01') && s.length == 11)
                     ? null
                     : 'Invalid Number',
       ),
@@ -97,7 +97,9 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
                 SizedBox(height: 20),
                 _loading
                     ? loading()
-                    : RoundedButton(
+                    : Padding(
+                      padding:EdgeInsets.symmetric(horizontal:16),
+                      child:RoundedButton(
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             setState(() {
@@ -127,7 +129,7 @@ class _EditLibraryInfoScreenState extends State<EditLibraryInfoScreen> {
                           }
                         },
                         title: 'Submit',
-                      )
+                      )),
               ],
             ),
           ),

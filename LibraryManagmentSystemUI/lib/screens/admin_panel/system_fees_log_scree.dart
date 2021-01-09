@@ -20,7 +20,7 @@ class _SystemFeesScreenState extends State<SystemFeesScreen> {
     if (_init) {
       final _userProvider = Provider.of<User>(context);
 
-      _userProvider.systemFees().then((_) {
+      _userProvider.getSystemFees().then((_) {
         setState(() {
           _loading = false;
           _allFees = _userProvider.allFees;
@@ -39,7 +39,7 @@ class _SystemFeesScreenState extends State<SystemFeesScreen> {
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _userProvider.systemFees();
+              await _userProvider.getSystemFees();
             },
             child: ListView.builder(
                 itemCount: _allFees.length,

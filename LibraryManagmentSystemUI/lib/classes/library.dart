@@ -45,29 +45,29 @@ class LibrarySerializer {
 }
 
 class Library extends ChangeNotifier {
-  List<LibrarySerializer> _libraries = [];
+  List<LibrarySerializer> _loadedLibraries = [];
   List<LibrarySerializer> get libraries {
-    return _libraries;
+    return _loadedLibraries.reversed.toList();
   }
 
   List<UserSerializer> _members = [];
   List<UserSerializer> get members {
-    return _members;
+    return _members.reversed.toList();
   }
 
   List<UserSerializer> _requests = [];
   List<UserSerializer> get requests {
-    return _requests;
+    return _requests.reversed.toList();
   }
 
   List<UserSerializer> _blockedFromReviewing = [];
   List<UserSerializer> get blockedFromReviewing {
-    return _blockedFromReviewing;
+    return _blockedFromReviewing.reversed.toList();
   }
 
   List<UserSerializer> _blockedFromBorrowing = [];
   List<UserSerializer> get blockedFromBorrowing {
-    return _blockedFromBorrowing;
+    return _blockedFromBorrowing.reversed.toList();
   }
 
   UserSerializer _librarian;
@@ -75,19 +75,19 @@ class Library extends ChangeNotifier {
     return _librarian;
   }
 
-  LibrarySerializer _library;
+  LibrarySerializer _loadedLibrary;
   LibrarySerializer get library {
-    return _library;
+    return _loadedLibrary;
   }
 
   List<ItemSerializer> _items = [];
   List<ItemSerializer> get items {
-    return _items;
+    return _items.reversed.toList();
   }
 
   List<ItemSerializer> _libraryItems = [];
   List<ItemSerializer> get libraryItems {
-    return _libraryItems;
+    return _libraryItems.reversed.toList();
   }
 
   Future<String> getLibrary() async {
@@ -105,9 +105,9 @@ class Library extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['err'];
         else {
-          _libraries.clear();
+          _loadedLibraries.clear();
           extractedData['libraries'].forEach((library) {
-            _libraries.add(LibrarySerializer.fromJson(library));
+            _loadedLibraries.add(LibrarySerializer.fromJson(library));
           });
           notifyListeners();
         }
@@ -133,7 +133,7 @@ class Library extends ChangeNotifier {
           return "extractedData['err']";
         else {
           _librarian = UserSerializer.fromJson(extractedData['librarian']);
-          _library = LibrarySerializer.fromJson(extractedData['library']);
+          _loadedLibrary = LibrarySerializer.fromJson(extractedData['library']);
           notifyListeners();
         }
       }
@@ -399,11 +399,7 @@ class Library extends ChangeNotifier {
         else {
           _libraryItems.clear();
           extractedData['items'].forEach((item) {
-            try {
-              _libraryItems.add(ItemSerializer.fromJson(item));
-            } catch (e) {
-              print(e);
-            }
+            _libraryItems.add(ItemSerializer.fromJson(item));
           });
           notifyListeners();
           return null;
@@ -436,6 +432,41 @@ class Library extends ChangeNotifier {
           });
           notifyListeners();
           return null;
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<List<ItemSerializer>> search({String by, String filter}) async {
+    try {
+      final _url = '$apiStart/search?by=$by&filter=$filter';
+      final response = await http.get(
+        _url,
+        headers: {
+          HttpHeaders.authorizationHeader: "bearer $globalToken",
+          "Content-Type": "application/json"
+        },
+      );
+
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return null;
+      } else {
+        if (response.statusCode != 200)
+          return null;
+        else {
+          List<ItemSerializer> it = [];
+          extractedData['items'].forEach((item) {
+            try {
+              it.add(ItemSerializer.fromJson(item));
+            } catch (e) {
+              print(e);
+            }
+          });
+          return it;
         }
       }
     } catch (e) {

@@ -74,7 +74,7 @@ class _PreventedFromBorrowingScreenState
 
     return Scaffold(
       appBar: appBar(
-          title: 'Prevented From Evaluating',
+          title: 'Prevented From Borrowing',
           backTheme: false,
           context: context),
       body: _loading
@@ -106,7 +106,7 @@ class _PreventedFromBorrowingScreenState
                                       'can borrow again',
                                     );
                                   },
-                                  child: Text('Allow Reviewing Items'))),
+                                  child: Text('Allow Borrowing Items'))),
                         ];
                       },
                     ),

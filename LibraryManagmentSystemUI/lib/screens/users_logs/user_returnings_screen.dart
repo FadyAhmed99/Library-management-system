@@ -18,7 +18,7 @@ class _UserReturningsScreenState extends State<UserReturningsScreen> {
     if (_init) {
       final _transactionProvider = Provider.of<Transaction>(context);
 
-      _transactionProvider.getTransactions(requestedToReturn: true).then((_) {
+      _transactionProvider.getReturningLogs().then((_) {
         setState(() {
           _loading = false;
           _transactions = _transactionProvider.transactions;
@@ -32,12 +32,12 @@ class _UserReturningsScreenState extends State<UserReturningsScreen> {
   @override
   Widget build(BuildContext context) {
     final _transactionProvider = Provider.of<Transaction>(context);
+
     return _loading
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _transactionProvider.getTransactions(
-                  requestedToReturn: true);
+              await _transactionProvider.getReturningLogs();
             },
             child: ListView.builder(
                 itemCount: _transactions.length,

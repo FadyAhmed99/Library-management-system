@@ -74,7 +74,7 @@ class _PreventedFromEvaluateScreenState
 
     return Scaffold(
       appBar: appBar(
-          title: 'Prevented From Evaluating',
+          title: 'Prevented From Reviewing',
           context: context,
           backTheme: false),
       body: _loading

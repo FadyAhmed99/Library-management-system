@@ -29,6 +29,8 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
   bool _loading = true;
   UserSerializer _librarian;
   ItemSerializer _item;
+  bool _btnLoading = false;
+
   @override
   void didChangeDependencies() {
     if (_init) {
@@ -177,34 +179,45 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16, vertical: 8),
-                                      child: RoundedButton(
-                                        onPressed: requested || borrowed
-                                            ? null
-                                            : () {
-                                                _borrowRequestProvider
-                                                    .requestToBorrow(
-                                                        libraryId:
-                                                            widget.libraryId,
-                                                        itemId: widget.itemId)
-                                                    .then((value) async {
-                                                  if (value == null) {
-                                                    await _borrowRequestProvider
-                                                        .getBorrowRequest();
-                                                    await _transactionProvider
-                                                        .userBorrowings();
-                                                  } else {
-                                                    ourDialog(
-                                                        error: value,
-                                                        context: context);
-                                                  }
-                                                });
-                                              },
-                                        title: requested
-                                            ? 'Requested'
-                                            : borrowed
-                                                ? 'Borrowed'
-                                                : 'Request Borrowing',
-                                      ),
+                                      child: _btnLoading
+                                          ? loading()
+                                          : RoundedButton(
+                                              onPressed: requested || borrowed
+                                                  ? null
+                                                  : () {
+                                                      setState(() =>
+                                                          _btnLoading = true);
+                                                      _borrowRequestProvider
+                                                          .requestToBorrow(
+                                                              libraryId: widget
+                                                                  .libraryId,
+                                                              itemId:
+                                                                  widget.itemId)
+                                                          .then((value) async {
+                                                        if (value == null) {
+                                                          await _borrowRequestProvider
+                                                              .getUserBorrowRequests();
+                                                          await _transactionProvider
+                                                              .getUserBorrowings();
+                                                          setState(() =>
+                                                              _btnLoading =
+                                                                  false);
+                                                        } else {
+                                                          ourDialog(
+                                                              error: value,
+                                                              context: context);
+                                                          setState(() =>
+                                                              _btnLoading =
+                                                                  false);
+                                                        }
+                                                      });
+                                                    },
+                                              title: requested
+                                                  ? 'Requested'
+                                                  : borrowed
+                                                      ? 'Borrowed'
+                                                      : 'Request Borrowing',
+                                            ),
                                     ),
                                   ),
                                 ],
@@ -238,10 +251,18 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                             _emptyRow(15),
                             _row('Genre', _item.genre),
                             _emptyRow(15),
-                            _row('ISBN', _item.isbn),
-                            _emptyRow(15),
-                            _row('Amount', _item.amount.toString()),
-                            _emptyRow(15),
+                            (_item.type == 'ebook' || _item.type == 'book')
+                                ? _row('ISBN', _item.isbn)
+                                : _emptyRow(0),
+                            (_item.type == 'ebook' || _item.type == 'book')
+                                ? _emptyRow(15)
+                                : _emptyRow(0),
+                            !(_item.type == 'ebook' || _item.type == 'article')
+                                ? _row('Amount', _item.amount.toString())
+                                : _emptyRow(0),
+                            !(_item.type == 'ebook' || _item.type == 'article')
+                                ? _emptyRow(15)
+                                : _emptyRow(0),
                             _item.type == 'book'
                                 ? _row('Shelf Number', _item.location)
                                 : _emptyRow(0),
@@ -254,12 +275,20 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                                     ? 'Not available'
                                     : 'Available'),
                             _emptyRow(15),
-                            _row('Must Read In Library',
+                            _row(
+                                _item.type == 'audio'
+                                    ? 'Must be listened in library'
+                                    : 'Must be read in library',
                                 _item.inLibrary ? 'Yes' : 'No'),
                             _emptyRow(15),
-                            _row('Late Fees',
-                                '\$'+(_item.lateFees / 100).toString() + '/day'),
-                            _emptyRow(15),
+                            _item.inLibrary
+                                ? _emptyRow(0)
+                                : _row(
+                                    'Late Fees',
+                                    '\$' +
+                                        (_item.lateFees).toString() +
+                                        '/day'),
+                            _item.inLibrary ? _emptyRow(0) : _emptyRow(15),
                           ]),
                     ),
                     Padding(
@@ -269,81 +298,67 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                         style: Theme.of(context).textTheme.headline2,
                       ),
                     ),
-                    _item.reviews.length == 0
-                        ? Container()
-                        : Container(
-                            child: Expanded(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: _item.reviews.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    margin: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 8),
-                                    child: ListTile(
-                                        leading: userImage(
-                                            image: _item
-                                                .reviews[index].profilePhoto),
-                                        isThreeLine: true,
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            _item.reviews[index].firstname
-                                                            .length !=
-                                                        0 ||
-                                                    _item.reviews[index]
-                                                            .lastname.length !=
-                                                        0
-                                                ? Text(
-                                                    _item.reviews[index]
-                                                            .firstname +
-                                                        ' ' +
-                                                        _item.reviews[index]
-                                                            .lastname,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText2
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                  )
-                                                : Text(
-                                                    'Unknown',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText2
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                  ),
-                                            RatingBarIndicator(
-                                              itemBuilder: (context, index) {
-                                                return Icon(Icons.star,
-                                                    color: Colors.blue);
-                                              },
-                                              rating:
-                                                  _item.reviews[index].rating,
-                                              itemCount: 5,
-                                              itemSize: 18,
-                                            )
-                                          ],
-                                        ),
-                                        contentPadding: EdgeInsets.all(8),
-                                        subtitle: Text(
-                                            _item.reviews[index].review,
+                    Container(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _item.reviews.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 8),
+                            child: ListTile(
+                                leading: userImage(
+                                    image: _item.reviews[index].profilePhoto),
+                                isThreeLine: true,
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _item.reviews[index].firstname.length !=
+                                                0 ||
+                                            _item.reviews[index].lastname
+                                                    .length !=
+                                                0
+                                        ? Text(
+                                            _item.reviews[index].firstname +
+                                                ' ' +
+                                                _item.reviews[index].lastname,
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .bodyText1),
-                                        tileColor: Colors.white),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
+                                                .bodyText2
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          )
+                                        : Text(
+                                            'Unknown',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                    RatingBarIndicator(
+                                      itemBuilder: (context, index) {
+                                        return Icon(Icons.star,
+                                            color: Colors.blue);
+                                      },
+                                      rating: _item.reviews[index].rating,
+                                      itemCount: 5,
+                                      itemSize: 18,
+                                    )
+                                  ],
+                                ),
+                                contentPadding: EdgeInsets.all(8),
+                                subtitle: Text(_item.reviews[index].review,
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                                tileColor: Colors.white),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ));

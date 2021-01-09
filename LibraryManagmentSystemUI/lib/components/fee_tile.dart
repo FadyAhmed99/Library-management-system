@@ -38,17 +38,20 @@ class _FeeTileState extends State<FeeTile> {
                 Row(
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    SizedBox(width: 5),
                     Container(
-                      width: 100,
-                      height: 90,
+                      height: 70,
+                      width: 70,
                       child: widget.admin
                           ? userImage(image: widget.fee.user.profilePhoto)
                           : itemImage(
-                              image: widget.fee.item.available[0].image,
-                            ),
+                              image: widget.fee.item.available[0].image),
                     ),
                     Expanded(
                       child: Table(
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        // border: TableBorder.all(),
                         children: [
                           !widget.admin
                               ? TableRow(children: [Container()])
@@ -88,7 +91,7 @@ class _FeeTileState extends State<FeeTile> {
                           TableRow(children: [
                             widget.admin
                                 ? Text(
-                                    "\$${widget.fee.fees / 100}",
+                                    "\$${widget.fee.fees}",
                                     textAlign: TextAlign.center,
                                   )
                                 : Container(),
@@ -109,7 +112,7 @@ class _FeeTileState extends State<FeeTile> {
                             : widget.fee.paid
                                 ? 'Payment Date'
                                 : 'Item name',
-                        secondLabel: widget.admin ? 'Patment Date' : 'Status',
+                        secondLabel: widget.admin ? 'Payment Date' : 'Status',
                         thirdLabel: widget.admin ? 'Payment Status' : 'Fees',
                         context: context),
                     threeEmptyRows(7),
@@ -128,7 +131,7 @@ class _FeeTileState extends State<FeeTile> {
                           ? widget.fee.paid
                               ? 'Paid'
                               : 'Required To Pay'
-                          : "\$${widget.fee.fees / 100}",
+                          : "\$${widget.fee.fees}",
                     ),
                     threeEmptyRows(20),
                   ],
@@ -144,16 +147,19 @@ class _FeeTileState extends State<FeeTile> {
                 children: [
                   widget.admin
                       ? Container()
-                      : SmallButton(
-                          child: Text('Pay'),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PayFeeScreen(fee: widget.fee),
-                              ),
-                            );
-                          })
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: SmallButton(
+                              child: Text('Pay'),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PayFeeScreen(fee: widget.fee),
+                                  ),
+                                );
+                              }),
+                        )
                 ],
               )
       ],

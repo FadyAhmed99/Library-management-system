@@ -42,6 +42,7 @@ class _LibraryMembersScreenState extends State<LibraryMembersScreen> {
     super.didChangeDependencies();
   }
 
+  int ind = 0;
   @override
   Widget build(BuildContext context) {
     final _libraryProvider = Provider.of<Library>(context);
@@ -61,7 +62,7 @@ class _LibraryMembersScreenState extends State<LibraryMembersScreen> {
           Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
               content: Text(
-                  '${_members[index].firstname} ${_members[index].firstname} $message')));
+                  '${_members[ind].firstname} ${_members[ind].lastname} $message')));
         } else {
           // fn();
           ourDialog(context: context, error: err);
@@ -99,29 +100,32 @@ class _LibraryMembersScreenState extends State<LibraryMembersScreen> {
                       trailing: PopupMenuButton(
                         color: Theme.of(context).dialogBackgroundColor,
                         itemBuilder: (context) {
+                          setState(() {
+                            ind = index;
+                          });
                           return [
                             PopupMenuItem(
                                 child: InkWell(
                                     onTap: () {
-                                      if (_members[index].canEvaluateItems) {
+                                      if (_members[ind].canEvaluateItems) {
                                         setPermission(
-                                            index,
+                                            ind,
                                             'block',
                                             'evaluating',
                                             'can\'t review any more',
-                                            _members[index].canEvaluateItems =
+                                            _members[ind].canEvaluateItems =
                                                 false);
                                       } else {
                                         setPermission(
-                                            index,
+                                            ind,
                                             'unblock',
                                             'evaluating',
                                             'can review again',
-                                            _members[index].canEvaluateItems =
+                                            _members[ind].canEvaluateItems =
                                                 true);
                                       }
                                     },
-                                    child: Text(_members[index].canEvaluateItems
+                                    child: Text(_members[ind].canEvaluateItems
                                         ? 'Prevent From Reviewing Items'
                                         : 'Allow Reviewing Items'))),
                             PopupMenuItem(
@@ -133,25 +137,25 @@ class _LibraryMembersScreenState extends State<LibraryMembersScreen> {
                             PopupMenuItem(
                                 child: InkWell(
                                     onTap: () {
-                                      if (_members[index].canBorrowItems) {
+                                      if (_members[ind].canBorrowItems) {
                                         setPermission(
-                                            index,
+                                            ind,
                                             'block',
                                             'borrowing',
                                             'can\'t borrow any more',
-                                            _members[index].canBorrowItems =
+                                            _members[ind].canBorrowItems =
                                                 false);
                                       } else {
                                         setPermission(
-                                            index,
+                                            ind,
                                             'unblock',
                                             'borrowing',
                                             'can borrow again',
-                                            _members[index].canBorrowItems =
+                                            _members[ind].canBorrowItems =
                                                 true);
                                       }
                                     },
-                                    child: Text(_members[index].canBorrowItems
+                                    child: Text(_members[ind].canBorrowItems
                                         ? 'Prevent From Borrowing Items'
                                         : 'Allow Borrowing Items'))),
                             PopupMenuItem(
@@ -167,28 +171,39 @@ class _LibraryMembersScreenState extends State<LibraryMembersScreen> {
                                           context: context,
                                           btn1: "back",
                                           error:
-                                              'Are you sure you want to remove\n ${_members[index].firstname} ${_members[index].lastname} from library?',
+                                              'Are you sure you want to remove ${_members[ind].firstname} ${_members[ind].lastname} from library?',
                                           button2: FlatButton(
-                                            child: Text("Remove"),
+                                            child: Text(
+                                              "Remove",
+                                              style:
+                                                  TextStyle(color: Colors.red),
+                                            ),
                                             onPressed: () async {
+                                              String fname =
+                                                  _members[ind].firstname;
+                                              String lname =
+                                                  _members[ind].lastname;
+
                                               Navigator.pop(context);
 
                                               await _libraryProvider
                                                   .librarianRejectRequest(
                                                       libraryId:
                                                           widget.libraryId,
-                                                      userId:
-                                                          _members[index].id)
-                                                  .then((err) {
+                                                      userId: _members[ind].id)
+                                                  .then((err) async {
                                                 if (err == null) {
-                                                  _members.removeAt(index);
+                                                  await _libraryProvider
+                                                      .getLibraryMembers(
+                                                          libraryId:
+                                                              widget.libraryId);
                                                   Navigator.pop(context);
                                                   Scaffold.of(context)
                                                       .showSnackBar(SnackBar(
                                                     duration:
                                                         Duration(seconds: 3),
                                                     content: Text(
-                                                        "${_members[index].firstname} ${_members[index].lastname} Member removed"),
+                                                        "$fname $lname Member removed"),
                                                   ));
                                                 } else {
                                                   ourDialog(

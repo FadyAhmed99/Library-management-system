@@ -49,18 +49,28 @@ class _PayFeeScreenState extends State<PayFeeScreen> {
                     context: context,
                     hint: 'Enter Credit Card Number',
                     label: 'Credit Card Number',
-                    validator: (text) {
-                      if (text.length == 0) return 'Empty Text';
-                    },
+                    validator: (String s) => s.length == 0
+                        ? null
+                        : double.parse(s, (e) => null) == null
+                            ? 'Not A Number!'
+                            : (s.length == 16)
+                                ? null
+                                : 'Invalid Number',
                     controller: _creditCardInfo),
+                SizedBox(height: 30),
                 myTextFormField(
                     context: context,
-                    label: 'Enter CCV',
-                    hint: 'CCV',
-                    validator: (text) {
-                      if (text.length == 0) return 'Empty Text';
-                    },
+                    label: 'Enter CVV',
+                    hint: 'CVV',
+                    validator: (String s) => s.length == 0
+                        ? null
+                        : double.parse(s, (e) => null) == null
+                            ? 'Not A Number!'
+                            : (s.length == 3)
+                                ? null
+                                : 'Invalid Number',
                     controller: _ccv),
+                SizedBox(height: 30),
                 _loading
                     ? loading()
                     : RoundedButton(

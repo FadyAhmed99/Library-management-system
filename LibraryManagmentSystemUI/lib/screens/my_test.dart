@@ -11,7 +11,7 @@ class _MyTestState extends State<MyTest> {
   @override
   Widget build(BuildContext context) {
     final _transactionProvider = Provider.of<Transaction>(context);
-    _transactionProvider.userBorrowings();
+    _transactionProvider.getUserBorrowings();
     return Container();
   }
 }

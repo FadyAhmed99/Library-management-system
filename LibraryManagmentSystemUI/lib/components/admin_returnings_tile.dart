@@ -23,7 +23,7 @@ class _ReturningTileState extends State<ReturningTile> {
     String requiredFees() {
       int diff = widget.transaction.deadline.difference(DateTime.now()).inDays;
       return diff < 0
-          ? '\$${diff.abs() * widget.transaction.lateFees / 100}'
+          ? '\$${diff.abs() * widget.transaction.lateFees}'
           : 'No Fees';
     }
 
@@ -45,28 +45,41 @@ class _ReturningTileState extends State<ReturningTile> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: itemImage(
-                        image: widget.transaction.item.available[0].image),
+                    // leading: itemImage(
+                    //     image: widget.transaction.item.available[0].image),
                     title: Table(
-                      // border: TableBorder.all(),
+                      //  border: TableBorder.all(),
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
                       children: [
                         TableRow(children: [
-                          Text(
-                            'Member name',
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2
-                                .copyWith(fontSize: 14),
-                            textAlign: TextAlign.center,
+                          itemImage(
+                              image:
+                                  widget.transaction.item.available[0].image),
+                          Table(
+                            children: [
+                              TableRow(children: [
+                                Text(
+                                  'Member name',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle2
+                                      .copyWith(fontSize: 14),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ]),
+                              TableRow(children: [
+                                Text(
+                                  widget.transaction.user.firstname +
+                                      ' ' +
+                                      widget.transaction.user.lastname,
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ])
+                            ],
                           ),
                         ]),
-                        TableRow(children: [
-                          Text(
-                            widget.transaction.user.firstname,
-                            style: Theme.of(context).textTheme.bodyText2,
-                            textAlign: TextAlign.center,
-                          )
-                        ])
                       ],
                     ),
                   ),
@@ -92,10 +105,10 @@ class _ReturningTileState extends State<ReturningTile> {
                                 ? widget.transaction.borrowedFrom.name
                                 : widget.transaction.returnedTo.name,
                         thirdLabel: widget.borrowing
-                            ? "\$${widget.transaction.item.available[0].lateFees / 100}/day"
+                            ? "\$${widget.transaction.item.available[0].lateFees}/day"
                             : requiredFees() == 'No Fees'
                                 ? ''
-                                : "\$${widget.transaction.lateFees / 100}",
+                                : "\$${widget.transaction.lateFees}",
                         firstLabel: '',
                       ),
                       threeEmptyRows(15)

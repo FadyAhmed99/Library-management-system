@@ -5,7 +5,8 @@ import 'package:pdf_flutter/pdf_flutter.dart';
 
 class ViewPDF extends StatefulWidget {
   final String fileLink;
-  ViewPDF({this.fileLink});
+  final String title;
+  ViewPDF({this.fileLink, this.title});
 
   @override
   _ViewPDFState createState() => _ViewPDFState();
@@ -15,7 +16,7 @@ class _ViewPDFState extends State<ViewPDF> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(backTheme: true, title: 'PDF', context: context),
+      appBar: appBar(backTheme: true, title: widget.title, context: context),
       body: PDF.network(
         widget.fileLink,
         width: double.infinity,

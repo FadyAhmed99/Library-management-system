@@ -19,17 +19,9 @@ class TransactionSerializer {
   final UserSerializer user;
 
   final ItemSerializer item;
-  // final String type;
-  // final String name;
-  // final String itemId;
-  // final String image;
-  // final String itemLink;
-  // final String author;
 
   final LibrarySerializer borrowedFrom;
   final LibrarySerializer returnedTo;
-  // final String libraryId;
-  // final String libraryName;
 
   final String id;
   final double lateFees;
@@ -69,26 +61,26 @@ class Transaction extends ChangeNotifier {
 
   List<TransactionSerializer> _borrowedItems = [];
   List<TransactionSerializer> get borrowedItems {
-    return _borrowedItems;
+    return _borrowedItems.reversed.toList();
   }
 
   List<BorrowRequestSerializer> _borrowRequests = [];
   List<BorrowRequestSerializer> get borrowRequests {
-    return _borrowRequests;
+    return _borrowRequests.reversed.toList();
   }
 
-  List<TransactionSerializer> _transactions = [];
+  List<TransactionSerializer> _loadedTransactions = [];
   List<TransactionSerializer> get transactions {
-    return _transactions;
+    return _loadedTransactions.reversed.toList();
   }
 
   List<TransactionSerializer> _retunings = [];
   List<TransactionSerializer> get retunings {
-    return _retunings;
+    return _retunings.reversed.toList();
   }
 
 // user get his borrowed items
-  Future<dynamic> userBorrowings() async {
+  Future<dynamic> getUserBorrowings() async {
     try {
       final _url = '$apiStart/transactions/borrowed';
       final response = await http.get(
@@ -119,7 +111,7 @@ class Transaction extends ChangeNotifier {
   }
 
 // to show reciept
-  Future<dynamic> exactTransaction({String transactionId}) async {
+  Future<dynamic> getBorrowingTransaction({String transactionId}) async {
     try {
       final _url = '$apiStart/transactions/transaction/$transactionId';
       final response = await http.get(
@@ -171,11 +163,11 @@ class Transaction extends ChangeNotifier {
     }
   }
 
-// user get his borrowing log requestedToReturn = false or returnings requestedToReturn = true
-  Future<dynamic> getTransactions({bool requestedToReturn}) async {
+// user get his borrowing log requestedToReturn = null or returnings requestedToReturn = true
+  Future<dynamic> getBorrwingLogs() async {
     try {
       final _url =
-          '$apiStart/transactions/myTransactions?requestedToReturn=$requestedToReturn';
+          '$apiStart/transactions/myTransactions?requestedToReturn=null';
       final response = await http.get(
         _url,
         headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
@@ -188,10 +180,11 @@ class Transaction extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          _transactions.clear();
+          _loadedTransactions.clear();
+          print(extractedData['transactions']);
           extractedData['transactions'].forEach((trans) {
             try {
-              _transactions.add(TransactionSerializer.fromJson(trans));
+              _loadedTransactions.add(TransactionSerializer.fromJson(trans));
             } catch (e) {
               print(e);
             }
@@ -212,7 +205,49 @@ class Transaction extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getRequestedToReturn() async {
+  Future<dynamic> getReturningLogs() async {
+    try {
+      final _url =
+          '$apiStart/transactions/myTransactions?requestedToReturn=true';
+      final response = await http.get(
+        _url,
+        headers: {HttpHeaders.authorizationHeader: "bearer $globalToken"},
+      );
+
+      final extractedData = jsonDecode(response.body);
+      if (extractedData == null) {
+        return 'Error';
+      } else {
+        if (response.statusCode != 200)
+          return extractedData['status'] + ' ' + extractedData['err'];
+        else {
+          _loadedTransactions.clear();
+          print(extractedData['transactions']);
+          extractedData['transactions'].forEach((trans) {
+            try {
+              _loadedTransactions.add(TransactionSerializer.fromJson(trans));
+            } catch (e) {
+              print(e);
+            }
+          });
+          _borrowRequests.clear();
+          if (extractedData['bRequests'] != null) {
+            extractedData['bRequests'].forEach((req) {
+              _borrowRequests.add(BorrowRequestSerializer.fromJson(req));
+            });
+          }
+          notifyListeners();
+          return null;
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+// get returnings to let librarian recive items
+  Future<dynamic> getReturnRequests() async {
     try {
       final _url = '$apiStart/transactions/allTransactions/requestedToReturn';
       final response = await http.get(

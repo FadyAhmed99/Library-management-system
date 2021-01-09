@@ -13,12 +13,13 @@ class ItemTile extends StatefulWidget {
   bool favorite;
   ItemSerializer item;
   String libraryId;
-
+  bool stars;
   ItemTile({
     this.borrowed = false,
     this.favorite = false,
     this.item,
-    this.libraryId,
+    this.stars = true,
+    @required this.libraryId,
   });
   @override
   _ItemTileState createState() => _ItemTileState();
@@ -79,15 +80,13 @@ class _ItemTileState extends State<ItemTile> {
                                                 libraryId: widget.libraryId)
                                             .then((value) {
                                           if (value == null)
-                                            setState(() {
-                                              widget.favorite =
-                                                  !widget.favorite;
-                                            });
+                                            _favProvider.getFavourites();
                                         });
                                       }
                                     : () {
                                         _favProvider
                                             .deleteFromFavourites(
+                                                libraryId: widget.libraryId,
                                                 itemId: widget.item.id)
                                             .then((value) {
                                           if (value == null)
@@ -124,22 +123,25 @@ class _ItemTileState extends State<ItemTile> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      RatingBarIndicator(
-                        itemBuilder: (context, index) {
-                          return Icon(
-                            Icons.star,
-                            color: Colors.blue,
-                          );
-                        },
-                        itemCount: 5,
-                        itemSize: 20,
-                        rating: double.parse("${widget.item.averageRating}",
-                                    (e) => null) ==
-                                null
-                            ? 0.0
-                            : double.parse(
-                                "${widget.item.averageRating}", (e) => null),
-                      ),
+                      widget.stars
+                          ? RatingBarIndicator(
+                              itemBuilder: (context, index) {
+                                return Icon(
+                                  Icons.star,
+                                  color: Colors.blue,
+                                );
+                              },
+                              itemCount: 5,
+                              itemSize: 20,
+                              rating: double.parse(
+                                          "${widget.item.averageRating}",
+                                          (e) => null) ==
+                                      null
+                                  ? 0.0
+                                  : double.parse("${widget.item.averageRating}",
+                                      (e) => null),
+                            )
+                          : Container(),
                       Text(
                         widget.item.name,
                         overflow: TextOverflow.ellipsis,

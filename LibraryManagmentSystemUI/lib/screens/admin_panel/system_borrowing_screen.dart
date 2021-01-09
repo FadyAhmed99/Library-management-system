@@ -20,7 +20,7 @@ class _SystemBorrowingScreenState extends State<SystemBorrowingScreen> {
     if (_init) {
       final _userProvider = Provider.of<User>(context);
 
-      _userProvider.systemBorrowedItems().then((_) {
+      _userProvider.getSystemBorrowedItems().then((_) {
         setState(() {
           _loading = false;
           _transactions = _userProvider.allBorrowedItems;
@@ -38,7 +38,7 @@ class _SystemBorrowingScreenState extends State<SystemBorrowingScreen> {
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _userProvider.systemBorrowedItems();
+              await _userProvider.getSystemBorrowedItems();
             },
             child: ListView.builder(
                 itemCount: _transactions.length,

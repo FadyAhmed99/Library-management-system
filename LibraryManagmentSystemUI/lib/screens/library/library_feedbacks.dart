@@ -21,7 +21,7 @@ class _FeedBackListState extends State<FeedBackList> {
   void didChangeDependencies() {
     final _feedbackProvider = Provider.of<feed.Feedback>(context);
     if (_init) {
-      _feedbackProvider.getFeedbacks(libraryId: widget.library.id).then((_) {
+      _feedbackProvider.getLibraryFeedbacks(libraryId: widget.library.id).then((_) {
         _feedbacks = _feedbackProvider.feedbacks;
         setState(() {
           _init = false;

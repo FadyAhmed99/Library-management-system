@@ -37,12 +37,12 @@ class BorrowRequestSerializer {
 class BorrowRequest with ChangeNotifier {
   List<BorrowRequestSerializer> _libraryRequests = [];
   List<BorrowRequestSerializer> get requests {
-    return _libraryRequests;
+    return _libraryRequests.reversed.toList() ;
   }
 
   List<BorrowRequestSerializer> _userBorrowRequests = [];
   List<BorrowRequestSerializer> get borrowRequests {
-    return _userBorrowRequests;
+    return _userBorrowRequests.reversed.toList() ;
   }
 
   Future<String> requestToBorrow({String libraryId, String itemId}) async {
@@ -70,7 +70,7 @@ class BorrowRequest with ChangeNotifier {
     }
   }
 
-  Future<dynamic> getLibraryBorrowRequest({String libraryId}) async {
+  Future<dynamic> getLibraryBorrowRequests({String libraryId}) async {
     try {
       final _url = '$apiStart/borrowRequests/libraryRequests/$libraryId';
       final response = await http.get(
@@ -124,8 +124,7 @@ class BorrowRequest with ChangeNotifier {
     }
   }
 
-// changed to getuserborrowrequest
-  Future<dynamic> getBorrowRequest() async {
+  Future<dynamic> getUserBorrowRequests() async {
     try {
       final _url = '$apiStart/borrowRequests/myRequests';
       final response = await http.get(

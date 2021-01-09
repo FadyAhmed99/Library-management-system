@@ -65,11 +65,13 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
                                 .sendFeedback(
                                     libraryId: widget.library.id,
                                     feedback: _text.text)
-                                .then((value) {
+                                .then((value) async {
                               if (value != null) {
                                 ourDialog(context: context, error: value);
                               } else {
                                 // TODO: Add snackbar
+                                await _feedbackProvider.getLibraryFeedbacks(
+                                    libraryId: widget.library.id);
                                 Navigator.pop(context);
                               }
                             });

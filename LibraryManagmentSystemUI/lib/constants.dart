@@ -20,7 +20,7 @@ SliverGridDelegateWithMaxCrossAxisExtent kGridShape(
     {@required BuildContext context}) {
   return SliverGridDelegateWithMaxCrossAxisExtent(
     maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
-    childAspectRatio: 0.75,
+    childAspectRatio: 0.75, 
   );
 }
 

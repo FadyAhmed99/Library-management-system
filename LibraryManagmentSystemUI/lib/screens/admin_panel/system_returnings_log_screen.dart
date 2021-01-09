@@ -20,7 +20,7 @@ class _SystemReturningScreenState extends State<SystemReturningScreen> {
     if (_init) {
       final _userProvider = Provider.of<User>(context);
 
-      _userProvider.allSystemReturnings().then((_) {
+      _userProvider.getSystemReturnings().then((_) {
         setState(() {
           _loading = false;
           _transactions = _userProvider.systemReturnings;
@@ -39,7 +39,7 @@ class _SystemReturningScreenState extends State<SystemReturningScreen> {
         ? loading()
         : RefreshIndicator(
             onRefresh: () async {
-              await _userProvider.allSystemReturnings();
+              await _userProvider.getSystemReturnings();
             },
             child: ListView.builder(
                 itemCount: _transactions.length,

@@ -1,7 +1,7 @@
-import 'package:LibraryManagmentSystem/components/small_button.dart';
-import 'package:LibraryManagmentSystem/components/three_cells_row.dart';
-import 'package:LibraryManagmentSystem/components/user_image.dart';
 import 'package:LibraryManagmentSystem/classes/transaction.dart';
+import 'package:LibraryManagmentSystem/components/small_button.dart';
+import 'package:LibraryManagmentSystem/components/tap_to_review.dart';
+import 'package:LibraryManagmentSystem/components/three_cells_row.dart';
 import 'package:flutter/material.dart';
 
 import 'library_image.dart';
@@ -27,8 +27,30 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
     String requiredFees() {
       int diff = widget.transaction.deadline.difference(DateTime.now()).inDays;
       return diff < 0
-          ? '\$${diff.abs() * widget.transaction.lateFees / 100}'
+          ? '\$${diff.abs() * widget.transaction.lateFees  }'
           : 'No Fees';
+    }
+
+    Widget _stars(double size) {
+      return widget.transaction.item.reviews[0].rating == null
+          ? TapToReview(
+              size: size,
+              title: true,
+              refresh: true,
+              rating: widget.transaction.item.reviews[0].rating ?? 0,
+              itemId: widget.transaction.item.id,
+              itemName: widget.transaction.item.name,
+              libraryId: widget.transaction.borrowedFrom.id,
+            )
+          : TapToReview(
+              size: size,
+              title: false,
+              refresh: true,
+              rating: widget.transaction.item.reviews[0].rating ?? 0,
+              itemId: widget.transaction.item.id,
+              itemName: widget.transaction.item.name,
+              libraryId: widget.transaction.borrowedFrom.id,
+            );
     }
 
     return InkWell(
@@ -51,11 +73,16 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: (MediaQuery.of(context).size.width / 5),
-                        child: itemImage(
-                          image: widget.transaction.item.available[0].image,
-                        ),
+                      Column(
+                        children: [
+                          Container(
+                            width: (MediaQuery.of(context).size.width / 5),
+                            child: itemImage(
+                              image: widget.transaction.item.available[0].image,
+                            ),
+                          ),
+                          _showDetails ? Container() : _stars(20)
+                        ],
                       ),
                       Table(
                         defaultVerticalAlignment:
@@ -66,7 +93,9 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
                           threeChecks(
                             true,
                             widget.transaction.returned,
-                            widget.transaction.hasFees,
+                            requiredFees() == 'No Fees'
+                                ? false
+                                : !widget.transaction.hasFees,
                             context: context,
                           ),
                           threeEmptyRows(5),
@@ -118,13 +147,20 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
                                   ? widget.transaction.returnedTo.name
                                   : widget.transaction.borrowedFrom.name,
                               secondLabel:
-                                  "\$${(widget.transaction.lateFees / 100)}/ day",
+                                  "\$${(widget.transaction.lateFees  )}/ day",
                               thirdLabel: requiredFees(),
                             ),
                             threeEmptyRows(10),
                           ],
                         )
                       : Container(),
+                  _showDetails
+                      ? Container(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [_stars(30)]),
+                        )
+                      : Container()
                 ],
               ),
             ),
