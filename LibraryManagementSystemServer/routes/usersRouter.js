@@ -294,6 +294,7 @@ userRouter
   });
 
 // Modifying Profile Pic
+/*
 //offline
 userRouter.put(
   "/profile/profilePic",
@@ -340,8 +341,8 @@ userRouter.put(
     }
   }
 );
+*/
 
-/*
 //online
 userRouter.put(
   "/profile/profilePic",
@@ -418,7 +419,7 @@ userRouter.put(
     }
   }
 );
-*/
+
 
 
 //Get my subscribed Libraries

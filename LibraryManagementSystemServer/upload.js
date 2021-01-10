@@ -3,7 +3,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
 exports.upload = (destination , allowedTypes)=>{
-   /*
+   
     // online
     const storage = new CloudinaryStorage({
         cloudinary: cloudinary,
@@ -11,16 +11,17 @@ exports.upload = (destination , allowedTypes)=>{
             folder: destination
         }
     });
-    */
+    /*
     // offline
    const storage = multer.diskStorage({
-    destination: (req,file,cb)=>{  // cb is callback fn
-        cb(null , destination);  // cb(err, destination)   states where the uploaded files are stored in the server
-    } ,
-    filename: (req,file,cb)=>{
-        cb(null, req.user._id+'+'+file.originalname);   // file.originalname ensures that the uploaded file keeps its original name
-    } 
-});
+        destination: (req,file,cb)=>{  // cb is callback fn
+            cb(null , destination);  // cb(err, destination)   states where the uploaded files are stored in the server
+        } ,
+        filename: (req,file,cb)=>{
+            cb(null, req.user._id+'+'+file.originalname);   // file.originalname ensures that the uploaded file keeps its original name
+        } 
+    });
+    */
 
     const imgFileFilter = (req,file,cb)=>{  // cb(err, fileAcceptState)
         if(!file.originalname.match(allowedTypes)){    // check if the original name of the uploaded files doen't have the extensions mentioned

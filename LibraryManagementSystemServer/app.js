@@ -47,7 +47,7 @@ connect
 // Initializing Express app
 var app = express();
 
-/*
+
 // redirecting any non-secure communications to the secure https server  "Me"
 app.all("*", (req, res, next) => {
   if (req.get('x-forwarded-proto') == "https") {
@@ -65,7 +65,7 @@ app.all("*", (req, res, next) => {
     //                       https://hostname:port/url
   }
 });
-*/
+
 
 
 // view engine setup
