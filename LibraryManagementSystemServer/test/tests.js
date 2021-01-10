@@ -20,8 +20,8 @@ const request = require('supertest');
 chai.should();
 chai.use(chaiHttp);
 
-var user = "y15";  // regarding sign up/in
-var item = {name: "test15", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var user = "y17";  // regarding sign up/in
+var item = {name: "test17", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
 var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
@@ -29,6 +29,7 @@ var admin2Token = "";
 var admin3Token = "";
 var userId = "";
 var itemId = "";
+var myItemId = "5ff7e5c246f9159e445c50b7";
 var library1Id = "5fd53f880f2d076ac295de1d";
 var library2Id = "5fd53f8e0f2d076ac295de1e";
 var library3Id = "5fd53f910f2d076ac295de1f";
@@ -1702,7 +1703,6 @@ describe("Libraries API Tests", ()=>{
             });
         });
 
-
         describe("Delete a certain item in a certain library", ()=>{
             it("should delete the item in library 1", (done)=>{
                 request(server)
@@ -1779,23 +1779,6 @@ describe("Libraries API Tests", ()=>{
             });
         });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     describe("Reject Incoming join request or delete the user from the library if he is a member", ()=>{
         it("should reject the incoming join request of a certain user to library 1 or delete him if he exists", (done)=>{
@@ -1876,4 +1859,33 @@ describe("Libraries API Tests", ()=>{
         });
     });
     
+});
+
+
+describe("Fees", ()=>{
+    it("should get all fees for the request owner", (done)=>{
+        request(server)
+        .get('/fees/myFees')
+        .set("Authorization", `bearer ${token}`)
+        .end((err,res)=>{
+            res.should.have.status(200);
+            res.body.should.have.property("success", true);
+            res.body.should.have.property("status", "Request Succeed");
+            res.body.should.have.property("fees");
+            done();
+        });
+    });
+
+    it.skip("should pay the fees of the request owner", (done)=>{
+        request(server)
+        .put(`/fees/pay/${feeId}`)
+        .set("Authorization", `bearer ${token}`)
+        .end((err,res)=>{
+            res.should.have.status(200);
+            res.body.should.have.property("success", true);
+            res.body.should.have.property("status", "Paid Successfully");
+            res.body.should.have.property("fee");
+            done();
+        });
+    });
 });
