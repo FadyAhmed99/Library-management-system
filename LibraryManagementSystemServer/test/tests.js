@@ -6,8 +6,10 @@ db.libraries.insertOne({"_id":ObjectId("5fd53f910f2d076ac295de1f"), "name":"libr
 db.users.insertOne({"_id":ObjectId("5ff86dbc85361e52dc5ba275"),"username":"librarian1", "librarian":true, "subscribedLibraries":[] ,"salt":"79f2b1c9566a923de3994b92257083c2ee240a8b86e292d12e95c82809f2e343", "hash":"c1bda90783acf4c4b4ea322e33af24d671d4b63c0090c3d8d29bb7dc0d3412b4235004ba46d025eb345922e4876a34fee8133ce39cad4bb976f14bddab64ae3ee7584228099caea318fd140e220a395931395aa7a76490781080e6359eb0a2736463ffb60bb1be8c06206f27cbb95880841d61cf7765c545fb451dd7691b9036921455fa3b288a91f3f829d19f5a947461fe4b70b92c58bb763db91ca206d313236ed3c4f2948f34c0642b484b02fec77484111a326f18a1383be0ade85090b7cd96c355192d46820dd588f0c69115a9fb6179eedfc633a1b371d0ef923cd04aba8001293a9a81003e32a1c216d02f69b42d17155233bdc5280dea1bacc3e90dabc4bbd1aca76d11cfbd6d227686001a6a3135eba3ef17227b257a6e71660e06183d20a11549b514d3911e0ecd298e29ce62688c167db2dc4eff74c639a6cef5d6287833255727538e9c73344277d88ecbc12b8dc46197fb70361ef76b74138a71eba2ed53bf248e2d5b09f40466dc34bcab3c81e85edd272e624632d46217420801a1df9a3612ead812704892ef6dd9a6bbefb1427d71570ae46264772ab5812430e72ee0f5b12a08aa926ad9e72aafc62c167fc9168a6e6e7845c28a8921498e783d343db17f23f38e5dca35dda7dd8ca679225a8cf6eb3a4b8b7bbf3abb5e39734d94607e6364f9d7b5cc1df34a27029f6880f886f620ff2448b3df3c5ec1"})
 db.users.insertOne({"_id":ObjectId("5ff86dbc85361e52dc5ba276"),"username":"librarian2", "librarian":true, "subscribedLibraries":[] ,"salt":"79f2b1c9566a923de3994b92257083c2ee240a8b86e292d12e95c82809f2e343", "hash":"c1bda90783acf4c4b4ea322e33af24d671d4b63c0090c3d8d29bb7dc0d3412b4235004ba46d025eb345922e4876a34fee8133ce39cad4bb976f14bddab64ae3ee7584228099caea318fd140e220a395931395aa7a76490781080e6359eb0a2736463ffb60bb1be8c06206f27cbb95880841d61cf7765c545fb451dd7691b9036921455fa3b288a91f3f829d19f5a947461fe4b70b92c58bb763db91ca206d313236ed3c4f2948f34c0642b484b02fec77484111a326f18a1383be0ade85090b7cd96c355192d46820dd588f0c69115a9fb6179eedfc633a1b371d0ef923cd04aba8001293a9a81003e32a1c216d02f69b42d17155233bdc5280dea1bacc3e90dabc4bbd1aca76d11cfbd6d227686001a6a3135eba3ef17227b257a6e71660e06183d20a11549b514d3911e0ecd298e29ce62688c167db2dc4eff74c639a6cef5d6287833255727538e9c73344277d88ecbc12b8dc46197fb70361ef76b74138a71eba2ed53bf248e2d5b09f40466dc34bcab3c81e85edd272e624632d46217420801a1df9a3612ead812704892ef6dd9a6bbefb1427d71570ae46264772ab5812430e72ee0f5b12a08aa926ad9e72aafc62c167fc9168a6e6e7845c28a8921498e783d343db17f23f38e5dca35dda7dd8ca679225a8cf6eb3a4b8b7bbf3abb5e39734d94607e6364f9d7b5cc1df34a27029f6880f886f620ff2448b3df3c5ec1"})
 db.users.insertOne({"_id":ObjectId("5ff86dbc85361e52dc5ba277"),"username":"librarian3", "librarian":true, "subscribedLibraries":[] ,"salt":"79f2b1c9566a923de3994b92257083c2ee240a8b86e292d12e95c82809f2e343", "hash":"c1bda90783acf4c4b4ea322e33af24d671d4b63c0090c3d8d29bb7dc0d3412b4235004ba46d025eb345922e4876a34fee8133ce39cad4bb976f14bddab64ae3ee7584228099caea318fd140e220a395931395aa7a76490781080e6359eb0a2736463ffb60bb1be8c06206f27cbb95880841d61cf7765c545fb451dd7691b9036921455fa3b288a91f3f829d19f5a947461fe4b70b92c58bb763db91ca206d313236ed3c4f2948f34c0642b484b02fec77484111a326f18a1383be0ade85090b7cd96c355192d46820dd588f0c69115a9fb6179eedfc633a1b371d0ef923cd04aba8001293a9a81003e32a1c216d02f69b42d17155233bdc5280dea1bacc3e90dabc4bbd1aca76d11cfbd6d227686001a6a3135eba3ef17227b257a6e71660e06183d20a11549b514d3911e0ecd298e29ce62688c167db2dc4eff74c639a6cef5d6287833255727538e9c73344277d88ecbc12b8dc46197fb70361ef76b74138a71eba2ed53bf248e2d5b09f40466dc34bcab3c81e85edd272e624632d46217420801a1df9a3612ead812704892ef6dd9a6bbefb1427d71570ae46264772ab5812430e72ee0f5b12a08aa926ad9e72aafc62c167fc9168a6e6e7845c28a8921498e783d343db17f23f38e5dca35dda7dd8ca679225a8cf6eb3a4b8b7bbf3abb5e39734d94607e6364f9d7b5cc1df34a27029f6880f886f620ff2448b3df3c5ec1"})
+db.users.insertOne({"_id":ObjectId("5ff86dbc85361e52dc5ba279"), "username":"member", "subscribedLibraries":[{"_id":ObjectId("5fd53f880f2d076ac295de1d"), "member": true}, {"_id":ObjectId("5fd53f8e0f2d076ac295de1e"), "member": true},{"_id":ObjectId("5fd53f910f2d076ac295de1f"), "member": true}], "salt":"79f2b1c9566a923de3994b92257083c2ee240a8b86e292d12e95c82809f2e343", "hash":"c1bda90783acf4c4b4ea322e33af24d671d4b63c0090c3d8d29bb7dc0d3412b4235004ba46d025eb345922e4876a34fee8133ce39cad4bb976f14bddab64ae3ee7584228099caea318fd140e220a395931395aa7a76490781080e6359eb0a2736463ffb60bb1be8c06206f27cbb95880841d61cf7765c545fb451dd7691b9036921455fa3b288a91f3f829d19f5a947461fe4b70b92c58bb763db91ca206d313236ed3c4f2948f34c0642b484b02fec77484111a326f18a1383be0ade85090b7cd96c355192d46820dd588f0c69115a9fb6179eedfc633a1b371d0ef923cd04aba8001293a9a81003e32a1c216d02f69b42d17155233bdc5280dea1bacc3e90dabc4bbd1aca76d11cfbd6d227686001a6a3135eba3ef17227b257a6e71660e06183d20a11549b514d3911e0ecd298e29ce62688c167db2dc4eff74c639a6cef5d6287833255727538e9c73344277d88ecbc12b8dc46197fb70361ef76b74138a71eba2ed53bf248e2d5b09f40466dc34bcab3c81e85edd272e624632d46217420801a1df9a3612ead812704892ef6dd9a6bbefb1427d71570ae46264772ab5812430e72ee0f5b12a08aa926ad9e72aafc62c167fc9168a6e6e7845c28a8921498e783d343db17f23f38e5dca35dda7dd8ca679225a8cf6eb3a4b8b7bbf3abb5e39734d94607e6364f9d7b5cc1df34a27029f6880f886f620ff2448b3df3c5ec1"})
 
-db.items.insertOne({"_id":ObjectId("5ff7e5c246f9159e445c50b7"), "name":"item1Book", "genre": "wow", "type":"book", "author":"cat", "language":"arabic", "ISBN":"24323232", "available":[{"_id":ObjectId("5ff86dbc85361e52dc5ba277"), "amount":10, "location":"shelf-3", "lateFees":5, "inLibrary":true, "image":"imagelink"}]})
+db.items.insertOne({"_id":ObjectId("5ff7e5c246f9159e445c50b7"), "name":"item1Book", "genre": "wow", "type":"book", "author":"cat", "language":"arabic", "ISBN":"24323232", "available":[{"_id":ObjectId("5fd53f880f2d076ac295de1d"), "location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "amount" : 99999999999999999},{"_id":ObjectId("5fd53f8e0f2d076ac295de1e"),"amount":99999999999999999, "location":"shelf-3", "lateFees":5, "inLibrary":true, "image":"imagelink"}, {"_id":ObjectId("5fd53f910f2d076ac295de1f"),"amount":99999999999999999, "location":"shelf-3", "lateFees":5, "inLibrary":true, "image":"imagelink"}]})
+db.items.insertOne({"_id":ObjectId("5ff7e5c246f9159e445c50b8"), "name":"item1Book", "genre": "wow", "type":"ebook", "author":"cat", "language":"arabic", "ISBN":"24323232", "available":[{"_id":ObjectId("5fd53f880f2d076ac295de1d"), "location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"},{"_id":ObjectId("5fd53f8e0f2d076ac295de1e"),"location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"}, {"_id":ObjectId("5fd53f910f2d076ac295de1f"), "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"}]})
 */
 
 const fs = require('fs');
@@ -19,9 +21,12 @@ const server = require('../app');
 const request = require('supertest');
 chai.should();
 chai.use(chaiHttp);
+const PhysicalBorrowRequests = require('../models/physicalBorrowRequestSchema');
+const Transaction = require('../models/transactionSchema');
+const mongoose = require('mongoose');
 
-var user = "y17";  // regarding sign up/in
-var item = {name: "test17", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var user = "s12";  // regarding sign up/in
+var item = {name: "s12", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
 var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
@@ -30,11 +35,16 @@ var admin3Token = "";
 var userId = "";
 var itemId = "";
 var myItemId = "5ff7e5c246f9159e445c50b7";
+var myNonItemId = "5ff7e5c246f9159e445c50b8";
 var library1Id = "5fd53f880f2d076ac295de1d";
 var library2Id = "5fd53f8e0f2d076ac295de1e";
 var library3Id = "5fd53f910f2d076ac295de1f";
 var review = "good";
 var rating = 4;
+var memToken = "";
+var bReq3Id = "";
+var bReq2Id = "";
+var bReq1Id = "";
 
 describe("Users API Tests", ()=>{
     describe("Sign up", ()=>{
@@ -1506,7 +1516,7 @@ describe("Libraries API Tests", ()=>{
                     res.body.should.have.property("success", true);
                     res.body.should.have.property("num");
                     res.body.should.have.property("items");
-                    itemId = res.body.items[0]._id;
+                    itemId = res.body.items[2]._id;
                     done();
                 });
             });
@@ -1860,6 +1870,322 @@ describe("Libraries API Tests", ()=>{
     });
     
 });
+
+describe("Borrow requests", ()=>{
+    describe("User sends borrow requests", ()=>{
+        it("should send a borrow request to library 1 in order to borrow a physical item (book, magazine, audioMaterial)", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library1Id}/${myItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Requested Successfully");
+                    done();
+                });
+            });
+        });
+
+        it("should send a borrow request to library 2 in order to borrow a physical item (book, magazine, audioMaterial)", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library2Id}/${myItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Requested Successfully");
+                    done();
+                });
+            });
+        });
+
+        it("should send a borrow request to library 3 in order to borrow a physical item (book, magazine, audioMaterial)", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library3Id}/${myItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Requested Successfully");
+                    done();
+                });
+            });
+        });
+    
+        it("should borrow a non-physical item (ebook, article) from library 1", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library1Id}/${myNonItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Borrowed Successfully");
+                    done();
+                });
+            });
+        });
+
+        it("should borrow a non-physical item (ebook, article) from library 2", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library2Id}/${myNonItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Borrowed Successfully");
+                    done();
+                });
+            });
+        });
+
+        it("should borrow a non-physical item (ebook, article) from library 3", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library3Id}/${myNonItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("status", "Borrowed Successfully");
+                    done();
+                });
+            });
+        });
+    
+        it("should NOT make the borrow request if the user have pending borrow requests equal to the maximum allowed borrow requests from any library", (done)=>{
+            request(server)
+            .post('/users/login')
+            .send({username: "member", password: "meow1"})
+            .end((err, res)=>{
+                memToken = res.body.token;
+                request(server)
+                .post(`/borrowRequests/request/${library1Id}/${myItemId}`)
+                .set("Authorization", `bearer ${memToken}`)
+                .end((err,res)=>{
+                    request(server)
+                    .post(`/borrowRequests/request/${library2Id}/${myItemId}`)
+                    .set("Authorization", `bearer ${memToken}`)
+                    .end((err, res)=>{
+                        request(server)
+                        .post(`/borrowRequests/request/${library3Id}/${myItemId}`)
+                        .set("Authorization", `bearer ${memToken}`)
+                        .end((err, res)=>{
+                            request(server)
+                            .post(`/borrowRequests/request/${library1Id}/${myItemId}`)
+                            .set("Authorization", `bearer ${memToken}`)
+                            .end((err, res)=>{
+                                res.should.have.status(403);
+                                res.body.should.have.property("success", false);
+                                res.body.should.have.property("status", "Request Failed");
+                                res.body.should.have.property("err", "Limit Reached");
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    describe("Librarian gets all borrow requests from his library", ()=>{
+        it("should get all borrow requests from library 1", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library1Id}`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("requests");
+                bReq1Id = res.body.requests[0]._id;
+                done();
+            });
+        });
+
+        it("should get all borrow requests from library 2", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library2Id}`)
+            .set("Authorization", `bearer ${admin2Token}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("requests");
+                bReq2Id = res.body.requests[0]._id;
+                done();
+            });
+        });
+
+        it("should get all borrow requests from library 3", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library3Id}`)
+            .set("Authorization", `bearer ${admin3Token}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("requests");
+                bReq3Id = res.body.requests[0]._id;
+                done();
+            });
+        });
+
+        it("should NOT get borrow requests from library 1 when the request owner is not the librarian", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library1Id}`)
+            .set("Authorization", `bearer ${admin2Token}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+
+        it("should NOT get borrow requests from library 2 when the request owner is not the librarian", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library2Id}`)
+            .set("Authorization", `bearer ${admin3Token}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+
+        it("should NOT get borrow requests from library 3 when the request owner is not the librarian", (done)=>{
+            request(server)
+            .get(`/borrowRequests/libraryRequests/${library3Id}`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+
+    describe("User gets all his pending borrow requests", ()=>{
+        it("should get all pending borrow requests for the request owner", (done)=>{
+            request(server)
+            .get('/borrowRequests/myRequests')
+            .set("Authorization", `bearer ${token}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("requests");
+                done();
+            });
+        });
+    });
+
+    describe("Librarian accepts a borrow request in his library", ()=>{
+        it("should accept the borrow request in library 1 if the request owner is the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library1Id}/${bReq1Id}`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end(async(err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("status","Accepted Successfully");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq1Id});
+                done();
+            });
+        });
+
+        it("should accept the borrow request in library 2 if the request owner is the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library2Id}/${bReq2Id}`)
+            .set("Authorization", `bearer ${admin2Token}`)
+            .end(async(err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("status","Accepted Successfully");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq2Id});
+                done();
+            });
+        });
+
+        it("should accept the borrow request in library 3 if the request owner is the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library3Id}/${bReq3Id}`)
+            .set("Authorization", `bearer ${admin3Token}`)
+            .end(async(err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("status","Accepted Successfully");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq3Id});
+                done();
+            });
+        });
+
+        it("should NOT accept the borrow request in library 1 if the request owner is NOT the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library1Id}/${bReq1Id}`)
+            .set("Authorization", `bearer ${admin2Token}`)
+            .end(async(err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status","Access Denied");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq1Id});
+                done();
+            });
+        });
+
+        it("should NOT accept the borrow request in library 2 if the request owner is NOT the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library2Id}/${bReq2Id}`)
+            .set("Authorization", `bearer ${admin3Token}`)
+            .end(async(err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status","Access Denied");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq2Id});
+                done();
+            });
+        });
+
+        it("should NOT accept the borrow request in library 3 if the request owner is NOT the librarian", (done)=>{
+            request(server)
+            .put(`/borrowRequests/accept/${library3Id}/${bReq3Id}`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end(async(err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status","Access Denied");
+                await PhysicalBorrowRequests.deleteOne({_id: bReq3Id});
+                done();
+            });
+        });
+
+        afterEach(async()=>{
+            await Transaction.deleteMany({});
+        });
+    });
+});
+
 
 
 describe("Fees", ()=>{
