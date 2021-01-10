@@ -122,6 +122,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 0.0),
                   child: Text(
                     'Librica',
+                    key: ValueKey('n'),
                     style: TextStyle(
                       fontSize: 40.0,
                       fontWeight: FontWeight.w900,
