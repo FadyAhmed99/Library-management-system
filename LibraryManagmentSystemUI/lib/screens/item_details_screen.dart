@@ -61,7 +61,6 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
     final _borrowRequestProvider = Provider.of<BorrowRequest>(context);
     final _itemProvider = Provider.of<Item>(context, listen: true);
 
-    _item = _itemProvider.item;
     _librarian = _libraryProvider.librarian;
 
     bool borrowed = false;
@@ -85,6 +84,8 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
             ? false
             : true
         : false);
+    _item = _itemProvider.item;
+
     return Scaffold(
         appBar: appBar(
             backTheme: true,
@@ -254,6 +255,8 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                               TableCellVerticalAlignment.top,
                           textDirection: TextDirection.ltr,
                           children: [
+                            _emptyRow(15),
+                            _row('Item Name', _item.name),
                             _emptyRow(15),
                             _row('Item Type', _item.type),
                             _emptyRow(15),

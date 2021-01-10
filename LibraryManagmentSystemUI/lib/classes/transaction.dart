@@ -74,9 +74,9 @@ class Transaction extends ChangeNotifier {
     return _loadedTransactions.reversed.toList();
   }
 
-  List<TransactionSerializer> _retunings = [];
-  List<TransactionSerializer> get retunings {
-    return _retunings.reversed.toList();
+  List<TransactionSerializer> _returnings = [];
+  List<TransactionSerializer> get returnings {
+    return _returnings.reversed.toList();
   }
 
 // user get his borrowed items
@@ -263,9 +263,9 @@ class Transaction extends ChangeNotifier {
         if (response.statusCode != 200)
           return extractedData['status'] + ' ' + extractedData['err'];
         else {
-          _retunings.clear();
+          _returnings.clear();
           extractedData['transactions'].forEach((trans) {
-            _retunings.add(TransactionSerializer.fromJson(trans));
+            _returnings.add(TransactionSerializer.fromJson(trans));
             return null;
           });
           notifyListeners();

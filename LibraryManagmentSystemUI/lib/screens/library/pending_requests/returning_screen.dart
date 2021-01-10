@@ -27,7 +27,7 @@ class _ReturningScrrenState extends State<ReturningScrren> {
         if (err != null) {
           ourDialog(context: context, error: err);
         } else {
-          _returnings = _transactionsProvider.retunings;
+          _returnings = _transactionsProvider.returnings;
         }
       });
     }

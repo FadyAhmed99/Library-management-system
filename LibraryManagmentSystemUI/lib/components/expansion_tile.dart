@@ -54,7 +54,7 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
     String requiredFees() {
       int diff = widget.transaction.deadline.difference(DateTime.now()).inDays;
       return diff < 0
-          ? '\$${diff.abs() * widget.transaction.lateFees   }'
+          ? '\$${diff.abs() * widget.transaction.lateFees}'
           : 'No Fees';
     }
 
@@ -175,8 +175,8 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
                                     ? widget.transaction.borrowedFrom.name
                                     : widget.borrowRequest.library.name,
                                 secondLabel: widget.borrowRequest == null
-                                    ? "\$${(widget.transaction.lateFees   )}/day"
-                                    : "\$${(widget.borrowRequest.item.available[0].lateFees   )}/day",
+                                    ? "\$${(widget.transaction.lateFees)}/day"
+                                    : "\$${(widget.borrowRequest.item.available[0].lateFees)}/day",
                                 thirdLabel: widget.borrowRequest == null
                                     ? requiredFees()
                                     : ''),
@@ -195,7 +195,7 @@ class _CustomExpantionTileState extends State<CustomExpantionTile> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: SmallButton(
-                    child: Text('Show Detailes'),
+                    child: Text('Show details'),
                     onPressed: () {
                       setState(() {
                         _showDetails = !_showDetails;

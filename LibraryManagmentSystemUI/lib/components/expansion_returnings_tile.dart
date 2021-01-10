@@ -27,7 +27,7 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
     String requiredFees() {
       int diff = widget.transaction.deadline.difference(DateTime.now()).inDays;
       return diff < 0
-          ? '\$${diff.abs() * widget.transaction.lateFees  }'
+          ? '\$${diff.abs() * widget.transaction.lateFees}'
           : 'No Fees';
     }
 
@@ -147,7 +147,7 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
                                   ? widget.transaction.returnedTo.name
                                   : widget.transaction.borrowedFrom.name,
                               secondLabel:
-                                  "\$${(widget.transaction.lateFees  )}/ day",
+                                  "\$${(widget.transaction.lateFees)}/ day",
                               thirdLabel: requiredFees(),
                             ),
                             threeEmptyRows(10),
@@ -171,7 +171,7 @@ class _ReturningsExpansionTileState extends State<ReturningsExpansionTile> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: SmallButton(
-                    child: Text('Show Detailes'),
+                    child: Text('Show details'),
                     onPressed: () {
                       setState(() {
                         _showDetails = !_showDetails;

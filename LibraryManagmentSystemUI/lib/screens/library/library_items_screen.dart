@@ -61,23 +61,29 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
     void requestBorrow(int index) {
       setState(() => _btnLoading = true);
       bool pending = _subsLibrariesProvider.subs
-              .where((sub) =>
-                  sub.status == 'pending' && sub.id == widget.libraryId)
-              .toList()
-              .length !=
-          0;
+              .firstWhere((lib) => lib.id == widget.libraryId)
+              .status ==
+          'pending';
+
       _borrowRequestProvider
           .requestToBorrow(
               itemId: _items[index].id, libraryId: widget.libraryId)
           .then((err) async {
-        if (err != null)
+        if (err != null) {
+          setState(() {
+            _btnLoading = false;
+          });
           ourDialog(
               btn1: 'ok',
               context: context,
               error: err,
               button2: FlatButton(
-                child: !pending ? null : Text('Send join request'),
+                child: pending ? null : Text('Send join request'),
                 onPressed: () async {
+                  setState(() {
+                    _btnLoading = false;
+                  });
+
                   await _userProvider
                       .sendJoinRequest(libraryId: widget.libraryId)
                       .then((err) async {
@@ -91,7 +97,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                   });
                 },
               ));
-        else {
+        } else {
           await _borrowRequestProvider.getUserBorrowRequests();
           await _transactionProvider.getUserBorrowings();
           setState(() {
