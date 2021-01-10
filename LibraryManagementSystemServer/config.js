@@ -12,7 +12,7 @@ module.exports = {
     'lib1': '5fd53f880f2d076ac295de1d',
     'lib2': '5fd53f8e0f2d076ac295de1e',
     'lib3': '5fd53f910f2d076ac295de1f',
-    'maxNumOfBorrowings': 3,
+    'maxNumOfBorrowings': 6,    // original 3 
     'jwtDuration': 36000,
     'cloudName': 'librica',
     'cloudAPIKey': '851195868686711',

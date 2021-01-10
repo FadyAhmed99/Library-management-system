@@ -106,7 +106,6 @@ transactionRouter.get(
           });
         });
     } else {
-      console.log(req.hostname);
       // returnings
       Transaction.find({
         user: req.user._id,

@@ -81,7 +81,6 @@ borrowRequestRouter.post(
                                       req.params.libraryId
                                     ).amount -= 1;
                                     item.save().catch((err) => {
-                                      console.log(err);
                                     });
                                   })
                                   .catch((err) => {
