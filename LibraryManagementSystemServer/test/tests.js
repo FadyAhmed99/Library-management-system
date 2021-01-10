@@ -1,4 +1,13 @@
 /*
+In a shell, run:
+-----------------
+mongod --dbpath=data --bind_ip 127.0.0.1
+
+In another shell, run these lines one by one:
+-------------------------------------------------
+mongo
+use LibraryManagementSystem
+
 db.libraries.insertOne({"_id":ObjectId("5fd53f880f2d076ac295de1d"), "name":"library1", "librarian":ObjectId("5ff86dbc85361e52dc5ba275"), "available":[]})
 db.libraries.insertOne({"_id":ObjectId("5fd53f8e0f2d076ac295de1e"), "name":"library2", "librarian":ObjectId("5ff86dbc85361e52dc5ba276"), "available":[]})
 db.libraries.insertOne({"_id":ObjectId("5fd53f910f2d076ac295de1f"), "name":"library3", "librarian":ObjectId("5ff86dbc85361e52dc5ba277"), "available":[]})
@@ -10,6 +19,9 @@ db.users.insertOne({"_id":ObjectId("5ff86dbc85361e52dc5ba279"), "username":"memb
 
 db.items.insertOne({"_id":ObjectId("5ff7e5c246f9159e445c50b7"), "name":"item1Book", "genre": "wow", "type":"book", "author":"cat", "language":"arabic", "ISBN":"24323232", "available":[{"_id":ObjectId("5fd53f880f2d076ac295de1d"), "location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "amount" : 99999999999999999},{"_id":ObjectId("5fd53f8e0f2d076ac295de1e"),"amount":99999999999999999, "location":"shelf-3", "lateFees":5, "inLibrary":true, "image":"imagelink"}, {"_id":ObjectId("5fd53f910f2d076ac295de1f"),"amount":99999999999999999, "location":"shelf-3", "lateFees":5, "inLibrary":true, "image":"imagelink"}]})
 db.items.insertOne({"_id":ObjectId("5ff7e5c246f9159e445c50b8"), "name":"item1Book", "genre": "wow", "type":"ebook", "author":"cat", "language":"arabic", "ISBN":"24323232", "available":[{"_id":ObjectId("5fd53f880f2d076ac295de1d"), "location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"},{"_id":ObjectId("5fd53f8e0f2d076ac295de1e"),"location":"shelf-3", "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"}, {"_id":ObjectId("5fd53f910f2d076ac295de1f"), "lateFees":5, "inLibrary":false, "image":"imagelink", "itemLink":"link"}]})
+
+db.transactions.insertOne({"_id":ObjectId("5ffb09fa1fc3602ec41d8bf2"),"user":ObjectId("5ff86dbc85361e52dc5ba279"), "borrowedFrom": ObjectId("5fd53f880f2d076ac295de1d"), "item":ObjectId("5ff7e5c246f9159e445c50b7"), "returnedTo":ObjectId("5fd53f8e0f2d076ac295de1e"), "lateFees": 5, "requestedToReturn": true, "returned": true, "hasFees": true})
+db.fees.insertOne({"_id":ObjectId("5ffb0ae01fc3602ec41d8bf2"),"user":ObjectId("5ff86dbc85361e52dc5ba279"), "transactionId": ObjectId("5ffb09fa1fc3602ec41d8bf2"), "item":ObjectId("5ff7e5c246f9159e445c50b7"), "fees": 5, "paid": false})
 */
 
 const fs = require('fs');
@@ -25,8 +37,8 @@ const PhysicalBorrowRequests = require('../models/physicalBorrowRequestSchema');
 const Transaction = require('../models/transactionSchema');
 const mongoose = require('mongoose');
 
-var user = "s12";  // regarding sign up/in
-var item = {name: "s12", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var user = "d17";  // regarding sign up/in
+var item = {name: "d17", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
 var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
@@ -45,6 +57,8 @@ var memToken = "";
 var bReq3Id = "";
 var bReq2Id = "";
 var bReq1Id = "";
+var feeId = "5ffb0ae01fc3602ec41d8bf2";
+var transactionId = "5ffb09fa1fc3602ec41d8bf2";
 
 describe("Users API Tests", ()=>{
     describe("Sign up", ()=>{
@@ -2187,6 +2201,218 @@ describe("Borrow requests", ()=>{
 });
 
 
+describe("Working with transactions", ()=>{
+    describe("User gets all of his transactions", ()=>{
+        it("should get all user's transactions", (done)=>{
+            request(server)
+            .get(`/transactions/myTransactions`)
+            .set("Authorization", `bearer ${token}`)
+            .query({requestedToReturn: "null"})
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("bRequests"); 
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+    });
+
+    describe("User gets all of his returnings", ()=>{
+        it("should get all user's returnings", (done)=>{
+            request(server)
+            .get(`/transactions/myTransactions`)
+            .set("Authorization", `bearer ${token}`)
+            .query({requestedToReturn: true})
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+    });
+
+    describe("User gets information about a specific transaction", ()=>{
+
+        beforeEach(async()=>{
+           await Transaction.create({"_id":"5ffb09fa1fc3602ec41d8bf2","user":"5ff86dbc85361e52dc5ba279", "borrowedFrom": "5fd53f880f2d076ac295de1d", "item":"5ff7e5c246f9159e445c50b7", "returnedTo":"5fd53f8e0f2d076ac295de1e", "lateFees": 5, "requestedToReturn": false, "returned": true, "hasFees": true});
+        });
+
+        it("should get info about a specific transaction of his", (done)=>{
+            request(server)
+            .get(`/transactions/transaction/${transactionId}`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transaction");
+                done();
+            });
+        })
+    });   
+
+
+    describe("User gets all his borrowed items", ()=>{
+        it("should get user's borrowed items", (done)=>{
+            request(server)
+            .get(`/transactions/borrowed`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("borrowedItems");
+                done();
+            });
+        });
+    });
+
+    describe("Admin gets all transactions in the system",()=>{
+        it("should get all transactions", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+
+        it("should NOT get all transactions if the request owner is NOT a librarian", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+
+    describe("User sends a return request to return a physical item", ()=>{
+        it("should send a return request", (done)=>{
+            request(server)
+            .put(`/transactions/requestToReturn/${transactionId}`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("status","Transaction Requested To Return");
+                done();
+            });
+        });
+    });
+
+    describe("Librarian accepts a specific return request", ()=>{
+        it("should accept the return request if the request owner is a librarian", (done)=>{
+            request(server)
+            .put(`/transactions/recive/${transactionId}`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("status","Transaction Returned");
+                done();
+            });
+        });
+
+        it("should NOT accept the return request if the request owner is NOT a librarian", (done)=>{
+            request(server)
+            .put(`/transactions/recive/${transactionId}`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+
+    describe("Librarian gets all non-returned transactions", ()=>{
+        it("should return all non-returned transactions", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions/nonReturned`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+
+        it("should NOT return all non-returned transactions if the request owner is NOT a librarian", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions/nonReturned`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+
+    describe("Librarian gets all requested to return transactions", ()=>{
+        it("should return all non-returned transactions", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions/requestedToReturn`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+
+        it("should NOT return all non-returned transactions if the request owner is NOT a librarian", (done)=>{
+            request(server)
+            .get(`/transactions/allTransactions/requestedToReturn`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+
+    describe("Librarian gets all returnings", ()=>{
+        it("should get all returnings", (done)=>{
+            request(server)
+            .get(`/transactions/admin/returned`)
+            .set("Authorization", `bearer ${adminToken}`)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.have.property("success", true);
+                res.body.should.have.property("transactions");
+                done();
+            });
+        });
+
+        it("should NOT get all returnings if the request owner is not a librarian", (done)=>{
+            request(server)
+            .get(`/transactions/admin/returned`)
+            .set("Authorization", `bearer ${memToken}`)
+            .end((err,res)=>{
+                res.should.have.status(403);
+                res.body.should.have.property("success", false);
+                res.body.should.have.property("status", "Access Denied");
+                done();
+            });
+        });
+    });
+});
+
+
 
 describe("Fees", ()=>{
     it("should get all fees for the request owner", (done)=>{
@@ -2202,10 +2428,35 @@ describe("Fees", ()=>{
         });
     });
 
-    it.skip("should pay the fees of the request owner", (done)=>{
+    it("should get all fees in the system if the request owner is a librarian", (done)=>{
+        request(server)
+        .get('/fees/admin/fees')
+        .set("Authorization", `bearer ${adminToken}`)
+        .end((err,res)=>{
+            res.should.have.status(200);
+            res.body.should.have.property("success", true);
+            res.body.should.have.property("status", "Request Succeed");
+            res.body.should.have.property("fees");
+            done();
+        });
+    });
+
+    it("should NOT get the fees in the system if the request owner is NOT a librarian", (done)=>{
+        request(server)
+        .get('/fees/admin/fees')
+        .set("Authorization", `bearer ${memToken}`)
+        .end((err,res)=>{
+            res.should.have.status(403);
+            res.body.should.have.property("success", false);
+            res.body.should.have.property("status", "Access Denied");
+            done();
+        });
+    });
+
+    it("should pay the fees of the request owner", (done)=>{
         request(server)
         .put(`/fees/pay/${feeId}`)
-        .set("Authorization", `bearer ${token}`)
+        .set("Authorization", `bearer ${memToken}`)
         .end((err,res)=>{
             res.should.have.status(200);
             res.body.should.have.property("success", true);

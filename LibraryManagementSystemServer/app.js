@@ -33,7 +33,7 @@ const feesRouter = require('./routes/feesRouter');
 // Connecting to DB server
 Mongoose.set('useCreateIndex', true);
 const url = config.mongoUrl;
-const connect = Mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+const connect = Mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 
 connect
   .then((db) => {

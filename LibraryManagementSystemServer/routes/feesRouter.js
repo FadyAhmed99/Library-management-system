@@ -191,6 +191,7 @@ feesRouter.get(
   "/admin/fees",
   cors.corsWithOptions,
   authenticate.verifyUser,
+  authenticate.verifyAdmin,
   (req, res, next) => {
     Fee.find({})
       .populate("item")
