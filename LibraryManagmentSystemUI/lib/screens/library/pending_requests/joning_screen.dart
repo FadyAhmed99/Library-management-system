@@ -69,8 +69,8 @@ class _JoiningScreenState extends State<JoiningScreen> {
                                   setState(() {
                                     _requests.removeAt(index);
                                   });
-                                  Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text(status)));
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text('Request approved')));
                                 });
                               },
                               child: Icon(
@@ -90,8 +90,8 @@ class _JoiningScreenState extends State<JoiningScreen> {
                                   setState(() {
                                     _requests.removeAt(index);
                                   });
-                                  Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text(status)));
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text('Request rejected')));
                                 });
                               },
                               child: Icon(
