@@ -208,7 +208,7 @@ feesRouter.get(
           fees[i].user = {
             firstname: fees[i].user.firstname,
             lastname: fees[i].user.lastname,
-            profilePhoto: correctPath(fees[i].user.profilePhoto, req.hostname),
+            profilePhoto: fees[i].user.profilePhoto,
           };
         }
 

@@ -17,6 +17,8 @@ cookie-parser
 morgan
 cors
 node-cron
+multer-storage-cloudinary
+cloudinary
 
 nodemon  	---> development-dependency
 mocha    	---> development-dependency

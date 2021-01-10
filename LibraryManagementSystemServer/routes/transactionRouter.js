@@ -496,10 +496,7 @@ transactionRouter.get(
             user: {
               firstname: transactions[i].user.firstname,
               lastname: transactions[i].user.lastname,
-              profilePhoto: correctPath(
-                transactions[i].user.profilePhoto,
-                req.hostname
-              ),
+              profilePhoto:transactions[i].user.profilePhoto,
               phoneNumber: transactions[i].user.phoneNumber,
               _id: transactions[i].user._id,
               username: transactions[i].user.username,

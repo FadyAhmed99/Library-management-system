@@ -44,6 +44,10 @@ var userSchema = new schema({
         type: String,
         default: ''
     },
+    profilePhotoPublicId:{
+        type: String,
+        default: ''
+    },
     phoneNumber:{
         type: String,
         default: ''
