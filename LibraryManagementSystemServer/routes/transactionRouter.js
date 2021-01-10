@@ -672,20 +672,13 @@ transactionRouter.get(
       .populate("borrowedFrom")
       .populate("user")
       .then((transactions) => {
-        var lib;
         for (var i in transactions) {
-          transactions.forEach((transaction) => {
-            transaction.item.available.forEach((library) => {
-              if (library._id.equals(transaction.borrowedFrom._id)) {
-                lib = library;
-              }
-            });
-          });
-
           transactions[i].item = {
             _id: transactions[i].item._id,
             name: transactions[i].item.name,
-            available: lib,
+            available: transactions[i].item.available.id(
+              transactions[i].borrowedFrom._id
+            ),
           };
           transactions[i].user = {
             _id: transactions[i].user._id,
