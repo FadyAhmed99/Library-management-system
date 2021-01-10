@@ -20,12 +20,20 @@ const request = require('supertest');
 chai.should();
 chai.use(chaiHttp);
 
-var user = "y3";  // regarding sign up/in
+var user = "y15";  // regarding sign up/in
+var item = {name: "test15", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
 var admin2Token = "";
 var admin3Token = "";
 var userId = "";
+var itemId = "";
+var library1Id = "5fd53f880f2d076ac295de1d";
+var library2Id = "5fd53f8e0f2d076ac295de1e";
+var library3Id = "5fd53f910f2d076ac295de1f";
+var review = "good";
+var rating = 4;
 
 describe("Users API Tests", ()=>{
     describe("Sign up", ()=>{
@@ -1360,6 +1368,419 @@ describe("Libraries API Tests", ()=>{
     });
 
 
+    describe("Working with items", ()=>{
+        describe("Adding a new item", ()=>{
+            it("should add an item to library 1", (done)=>{
+                request(server)
+                .post(`/libraries/${library1Id}/items`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Item Added Successfully");
+                    done();
+                });
+            });
+
+            it("should add an item to library 2", (done)=>{
+                request(server)
+                .post(`/libraries/${library2Id}/items`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Item Added Successfully");
+                    done();
+                });
+            });
+
+            it("should add an item to library 3", (done)=>{
+                request(server)
+                .post(`/libraries/${library3Id}/items`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Item Added Successfully");
+                    done();
+                });
+            });
+        });
+
+        describe("Adding an existing item", ()=>{
+            it("should NOT add the item to library 1", (done)=>{
+                request(server)
+                .post(`/libraries/${library1Id}/items`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Process Failed");
+                    res.body.should.have.property("err", "This Item Already Exists In This Library");
+                    done();
+                });
+            });
+
+            it("should NOT add the item to library 2", (done)=>{
+                request(server)
+                .post(`/libraries/${library2Id}/items`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Process Failed");
+                    res.body.should.have.property("err", "This Item Already Exists In This Library");
+                    done();
+                });
+            });
+
+            it("should NOT add the item to library 3", (done)=>{
+                request(server)
+                .post(`/libraries/${library3Id}/items`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Process Failed");
+                    res.body.should.have.property("err", "This Item Already Exists In This Library");
+                    done();
+                });
+            });
+        });
+
+        describe("Adding items by non-librarian of the respective library", ()=>{
+            it("should NOT add the item to library 1", (done)=>{
+                request(server)
+                .post(`/libraries/${library1Id}/items`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT add the item to library 2", (done)=>{
+                request(server)
+                .post(`/libraries/${library2Id}/items`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT add the item to library 3", (done)=>{
+                request(server)
+                .post(`/libraries/${library3Id}/items`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .send(item)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+        });
+
+        describe("Get all items in a certain library", ()=>{
+            it("should get all items in library 1", (done)=>{
+                request(server)
+                .get(`/libraries/${library1Id}/items`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("num");
+                    res.body.should.have.property("items");
+                    itemId = res.body.items[0]._id;
+                    done();
+                });
+            });
+
+            it("should get all items in library 2", (done)=>{
+                request(server)
+                .get(`/libraries/${library2Id}/items`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("num");
+                    res.body.should.have.property("items");
+                    done();
+                });
+            });
+
+            it("should get all items in library 3", (done)=>{
+                request(server)
+                .get(`/libraries/${library3Id}/items`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("num");
+                    res.body.should.have.property("items");
+                    done();
+                });
+            });
+        });
+
+        describe("Get info about a certain item in a certain library", ()=>{
+            it("should get the info of the item from library 1", (done)=>{
+                request(server)
+                .get(`/libraries/${library1Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("item");
+                    done();
+                });
+            });
+
+            it("should get the info of the item from library 2", (done)=>{
+                request(server)
+                .get(`/libraries/${library2Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("item");
+                    done();
+                });
+            });
+
+            it("should get the info of the item from library 3", (done)=>{
+                request(server)
+                .get(`/libraries/${library3Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("item");
+                    done();
+                });
+            });
+        });
+
+        describe("Modify the info of a certain item in a certain library", ()=>{
+            it("should modify the item in library 1", (done)=>{
+                request(server)
+                .put(`/libraries/${library1Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Modified Successfully");
+                    res.body.should.have.property("modifiedItem");
+                    done();
+                });
+            });
+
+            it("should modify the item in library 2", (done)=>{
+                request(server)
+                .put(`/libraries/${library2Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Modified Successfully");
+                    res.body.should.have.property("modifiedItem");
+                    done();
+                });
+            });
+
+            it("should modify the item in library 3", (done)=>{
+                request(server)
+                .put(`/libraries/${library3Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Modified Successfully");
+                    res.body.should.have.property("modifiedItem");
+                    done();
+                });
+            });
+        });
+
+        describe("Modify an item by non-librarian of the respective library", ()=>{
+            it("should NOT modify the item in library 1", (done)=>{
+                request(server)
+                .put(`/libraries/${library1Id}/items`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT modify the item in library 2", (done)=>{
+                request(server)
+                .put(`/libraries/${library2Id}/items`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT modify the item in library 3", (done)=>{
+                request(server)
+                .put(`/libraries/${library3Id}/items`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .send(itemMod)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+        });
+
+
+        describe("Review an item", ()=>{
+            it("should review an item from library 1", (done)=>{
+                request(server)
+                .post(`/libraries/${library1Id}/items/${itemId}/reviews`)
+                .set("Authorization", `bearer ${token}`)
+                .send({rating: rating, review: review})
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Review Posted Successfully");
+                    done();
+                });
+            });
+
+            it("should review an item from library 2", (done)=>{
+                request(server)
+                .post(`/libraries/${library2Id}/items/${itemId}/reviews`)
+                .set("Authorization", `bearer ${token}`)
+                .send({rating: rating, review: review})
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Review Posted Successfully");
+                    done();
+                });
+            });
+
+            it("should review an item from library 3", (done)=>{
+                request(server)
+                .post(`/libraries/${library3Id}/items/${itemId}/reviews`)
+                .set("Authorization", `bearer ${token}`)
+                .send({rating: rating, review: review})
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true);
+                    res.body.should.have.property("status", "Review Posted Successfully");
+                    done();
+                });
+            });
+        });
+
+
+        describe("Delete a certain item in a certain library", ()=>{
+            it("should delete the item in library 1", (done)=>{
+                request(server)
+                .delete(`/libraries/${library1Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Deleted Successfully");
+                    done();
+                });
+            });
+
+            it("should delete the item in library 2", (done)=>{
+                request(server)
+                .delete(`/libraries/${library2Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Deleted Successfully");
+                    done();
+                });
+            });
+
+            it("should delete the item in library 3", (done)=>{
+                request(server)
+                .delete(`/libraries/${library3Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.have.property("success", true); 
+                    res.body.should.have.property("status", "Item Deleted Successfully");
+                    done();
+                });
+            });
+        });
+
+        describe("Delete an item by non-librarian of the respective library", ()=>{
+            it("should NOT delete the item from library 1", (done)=>{
+                request(server)
+                .delete(`/libraries/${library1Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin2Token}`)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT delete the item from library 2", (done)=>{
+                request(server)
+                .delete(`/libraries/${library2Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${admin3Token}`)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+
+            it("should NOT delete the item from library 3", (done)=>{
+                request(server)
+                .delete(`/libraries/${library3Id}/items/${itemId}`)
+                .set("Authorization", `bearer ${adminToken}`)
+                .end((err,res)=>{
+                    res.should.have.status(403);
+                    res.body.should.have.property("success", false);
+                    res.body.should.have.property("status", "Access Denied");
+                    done();
+                });
+            });
+        });
+    });
+
+
 
 
 
@@ -1390,7 +1811,7 @@ describe("Libraries API Tests", ()=>{
             });
         });
 
-        it("should reject the incoming join request of a certain user to library 2", (done)=>{
+        it("should reject the incoming join request of a certain user to library 2 or delete him if he exists", (done)=>{
             request(server)
             .put(`/libraries/5fd53f8e0f2d076ac295de1e/${userId}`)
             .set("Authorization", `bearer ${admin2Token}`)
