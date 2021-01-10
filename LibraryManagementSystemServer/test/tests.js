@@ -20,7 +20,7 @@ const request = require('supertest');
 chai.should();
 chai.use(chaiHttp);
 
-var user = "y1";  // regarding sign up/in
+var user = "y3";  // regarding sign up/in
 var token = "";
 var adminToken = "";
 var admin2Token = "";

@@ -294,6 +294,55 @@ userRouter
   });
 
 // Modifying Profile Pic
+//offline
+userRouter.put(
+  "/profile/profilePic",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  upload
+    .upload("public/images/profiles", /\.(jpg|jpeg|png|gif)$/)
+    .single("profilePic"),
+  (req, res, next) => {
+    if (req.wrongFormat) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Upload Failed",
+        err: "Unsupported Format",
+      });
+    } else {
+      User.findById(req.user._id)
+        .then((user) => {
+          user.profilePhoto = req.file.path;
+          user
+            .save()
+            .then((user) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: true,
+                status: "Profile Pic Updated",
+                image: user.profilePhoto,
+              });
+            })
+            .catch((err = "Server Failed") => {
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.json({ success: false, status: "Upload Failed", err: err });
+            });
+        })
+        .catch((err = "Server Failed") => {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.json({ success: false, status: "Upload Failed", err: err });
+        });
+    }
+  }
+);
+
+/*
+//online
 userRouter.put(
   "/profile/profilePic",
   cors.corsWithOptions,
@@ -369,6 +418,8 @@ userRouter.put(
     }
   }
 );
+*/
+
 
 //Get my subscribed Libraries
 userRouter.get(
