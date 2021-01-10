@@ -176,6 +176,7 @@ transactionRouter.get(
             name: transaction.item.name,
             author: transaction.item.author,
             image: transaction.item.image,
+            inLibrary: transaction.item.available.id(transaction.borrowedFrom._id).inLibrary
           },
           borrowedFrom: {
             _id: transaction.borrowedFrom._id,
@@ -495,10 +496,7 @@ transactionRouter.get(
             user: {
               firstname: transactions[i].user.firstname,
               lastname: transactions[i].user.lastname,
-              profilePhoto: correctPath(
-                transactions[i].user.profilePhoto,
-                req.hostname
-              ),
+              profilePhoto:transactions[i].user.profilePhoto,
               phoneNumber: transactions[i].user.phoneNumber,
               _id: transactions[i].user._id,
               username: transactions[i].user.username,
@@ -674,20 +672,13 @@ transactionRouter.get(
       .populate("borrowedFrom")
       .populate("user")
       .then((transactions) => {
-        var lib;
         for (var i in transactions) {
-          transactions.forEach((transaction) => {
-            transaction.item.available.forEach((library) => {
-              if (library._id.equals(transaction.borrowedFrom._id)) {
-                lib = library;
-              }
-            });
-          });
-
           transactions[i].item = {
             _id: transactions[i].item._id,
             name: transactions[i].item.name,
-            available: lib,
+            available: transactions[i].item.available.id(
+              transactions[i].borrowedFrom._id
+            ),
           };
           transactions[i].user = {
             _id: transactions[i].user._id,

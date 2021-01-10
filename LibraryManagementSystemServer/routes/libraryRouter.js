@@ -92,7 +92,7 @@ libraryRouter
             firstname: library.librarian.firstname,
             lastname: library.librarian.lastname,
             email: library.librarian.email,
-            profilePhoto: correctPath(library.librarian.profilePhoto,req.hostname),
+            profilePhoto: library.librarian.profilePhoto,
             phoneNumber: library.librarian.phoneNumber,
             _id: library.librarian._id,
           };
@@ -202,7 +202,7 @@ libraryRouter.get(
                 firstname: requests[i].firstname,
                 lastname: requests[i].lastname,
                 _id: requests[i]._id,
-                profilePhoto: correctPath(requests[i].profilePhoto,req.hostname),
+                profilePhoto: requests[i].profilePhoto,
               };
             }
             res.statusCode = 200;
@@ -239,7 +239,7 @@ libraryRouter.get(
                 canBorrowItems: members[i].canBorrowItems,
                 canEvaluateItems: members[i].canEvaluateItems,
                 _id: members[i]._id,
-                profilePhoto: correctPath(members[i].profilePhoto,req.hostname),
+                profilePhoto: members[i].profilePhoto,
               };
             }
             res.statusCode = 200;
@@ -486,7 +486,7 @@ libraryRouter
             feedbacks.push({
               firstname: library.feedback[i].user.firstname,
               lastname: library.feedback[i].user.lastname,
-              profilePhoto: correctPath(library.feedback[i].user.profilePhoto,req.hostname),
+              profilePhoto: library.feedback[i].user.profilePhoto,
               userId: library.feedback[i].user._id,
               feedback: library.feedback[i].feedback,
             });
@@ -523,7 +523,7 @@ libraryRouter.get(
             bUsers.push({
               firstname: users[i].firstname,
               lastname: users[i].lastname,
-              profilePhoto: correctPath(users[i].profilePhoto,req.hostname),
+              profilePhoto: users[i].profilePhoto,
               canBorrowItems: users[i].canBorrowItems,
               canEvaluateItems: users[i].canEvaluateItems,
               _id: users[i]._id,
@@ -551,7 +551,7 @@ libraryRouter.get(
             bUsers.push({
               firstname: users[i].firstname,
               lastname: users[i].lastname,
-              profilePhoto: correctPath(users[i].profilePhoto,req.hostname),
+              profilePhoto: users[i].profilePhoto,
               canBorrowItems: users[i].canBorrowItems,
               canEvaluateItems: users[i].canEvaluateItems,
               _id: users[i]._id,
@@ -981,7 +981,7 @@ libraryRouter
               reviewS.push({
                 firstname: item.reviews[i]._id.firstname,
                 lastname: item.reviews[i]._id.lastname,
-                profilePhoto: correctPath(item.reviews[i]._id.profilePhoto,req.hostname),
+                profilePhoto: item.reviews[i]._id.profilePhoto,
                 rating: item.reviews[i].rating,
                 review: item.reviews[i].review,
               });

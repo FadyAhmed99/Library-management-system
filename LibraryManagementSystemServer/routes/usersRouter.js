@@ -8,6 +8,7 @@ const cors = require("./cors");
 const multer = require("multer");
 const authenticate = require("../authenticate");
 const upload = require("../upload");
+const cloudinary = require('../cloudinary');
 const { correctPath } = require("../photo_correction");
 
 userRouter.options("*", cors.corsWithOptions, (req, res, next) => {
@@ -267,7 +268,7 @@ userRouter
           var profile = {
             firstname: user.firstname,
             lastname: user.lastname,
-            profilePhoto: correctPath(user.profilePhoto, req.hostname),
+            profilePhoto: user.profilePhoto,
             phoneNumber: user.phoneNumber,
             email: user.email,
             username: user.username,
@@ -293,6 +294,7 @@ userRouter
   });
 
 // Modifying Profile Pic
+//offline
 userRouter.put(
   "/profile/profilePic",
   cors.corsWithOptions,
@@ -338,6 +340,86 @@ userRouter.put(
     }
   }
 );
+
+/*
+//online
+userRouter.put(
+  "/profile/profilePic",
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  upload
+    .upload("profiles", /\.(jpg|jpeg|png|gif)$/)
+    .single("profilePic"),
+    (req, res, next) => {
+    if (req.wrongFormat) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: false,
+        status: "Upload Failed",
+        err: "Unsupported Format",
+      });
+    } else {
+      User.findById(req.user._id)
+      .then((user) => {
+        if(user.profilePhotoPublicId){
+          cloudinary.uploader.destroy(user.profilePhotoPublicId).then(()=>{
+            user.profilePhoto = req.file.path;
+            user.profilePhotoPublicId = req.file.filename;
+            user
+            .save()
+            .then((user) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: true,
+                status: "Profile Pic Updated",
+                image: user.profilePhoto,
+              });
+            })
+            .catch((err = "Server Failed") => {
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.json({ success: false, status: "Upload Failed", err: err });
+            });
+          }).catch((err)=>{
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.json({ success: false, status: "Couldn't Delete The Old Profile Pic", err: err });
+          });
+        }
+        else{
+          user.profilePhoto = req.file.path;
+            user.profilePhotoPublicId = req.file.filename;
+            user
+            .save()
+            .then((user) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json({
+                success: true,
+                status: "Profile Pic Updated",
+                image: user.profilePhoto,
+              });
+            })
+            .catch((err = "Server Failed") => {
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.json({ success: false, status: "Upload Failed", err: err });
+            });
+        }
+        
+      })
+      .catch((err = "Server Failed") => {
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ success: false, status: "Upload Failed", err: err });
+      });
+    }
+  }
+);
+*/
+
 
 //Get my subscribed Libraries
 userRouter.get(

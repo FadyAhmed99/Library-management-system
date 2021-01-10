@@ -261,7 +261,7 @@ borrowRequestRouter.get(
             _id: requests[i].user._id,
             firstname: requests[i].user.firstname,
             lastname: requests[i].user.lastname,
-            profilePhoto: correctPath(requests[i].user.profilePhoto,req.hostname),
+            profilePhoto: requests[i].user.profilePhoto,
             phoneNumber: requests[i].user.phoneNumber,
             username: requests[i].user.username,
           };

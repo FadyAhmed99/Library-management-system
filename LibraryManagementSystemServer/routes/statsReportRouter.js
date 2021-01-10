@@ -26,7 +26,7 @@ statsReport.get('/users' , cors.corsWithOptions ,  authenticate.verifyUser , aut
             _id: users[i]._id,
             firstname: users[i].firstname,
             lastname: users[i].lastname,
-            profilePhoto: correctPath(users[i].profilePhoto,req.hostname)
+            profilePhoto: users[i].profilePhoto
         });
       }
 

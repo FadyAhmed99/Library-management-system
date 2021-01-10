@@ -14,5 +14,7 @@ module.exports = {
     'lib3': '5fd53f910f2d076ac295de1f',
     'maxNumOfBorrowings': 3,
     'jwtDuration': 36000,
-    'startPoint':"https://156.213.70.91:3443/",
+    'cloudName': 'librica',
+    'cloudAPIKey': '851195868686711',
+    'cloudAPISecret': 'h43SOE_V9tkyIhenl3b2FBRZxoI' 
 };
