@@ -1,5 +1,5 @@
 // store some configuration information
-
+// notice the comments
 module.exports = {
     'secretKey': '12345-67890-09876-54321',
     'mongoUrl' : 'mongodb+srv://librica:librica1234@cluster0.hkday.mongodb.net/LibraryManagementSystem?retryWrites=true&w=majority', //ONLINE
