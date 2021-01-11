@@ -1989,7 +1989,7 @@ describe("Borrow requests", ()=>{
             });
         });
     
-        it("should NOT make the borrow request if the user have pending borrow requests equal to the maximum allowed borrow requests from any library", (done)=>{
+        it("should NOT make the borrow request for the user if (the number of borrow requests + number of borrowed but not returned items) equal to the maximum allowed borrowings from any library", (done)=>{
             request(server)
             .post('/users/login')
             .send({username: "member", password: "meow1"})
