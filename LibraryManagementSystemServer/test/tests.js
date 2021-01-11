@@ -37,8 +37,8 @@ const PhysicalBorrowRequests = require('../models/physicalBorrowRequestSchema');
 const Transaction = require('../models/transactionSchema');
 const mongoose = require('mongoose');
 
-var user = "d17";  // regarding sign up/in
-var item = {name: "d17", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var user = "userTest";  // regarding sign up/in
+var item = {name: "itemTest", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
 var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
@@ -77,7 +77,7 @@ describe("Users API Tests", ()=>{
         it("should signup user correctly by speicfying other fields", (done)=>{
             request(server)
             .post('/users/signup')
-            .send({username: user+"test", password: "meow1", firstname: "Abdo", lastname: "hany", email: "xx", phoneNumber: "011"})
+            .send({username: user+"test", password: "meow1", firstname: "Abdo", lastname: "hany", email: "xx@gmail.com", phoneNumber: "02341749375"})
             .end((err, res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -2024,7 +2024,7 @@ describe("Borrow requests", ()=>{
         });
     });
 
-    describe("Librarian gets all borrow requests from his library", ()=>{
+    describe("Librarian gets all borrow requests from his/her library", ()=>{
         it("should get all borrow requests from library 1", (done)=>{
             request(server)
             .get(`/borrowRequests/libraryRequests/${library1Id}`)
@@ -2101,7 +2101,7 @@ describe("Borrow requests", ()=>{
         });
     });
 
-    describe("User gets all his pending borrow requests", ()=>{
+    describe("User gets all his/her pending borrow requests", ()=>{
         it("should get all pending borrow requests for the request owner", (done)=>{
             request(server)
             .get('/borrowRequests/myRequests')
@@ -2115,7 +2115,7 @@ describe("Borrow requests", ()=>{
         });
     });
 
-    describe("Librarian accepts a borrow request in his library", ()=>{
+    describe("Librarian accepts a borrow request in his/her library", ()=>{
         it("should accept the borrow request in library 1 if the request owner is the librarian", (done)=>{
             request(server)
             .put(`/borrowRequests/accept/${library1Id}/${bReq1Id}`)
@@ -2202,7 +2202,7 @@ describe("Borrow requests", ()=>{
 
 
 describe("Working with transactions", ()=>{
-    describe("User gets all of his transactions", ()=>{
+    describe("User gets all of his/her transactions", ()=>{
         it("should get all user's transactions", (done)=>{
             request(server)
             .get(`/transactions/myTransactions`)
@@ -2218,7 +2218,7 @@ describe("Working with transactions", ()=>{
         });
     });
 
-    describe("User gets all of his returnings", ()=>{
+    describe("User gets all of his/her returnings", ()=>{
         it("should get all user's returnings", (done)=>{
             request(server)
             .get(`/transactions/myTransactions`)
@@ -2239,7 +2239,7 @@ describe("Working with transactions", ()=>{
            await Transaction.create({"_id":"5ffb09fa1fc3602ec41d8bf2","user":"5ff86dbc85361e52dc5ba279", "borrowedFrom": "5fd53f880f2d076ac295de1d", "item":"5ff7e5c246f9159e445c50b7", "returnedTo":"5fd53f8e0f2d076ac295de1e", "lateFees": 5, "requestedToReturn": false, "returned": true, "hasFees": true});
         });
 
-        it("should get info about a specific transaction of his", (done)=>{
+        it("should get info about a specific transaction of his/her", (done)=>{
             request(server)
             .get(`/transactions/transaction/${transactionId}`)
             .set("Authorization", `bearer ${memToken}`)
@@ -2253,7 +2253,7 @@ describe("Working with transactions", ()=>{
     });   
 
 
-    describe("User gets all his borrowed items", ()=>{
+    describe("User gets all his/her borrowed items", ()=>{
         it("should get user's borrowed items", (done)=>{
             request(server)
             .get(`/transactions/borrowed`)
