@@ -77,7 +77,7 @@ describe("Users API Tests", ()=>{
         it("should signup user correctly by speicfying other fields", (done)=>{
             request(server)
             .post('/users/signup')
-            .send({username: user+"test", password: "meow1", firstname: "Abdo", lastname: "hany", email: "xx", phoneNumber: "011"})
+            .send({username: user+"test", password: "meow1", firstname: "Abdo", lastname: "hany", email: "xx@gmail.com", phoneNumber: "02341749375"})
             .end((err, res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object');
