@@ -37,8 +37,8 @@ const PhysicalBorrowRequests = require('../models/physicalBorrowRequestSchema');
 const Transaction = require('../models/transactionSchema');
 const mongoose = require('mongoose');
 
-var user = "d17";  // regarding sign up/in
-var item = {name: "d17", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
+var user = "userTest";  // regarding sign up/in
+var item = {name: "itemTest", type: "magazine" , genre: "sci-fi", author: "eng", language:"ar", inLibrary: true, lateFees: 12, location:"s-5"} // regarding item
 var itemMod = {name: "test1mod", type: "magazine" , genre: "sci-fi", author: "eng", language:"en", inLibrary: true, lateFees: 12, location:"s-5"};
 var token = "";
 var adminToken = "";
