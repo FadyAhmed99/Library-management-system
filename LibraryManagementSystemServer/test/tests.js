@@ -2293,7 +2293,7 @@ describe("Working with transactions", ()=>{
         });
     });
 
-    describe("User sends a return request to return a physical item", ()=>{
+    describe("User sends a return request to return an item", ()=>{
         it("should send a return request", (done)=>{
             request(server)
             .put(`/transactions/requestToReturn/${transactionId}`)
