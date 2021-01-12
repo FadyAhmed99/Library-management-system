@@ -123,6 +123,7 @@ class User with ChangeNotifier {
           return extractedData['err']['message'];
         } else {
           await logIn(userName, password);
+          return null;
         }
       }
     } catch (e) {
@@ -154,6 +155,7 @@ class User with ChangeNotifier {
           globalToken = extractedData['token'];
 
           notifyListeners();
+          return null;
         }
       }
     } catch (e) {
@@ -188,7 +190,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<String> getProfile() async {
+  Future<String> getProfile([http.Client client]) async {
     try {
       final _url = '$apiStart/users/profile';
       final response = await http.get(
@@ -198,7 +200,7 @@ class User with ChangeNotifier {
 
       final extractedData = jsonDecode(response.body);
       if (extractedData == null) {
-        return null;
+        return 'Error!';
       } else {
         if (response.statusCode != 200)
           return extractedData['err']['message'];

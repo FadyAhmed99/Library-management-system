@@ -180,6 +180,8 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                                   children: [
                                     Expanded(
                                       child: ItemTile(
+                                        key:ValueKey('item_tile_$index'),
+                                        index: index,
                                           borrowed: false,
                                           item: _items[index],
                                           libraryId: widget.libraryId,
@@ -210,11 +212,13 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                                                       },
                                                 child: FittedBox(
                                                   child: Text(
+                                                    
                                                     requested
                                                         ? 'Requested'
                                                         : borrowed
                                                             ? "Borrowed"
                                                             : "Request Borrowing",
+                                                  key: ValueKey('borrow btn$index'),
                                                   ),
                                                 )),
                                           ),

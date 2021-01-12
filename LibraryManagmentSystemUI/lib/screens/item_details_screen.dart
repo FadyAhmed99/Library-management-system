@@ -227,6 +227,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                                                   : borrowed
                                                       ? 'Borrowed'
                                                       : 'Request Borrowing',
+                                                      key: ValueKey('Borrow btn'),
                                             ),
                                     ),
                                   ),
@@ -378,6 +379,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
     return TableRow(children: [
       Text(
         label + ': ',
+        key: ValueKey(label),
         style: Theme.of(context)
             .textTheme
             .headline1

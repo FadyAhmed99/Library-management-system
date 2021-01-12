@@ -12,6 +12,7 @@ import 'package:LibraryManagmentSystem/screens/regestration/welcome_screen.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_driver/driver_extension.dart';
 
 import './theme.dart';
 
@@ -25,6 +26,8 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() {
+    enableFlutterDriverExtension();
+
   HttpOverrides.global = new MyHttpOverrides();
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));

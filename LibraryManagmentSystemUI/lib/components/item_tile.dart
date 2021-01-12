@@ -14,12 +14,16 @@ class ItemTile extends StatefulWidget {
   ItemSerializer item;
   String libraryId;
   bool stars;
+  int index;
+  final Key key;
   ItemTile({
     this.borrowed = false,
     this.favorite = false,
     this.item,
     this.stars = true,
+    this.index,
     @required this.libraryId,
+    this.key,
   });
   @override
   _ItemTileState createState() => _ItemTileState();
@@ -144,6 +148,7 @@ class _ItemTileState extends State<ItemTile> {
                           : Container(),
                       Text(
                         widget.item.name,
+                        key: ValueKey('name${widget.index}'),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Row(

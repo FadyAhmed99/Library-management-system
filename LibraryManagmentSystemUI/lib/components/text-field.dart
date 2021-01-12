@@ -3,6 +3,7 @@ import 'package:LibraryManagmentSystem/constants.dart';
 
 
 TextFormField myTextFormField({
+  Key key,
   BuildContext context,
   String hint,
   String label,
@@ -12,6 +13,7 @@ TextFormField myTextFormField({
   bool obsecure = false,
 }) {
   return TextFormField(
+    key: key,
     obscureText: obsecure,
     validator: validator,
     controller: controller,

@@ -10,8 +10,10 @@ Widget libraryTile(
     @required bool joined,
     @required bool requested,
     bool icon,
-    int index}) {
+    int index,
+    Key key}) {
   return GridTile(
+    key: key,
     child: InkWell(
       onTap: () {
         Navigator.of(context).push(
@@ -71,7 +73,8 @@ Widget libraryTile(
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      library.name,
+                      library.name.trim(),
+                      key: ValueKey('name$index'),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

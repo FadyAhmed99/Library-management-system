@@ -115,6 +115,7 @@ class _LibrariesRoomScreenState extends State<LibrariesRoomScreen> {
                               Expanded(
                                 child: Center(
                                   child: libraryTile(
+                                    key: ValueKey('library tile$index') ,
                                     context: context,
                                     library: _lib[index],
                                     joined: joined == 'Joined',

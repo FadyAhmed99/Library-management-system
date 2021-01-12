@@ -146,6 +146,7 @@ class _SignUpState extends State<SignUp> {
     }
 
     return Scaffold(
+      key: ValueKey('signup screen'),
       body: _bigLoading
           ? loading()
           : InkWell(
@@ -177,6 +178,7 @@ class _SignUpState extends State<SignUp> {
                               return Padding(
                                 padding: const EdgeInsets.all(8),
                                 child: myTextFormField(
+                                    key: ValueKey('label'),
                                     context: context,
                                     controller: e.controller,
                                     hint: e.hint,
@@ -257,6 +259,7 @@ class _SignUpState extends State<SignUp> {
                                           }
                                         },
                                         title: 'Sign up',
+                                        key: ValueKey('Sign up'),
                                       ),
                                     ),
                                     Center(child: Text('OR')),

@@ -25,6 +25,6 @@ void main() {
       ChangeNotifierProvider(create: (context) => Transaction()),
     ], child: MaterialApp(home: WelcomeScreen())));
 
-    expect(find.byKey(ValueKey('n')), findsOneWidget);
+    expect(find.byKey(ValueKey('label')), findsOneWidget);
   });
 }

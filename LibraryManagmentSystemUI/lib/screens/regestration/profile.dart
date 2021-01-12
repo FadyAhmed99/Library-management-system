@@ -60,7 +60,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final _userProvider = Provider.of<User>(context);
-    UserSerializer _user = _userProvider.user;
+    UserSerializer _user = Provider.of<UserSerializer>(context);
 
     return Scaffold(
       appBar: appBar(

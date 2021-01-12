@@ -122,7 +122,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 0.0),
                   child: Text(
                     'Librica',
-                    key: ValueKey('n'),
+                    key: ValueKey('label'),
                     style: TextStyle(
                       fontSize: 40.0,
                       fontWeight: FontWeight.w900,
@@ -153,6 +153,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                         SizedBox(height: 10),
                         RoundedButton(
+                          key: ValueKey('Register'),
                           title: 'Register',
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
