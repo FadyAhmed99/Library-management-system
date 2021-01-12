@@ -93,8 +93,7 @@ class _LibraryLatestAdditionState extends State<LibraryLatestAddition> {
                                             builder: (context) =>
                                                 ItemInfoScreen(
                                               itemId: _items[index].id,
-                                              libraryId:
-                                                  libs[widget.libraryNumber],
+                                              libraryId: widget.libraryNumber,
                                             ),
                                           ),
                                         );
