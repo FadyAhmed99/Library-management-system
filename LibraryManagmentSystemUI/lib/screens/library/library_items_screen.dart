@@ -143,7 +143,7 @@ class _LibraryItemsScreenState extends State<LibraryItemsScreen> {
                             child: Text(
                                 _loading
                                     ? ''
-                                    : "Library have ${_items.length.toString()} items",
+                                    : "Library has ${_items.length.toString()} items",
                                 style: Theme.of(context).textTheme.headline1),
                           ),
                         ),

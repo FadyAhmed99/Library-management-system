@@ -78,7 +78,7 @@ class _BorrowingScreenState extends State<BorrowingScreen> {
                                   _requests.removeAt(index);
                                 });
                                 Scaffold.of(context).showSnackBar(SnackBar(
-                                  content: Text('Item recieved'),
+                                  content: Text('Item received'),
                                   duration: Duration(seconds: 3),
                                 ));
                               }

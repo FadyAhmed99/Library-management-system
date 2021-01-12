@@ -76,7 +76,7 @@ class _ReturningScrrenState extends State<ReturningScrren> {
                           }
                         });
                       },
-                      child: Text('Recieve'),
+                      child: Text('Receive'),
                     )),
               );
             });
