@@ -79,7 +79,7 @@ void main() {
     });
   });
 
-  group('Welcome screen then Sign up', () {
+  group('Welcome screen then Sign in', () {
     tDriver.FlutterDriver driver;
 
     // Connect to the Flutter driver before running any tests.
@@ -98,18 +98,15 @@ void main() {
       expect(health.status, tDriver.HealthStatus.ok);
     });
 
-    test('tap on register', () async {
-      final regBtn = tDriver.find.byValueKey('Register');
-      await driver.waitFor(regBtn);
-      await driver.tap(regBtn);
-      final signupBtn = tDriver.find.byValueKey('Sign up');
-      final signupScreen = tDriver.find.byValueKey('signup screen');
+    test('tap on log in', () async {
+      final loginBtn = tDriver.find.byValueKey('Log in');
+      await driver.waitFor(loginBtn);
+      await driver.tap(loginBtn);
+      final logBtn = tDriver.find.byValueKey('Log in');
 
-      await driver.scroll(signupScreen, 0, -200, Duration(seconds: 1));
-
-      // await driver.waitFor(signupBtn);
-      // expect(await driver.getText(signupBtn), "Sign up");
-      await driver.tap(signupBtn);
+      await driver.waitFor(logBtn);
+       expect(await driver.getText(logBtn), "Log in");
+      await driver.tap(logBtn);
     });
   });
 }

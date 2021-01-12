@@ -150,6 +150,7 @@ class _SignInState extends State<SignIn> {
                             child: RoundedButton(
                               onPressed: logInUser,
                               title: 'Log in',
+                              key: ValueKey('Log in'),
                             ),
                           ),
                           Center(child: Text('OR')),

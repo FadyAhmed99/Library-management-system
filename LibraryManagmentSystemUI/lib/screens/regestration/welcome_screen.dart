@@ -142,7 +142,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         RoundedButton(
-                          title: 'Log In',
+                          title: 'Log in',
+                          key: ValueKey('Log in'),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
