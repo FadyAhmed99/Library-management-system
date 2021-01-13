@@ -38,7 +38,7 @@ Backend:
 
 #### Backend:
 Note: in this part you need MongoDB and NodeJs installed.
-The application's backend is already up and deployed on heroku online [heroku_online_server](https://librica.herokuapp.com/)
+The application's backend is already up and deployed on heroku online
 The database is also up and deployed online on MongoDB Atlas(the link will be provided in the report)
 If you want to connect to the online database, open the terminal and write this line:
 ```
