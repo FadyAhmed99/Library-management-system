@@ -50,7 +50,7 @@ class _SignUpState extends State<SignUp> {
       KFormField(
           controller: _userName,
           hint: 'Enter user name',
-          label: "user Name*",
+          label: "User Name*",
           validator: (text) {
             if (text.length == 0) return 'Empty Name';
           }),
@@ -68,7 +68,7 @@ class _SignUpState extends State<SignUp> {
           controller: _confirmEmail,
           textInputType: TextInputType.emailAddress,
           hint: 'Confirm your email',
-          label: "email confirm*",
+          label: "Email confirm*",
           validator: (text) => text.length == 0
               ? 'Empty Email'
               : text == _email.text
