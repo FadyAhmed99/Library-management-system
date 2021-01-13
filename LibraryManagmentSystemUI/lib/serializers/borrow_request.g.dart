@@ -13,8 +13,8 @@ BorrowRequestSerializer _$BorrowRequestSerializerFromJson(
     user: json['user'] == null
         ? null
         : UserSerializer.fromJson(json['user'] as Map<String, dynamic>),
-    deadline: json['deadline'] as String,
-    borrowed: json['borrowed'] as bool,
+    deadline: json['deadline'] as String ?? '',
+    borrowed: json['borrowed'] as bool ?? false,
     item: json['item'] == null
         ? null
         : ItemSerializer.fromJson(json['item'] as Map<String, dynamic>),

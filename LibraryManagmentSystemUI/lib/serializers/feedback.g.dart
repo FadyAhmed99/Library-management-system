@@ -8,19 +8,19 @@ part of '../classes/feedback.dart';
 
 FeedbackSerializer _$FeedbackFromJson(Map<String, dynamic> json) {
   return FeedbackSerializer(
-    firstname: json['firstname'] as String,
-    lastname: json['lastname'] as String,
-    profilePhoto: json['profilePhoto'] as String,
-    userId: json['userId'] as String,
-    feedback: json['feedback'] as String,
+    firstname: json['firstname'] as String ?? '',
+    lastname: json['lastname'] as String ?? '',
+    profilePhoto: json['profilePhoto'] as String ?? '',
+    userId: json['userId'] as String ?? '',
+    feedback: json['feedback'] as String ?? '',
   );
 }
 
 Map<String, dynamic> _$FeedbackToJson(FeedbackSerializer instance) =>
     <String, dynamic>{
-      'firstname': instance.firstname,
-      'lastname': instance.lastname,
-      'profilePhoto': instance.profilePhoto,
-      'userId': instance.userId,
-      'feedback': instance.feedback,
+      'firstname': instance.firstname ?? '',
+      'lastname': instance.lastname ?? '',
+      'profilePhoto': instance.profilePhoto ?? '',
+      'userId': instance.userId ?? '',
+      'feedback': instance.feedback ?? '',
     };

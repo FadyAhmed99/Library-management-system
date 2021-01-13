@@ -12,7 +12,7 @@ ItemSerializer _$ItemFromJson(Map<String, dynamic> json) {
     id: json['_id'] as String,
     type: json['type'] as String,
     genre: json['genre'] as String,
-    name: json['name'] as String,
+    name: json['name'] as String ?? '',
     author: json['author'] as String,
     language: json['language'] as String ?? '',
     isbn: json['ISBN'] as String ?? '',
@@ -24,7 +24,7 @@ ItemSerializer _$ItemFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : Review.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    amount: json['amount'] as num ?? 0,
+    amount: json['amount'] as num ?? 2,
     averageRating: json['averageRating'] ?? 0,
     isNew: json['isNew'] as bool ?? false,
     itemLink: json['itemLink'] as String ?? '',
@@ -44,7 +44,7 @@ Map<String, dynamic> _$ItemToJson(ItemSerializer instance) => <String, dynamic>{
       'libraryId': instance.libraryId,
       'author': instance.author,
       'language': instance.language,
-      'ISBN': instance.isbn??'',
+      'ISBN': instance.isbn ?? '',
       'image': instance.image,
       'inLibrary': instance.inLibrary,
       'lateFees': instance.lateFees,
@@ -53,6 +53,6 @@ Map<String, dynamic> _$ItemToJson(ItemSerializer instance) => <String, dynamic>{
       'amount': instance.amount,
       'averageRating': instance.averageRating,
       'isNew': instance.isNew,
-      'itemLink': instance.itemLink??'',
+      'itemLink': instance.itemLink ?? '',
       'available': instance.available?.map((e) => e?.toJson())?.toList(),
     };

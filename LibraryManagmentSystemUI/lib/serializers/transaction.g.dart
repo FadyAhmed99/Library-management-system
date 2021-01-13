@@ -12,7 +12,7 @@ TransactionSerializer _$TransactionFromJson(Map<String, dynamic> json) {
         ? null
         : LibrarySerializer.fromJson(
             json['returnedTo'] as Map<String, dynamic>),
-    hasFees: json['hasFees'] as bool,
+    hasFees: json['hasFees'] as bool ?? false,
     user: json['user'] == null
         ? null
         : UserSerializer.fromJson(json['user'] as Map<String, dynamic>),
@@ -30,15 +30,15 @@ TransactionSerializer _$TransactionFromJson(Map<String, dynamic> json) {
         : LibrarySerializer.fromJson(
             json['borrowedFrom'] as Map<String, dynamic>),
     id: json['_id'] as String,
-    lateFees: (json['lateFees'] as num)?.toDouble(),
+    lateFees: (json['lateFees'] as num)?.toDouble()??0,
     borrowDate: json['borrowDate'] == null
         ? null
         : DateTime.parse(json['borrowDate'] as String),
     deadline: json['deadline'] == null
         ? null
         : DateTime.parse(json['deadline'] as String),
-    requestedToReturn: json['requestedToReturn'] as bool,
-    returned: json['returned'] as bool,
+    requestedToReturn: json['requestedToReturn'] as bool ?? false,
+    returned: json['returned'] as bool ?? false,
   );
 }
 

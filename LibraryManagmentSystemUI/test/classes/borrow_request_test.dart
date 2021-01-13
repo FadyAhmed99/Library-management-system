@@ -5,7 +5,8 @@ import 'package:LibraryManagmentSystem/classes/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Given borrow request json data then fromJson() is called', () async {
+  test('Given borrow request json full data then fromJson() is called',
+      () async {
     // ARRANGE
     BorrowRequestSerializer request = BorrowRequestSerializer();
     final Map<String, dynamic> _requestJson = {
@@ -62,8 +63,39 @@ void main() {
     expect(request.library.id, "1");
     expect(request.library.image, "image");
   });
+  test(
+      'Given borrowRequest json without borrowed flag then fromJson() is called',
+      () async {
+    // ARRANGE
+    BorrowRequestSerializer request = BorrowRequestSerializer();
+    final Map<String, dynamic> _requestJson = {
+      "_id": "1",
+      "deadline": "2021-01-10T23:26:00.205Z",
+    };
+    // ACT
+    request = BorrowRequestSerializer.fromJson(_requestJson);
+    // ASSERT
+    expect(request.id, "1");
+    expect(request.borrowed, false);
+    expect(request.deadline, "2021-01-10T23:26:00.205Z");
+  });
+  test('Given borrow request json without deadline then fromJson() is called',
+      () async {
+    // ARRANGE
+    BorrowRequestSerializer request = BorrowRequestSerializer();
+    final Map<String, dynamic> _requestJson = {
+      "_id": "1",
+      "borrowed": true,
+    };
+    // ACT
+    request = BorrowRequestSerializer.fromJson(_requestJson);
+    // ASSERT
+    expect(request.id, "1");
+    expect(request.borrowed, true);
+    expect(request.deadline, '');
+  });
 
-  test('Given borrow request object then toJson() is called', () async {
+  test('Given borrowRequest object then toJson() is called', () async {
     // ARRANGE
     BorrowRequestSerializer request = BorrowRequestSerializer(
       id: "1",
@@ -97,7 +129,7 @@ void main() {
       deadline: "2021-01-10T23:26:00.205Z",
     );
     // ACT
-  Map<String,dynamic>  _requestJson = request.toJson();
+    Map<String, dynamic> _requestJson = request.toJson();
     // ASSERT
     expect(_requestJson['_id'], "1");
     expect(_requestJson['borrowed'], true);

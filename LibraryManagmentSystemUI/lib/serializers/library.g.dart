@@ -8,14 +8,14 @@ part of '../classes/library.dart';
 
 LibrarySerializer _$LibraryFromJson(Map<String, dynamic> json) {
   return LibrarySerializer(
-    status: json['status'] as String,
-    name: json['name'] as String,
+    status: json['status'] as String ?? '',
+    name: json['name'] as String ?? '',
     id: json['_id'] as String,
-    address: json['address'] as String,
-    description: json['description'] as String,
-    phoneNumber: json['phoneNumber'] as String,
-    image: json['image'] as String,
-    librarian: json['librarian'] as String,
+    address: json['address'] as String ?? '',
+    description: json['description'] as String ?? '',
+    phoneNumber: json['phoneNumber'] as String ?? '',
+    image: json['image'] as String ?? '',
+    librarian: json['librarian'] as String ?? '',
     feedback: (json['feedback'] as List)
         ?.map((e) => e == null
             ? null
