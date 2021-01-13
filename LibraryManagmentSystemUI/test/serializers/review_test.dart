@@ -2,6 +2,86 @@ import 'package:LibraryManagmentSystem/serializers/review.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Given review full json data then fromJson() is called', () async {
+    // ARRANGE
+    Review review = Review();
+    final Map<String, dynamic> _reviewJson = {
+      "firstname": "fname",
+      "lastname": "lname",
+      "profilePhoto": "image",
+      "rating": 2.4,
+      "review": "rev",
+    };
+    // ACT
+    review = Review.fromJson(_reviewJson);
+    // ASSERT
+    expect(review.firstname, "fname");
+    expect(review.lastname, "lname");
+    expect(review.profilePhoto, "image");
+    expect(review.rating, 2.4);
+    expect(review.review, "rev");
+  });
+
+  test('Given review json data then fromJson() is called', () async {
+    // ARRANGE
+    Review review = Review();
+    final Map<String, dynamic> _reviewJson = {
+      "firstname": "fname",
+      "lastname": "lname",
+      "profilePhoto": "image",
+      "rating": 2.4,
+      "review": "rev",
+    };
+    // ACT
+    review = Review.fromJson(_reviewJson);
+    // ASSERT
+    expect(review.firstname, "fname");
+    expect(review.lastname, "lname");
+    expect(review.profilePhoto, "image");
+    expect(review.rating, 2.4);
+    expect(review.review, "rev");
+  });
+
+  test('Given review json data then fromJson() is called', () async {
+    // ARRANGE
+    Review review = Review();
+    final Map<String, dynamic> _reviewJson = {
+      "firstname": "fname",
+      "lastname": "lname",
+      "profilePhoto": "image",
+      "rating": 2.4,
+      "review": "rev",
+    };
+    // ACT
+    review = Review.fromJson(_reviewJson);
+    // ASSERT
+    expect(review.firstname, "fname");
+    expect(review.lastname, "lname");
+    expect(review.profilePhoto, "image");
+    expect(review.rating, 2.4);
+    expect(review.review, "rev");
+  });
+
+  test('Given review json data then fromJson() is called', () async {
+    // ARRANGE
+    Review review = Review();
+    final Map<String, dynamic> _reviewJson = {
+      "firstname": "fname",
+      "lastname": "lname",
+      "profilePhoto": "image",
+      "rating": 2.4,
+      "review": "rev",
+    };
+    // ACT
+    review = Review.fromJson(_reviewJson);
+    // ASSERT
+    expect(review.firstname, "fname");
+    expect(review.lastname, "lname");
+    expect(review.profilePhoto, "image");
+    expect(review.rating, 2.4);
+    expect(review.review, "rev");
+  });
+
   test('Given review json data then fromJson() is called', () async {
     // ARRANGE
     Review review = Review();

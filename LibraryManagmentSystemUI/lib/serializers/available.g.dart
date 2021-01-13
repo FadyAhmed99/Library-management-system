@@ -8,17 +8,18 @@ part of 'available.dart';
 
 AvailableSerializer _$AvailableFromJson(Map<String, dynamic> json) {
   return AvailableSerializer(
-    id: json['_id'] as String,
-    image: json['image'] as String,
-    inLibrary: json['inLibrary'] as bool,
-    itemLink: json['itemLink'] as String,
-    lateFees: (json['lateFees'] as num)?.toDouble(),
-    amount: json['amount'] as int,
-    location: json['location'] as String,
+    id: json['_id'] as String??'',
+    image: json['image'] as String ?? '',
+    inLibrary: json['inLibrary'] as bool ?? true,
+    itemLink: json['itemLink'] as String ?? '',
+    lateFees: (json['lateFees'] as num)?.toDouble() ?? 0,
+    amount: json['amount'] as int ?? 0,
+    location: json['location'] as String ?? '',
   );
 }
 
-Map<String, dynamic> _$AvailableToJson(AvailableSerializer instance) => <String, dynamic>{
+Map<String, dynamic> _$AvailableToJson(AvailableSerializer instance) =>
+    <String, dynamic>{
       '_id': instance.id,
       'image': instance.image,
       'inLibrary': instance.inLibrary,

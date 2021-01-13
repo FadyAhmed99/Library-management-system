@@ -34,27 +34,26 @@ class ItemSerializer {
   final bool isNew;
   final String itemLink;
   final List<AvailableSerializer> available;
-  final TransactionSerializer transaction;
-  ItemSerializer(
-      {this.libraryId,
-      this.id,
-      this.type,
-      this.genre,
-      this.name,
-      this.author,
-      this.language,
-      this.isbn,
-      this.image,
-      this.inLibrary,
-      this.lateFees,
-      this.location,
-      this.reviews,
-      this.amount,
-      this.averageRating,
-      this.isNew,
-      this.itemLink,
-      this.available,
-      this.transaction});
+  ItemSerializer({
+    this.libraryId,
+    this.id,
+    this.type,
+    this.genre,
+    this.name,
+    this.author,
+    this.language,
+    this.isbn,
+    this.image,
+    this.inLibrary,
+    this.lateFees,
+    this.location,
+    this.reviews,
+    this.amount,
+    this.averageRating,
+    this.isNew,
+    this.itemLink,
+    this.available,
+  });
 
   factory ItemSerializer.fromJson(Map<String, dynamic> data) =>
       _$ItemFromJson(data);
